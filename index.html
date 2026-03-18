@@ -1624,22 +1624,25 @@ function isUnionHoliday(dateStr){
             for (const [key, val] of Object.entries(data.inputs)) { let el = document.getElementById(key); if(el && key !== 'audit-toggle') { if(el.type === 'checkbox') el.checked = val; else if(el.classList.contains('btn-12') && val===true) el.classList.add('active'); else el.value = val; } }
             if(data.inputs['sm-1']) document.getElementById('sm-1').setAttribute('data-rate', data.inputs['sm-rate-1'] || '1.5');
             if(data.inputs['sm-2']) document.getElementById('sm-2').setAttribute('data-rate', data.inputs['sm-rate-2'] || '1.5');
-            for(let w=1; w<=2; w++) { days.forEach((d,i) => { 
-                let muHrs = parseFloat(document.getElementById(`step-hrs-${w}-${i}`).value)>0;
-                let muRate = parseFloat(document.getElementById(`step-rate-${w}-${i}`).value)>0;
-                let esHrs = parseFloat(document.getElementById(`es-hrs-${w}-${i}`).value)>0;
-                let esRate = parseFloat(document.getElementById(`es-rate-${w}-${i}`).value)>0;
-                let mtOn = document.getElementById(`mt-${w}-${i}`).checked;
-                
-                if (muHrs || muRate) {
-                    document.getElementById(`zone-mu-${w}-${i}`).classList.add('show');
-                }
-                if (esHrs || esRate || mtOn) {
-                    document.getElementById(`zone-es-${w}-${i}`).classList.add('show');
-                }
-                
-                if(document.getElementById(`ro-${w}-${i}`).checked) document.getElementById(`card-${w}-${i}`).classList.add('ro-active'); 
-            }); }
+            for(let w=1; w<=2; w++) { 
+                days.forEach((d,i) => { 
+                    let muHrs = parseFloat(document.getElementById(`step-hrs-${w}-${i}`).value)>0;
+                    let muRate = parseFloat(document.getElementById(`step-rate-${w}-${i}`).value)>0;
+                    let esHrs = parseFloat(document.getElementById(`es-hrs-${w}-${i}`).value)>0;
+                    let esRate = parseFloat(document.getElementById(`es-rate-${w}-${i}`).value)>0;
+                    let mtOn = document.getElementById(`mt-${w}-${i}`).checked;
+                    
+                    if (muHrs || muRate) {
+                        document.getElementById(`zone-mu-${w}-${i}`).classList.add('show');
+                    }
+                    if (esHrs || esRate || mtOn) {
+                        document.getElementById(`zone-es-${w}-${i}`).classList.add('show');
+                    }
+                    
+                    if(document.getElementById(`ro-${w}-${i}`).checked) document.getElementById(`card-${w}-${i}`).classList.add('ro-active'); 
+                }); 
+                toggleMisc(w); // <--- THIS WAKES UP THE JURY DUTY UI ON LOAD
+            }
         }
     }
     function resetCheckData() { if(confirm("Are you sure? This will DELETE all saved checks for "+currentYear)) { localStorage.removeItem(`ledger_${currentYear}_final`); location.reload(); } }
