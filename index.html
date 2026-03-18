@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V3.6.6 (Auto-Pivot)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.6.7(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -212,7 +212,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.6.6</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.6.7</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats"><div id="header-ytd-label">EST. GROSS YTD</div><div class="ytd-val" id="header-ytd-gross">$0.00</div></div>
@@ -615,21 +615,28 @@ function isUnionHoliday(dateStr){
             let statusClass = "";
             if (isVerified) statusClass = "verified"; else if (isDone) statusClass = "estimated"; else if (today >= p.start && today <= p.end) statusClass = "current";
             
-            // SCAN THE 14 DAYS FOR VACATIONS AND HOLIDAYS
+            // SCAN THE 14 DAYS FOR VACATIONS AND HOLIDAYS (SPLIT WEEK)
             let isVac = false;
-            let hasHol = false;
+            let hasHolW1 = false;
+            let hasHolW2 = false;
             let pS = new Date(p.start);
-            let pE = new Date(p.end);
-            while(pS <= pE) { 
+            
+            for(let i=0; i<14; i++) { 
                 let dStr = fmt(pS);
                 if(vacationDates.includes(dStr)) isVac = true; 
-                if(isUnionHoliday(dStr)) hasHol = true; // Checks if any day is a holiday
+                if(isUnionHoliday(dStr)) {
+                    if (i < 7) hasHolW1 = true;
+                    else hasHolW2 = true;
+                }
                 pS.setDate(pS.getDate()+1); 
             }
             if(isVac) statusClass += " vacation-active";
             
-            // APPLY PURPLE INLINE STYLE IF HOLIDAY IS FOUND
-            let rangeStyle = hasHol ? "color: #ba68c8; font-weight: bold;" : "";
+            let w1Style = hasHolW1 ? "color: #ba68c8; font-weight: bold;" : "";
+            let w2Style = hasHolW2 ? "color: #ba68c8; font-weight: bold;" : "";
+            
+            let splitDates = p.fullRange.split(' - ');
+            let customRangeHTML = `<span style="${w1Style}">${splitDates[0]}</span> - <span style="${w2Style}">${splitDates[1]}</span>`;
             
             let depBadge = "";
             if(isDone && distTotal > 0) {
@@ -637,8 +644,7 @@ function isUnionHoliday(dateStr){
                 depBadge = `<div class="deposit-badge">Main Deposit: ${f(mainDep)}</div>`;
             }
             
-            // INJECTS rangeStyle INTO THE .period-range SPAN
-            container.innerHTML += `<div class="pay-card ${statusClass} ${p.isEarly?'early-pay':''}" onclick="openPeriod(${p.id})" data-ref-section="Dashboard" data-ref-selector=".pay-card"><div class="date-badge" onclick="resetSingleCheck(${p.id}, event)">#${p.id}</div><div class="card-info"><span class="pay-date-label">${p.payDate} Paycheck</span><span class="period-range" style="${rangeStyle}">${p.fullRange}</span>${depBadge}</div><div class="card-total">${val}</div></div>`;
+            container.innerHTML += `<div class="pay-card ${statusClass} ${p.isEarly?'early-pay':''}" onclick="openPeriod(${p.id})" data-ref-section="Dashboard" data-ref-selector=".pay-card"><div class="date-badge" onclick="resetSingleCheck(${p.id}, event)">#${p.id}</div><div class="card-info"><span class="pay-date-label">${p.payDate} Paycheck</span><span class="period-range">${customRangeHTML}</span>${depBadge}</div><div class="card-total">${val}</div></div>`;
         });
         
         document.getElementById('header-ytd-label').innerText = "EST. GROSS YTD";
@@ -825,7 +831,19 @@ function isUnionHoliday(dateStr){
         container.innerHTML += `<div style="text-align:center; font-size:10px; color:#ffb300; margin-bottom:5px; font-weight:bold;">MANUAL ENTRY FORMAT: HH.MM (Decimal = Minutes)</div>`;
 
         for(let w=1; w<=2; w++) {
-            container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin:15px 10px 5px 10px;"><b style="color:var(--accent)">WEEK ${w}</b><label style="color:var(--gold); font-size:11px; font-weight:bold;"><input type="checkbox" id="sm-${w}" onchange="triggerSM(${w})" data-rate="1.5"> Safety Meeting</label><div style="width:80px;"><input type="number" id="bonus-${w}" style="background:#004d40; color:white; margin:0; border:none; padding:8px; border-radius:6px; width:100%;" placeholder="Inc %" oninput="calc();" enterkeyhint="${w===1?'next':'done'}" onkeydown="if(event.key==='Enter'){event.preventDefault(); document.getElementById('bonus-${w===1?'2':'1'}').focus();}"></div></div>`;
+            container.innerHTML += `<div style="display:flex; justify-content:space-between; align-items:center; margin:15px 10px 5px 10px;">
+                <b style="color:var(--accent)">WEEK ${w}</b>
+                <div style="display:flex; align-items:center; gap:15px;">
+                    <label style="color:var(--gold); font-size:11px; font-weight:bold; display:flex; align-items:center; gap:4px; margin:0; cursor:pointer;">
+                        <input type="checkbox" id="sm-${w}" onchange="triggerSM(${w})" data-rate="1.5" style="width:14px; height:14px; margin:0;"> Safety Meeting
+                    </label>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <select id="misc-${w}" style="font-size:10px; padding:2px; height:auto; background:#222; color:#bbb; border:1px solid #444; border-radius:4px; margin:0; width:auto;" onchange="toggleMisc(${w})"><option value="none">Misc ▼</option><option value="jd">Jury Duty (JD)</option><option value="br">Bereavement (BR)</option></select>
+                        <input type="number" id="stipend-${w}" placeholder="Court Pay $" style="display:none; width:75px; font-size:10px; padding:2px; height:auto; background:#000; color:var(--warning); border:1px solid var(--warning); border-radius:4px; margin:0;" oninput="calc()">
+                    </div>
+                </div>
+                <div style="width:80px;"><input type="number" id="bonus-${w}" style="background:#004d40; color:white; margin:0; border:none; padding:8px; border-radius:6px; width:100%;" placeholder="Inc %" oninput="calc();" enterkeyhint="${w===1?'next':'done'}" onkeydown="if(event.key==='Enter'){event.preventDefault(); document.getElementById('bonus-${w===1?'2':'1'}').focus();}"></div>
+            </div>`;
             days.forEach((day, i) => {
                 let isSun = (day === 'Sun'), dateNum = cur.getDate();
                 let curDateStr = cur.toISOString().split('T')[0];
@@ -867,6 +885,7 @@ function isUnionHoliday(dateStr){
                             <label class="cb-label ro"><input type="checkbox" id="ro-${w}-${i}" onchange="toggleRO(${w},${i})">RO</label>
                             ${isSun?`<label class="cb-label vac"><input type="checkbox" id="vw-${w}" onchange="toggleVW(${w})">VW</label>`:''}
                             <label class="cb-label vac"><input type="checkbox" id="vd-${w}-${i}" onchange="calc()">VD</label>
+                            <label class="cb-label" id="ghost-label-${w}-${i}" style="display:none; border-color:#90caf9; color:#90caf9;"><input type="checkbox" id="ghost-${w}-${i}" onchange="calc()"><span id="ghost-text-${w}-${i}">JD</span></label>
                         </div>
                     </div>
                 </div>`;
@@ -950,8 +969,10 @@ function isUnionHoliday(dateStr){
                     let dqCheck = document.getElementById(`dq-${w}-${d}`); 
                     let mtCheck = document.getElementById(`mt-${w}-${d}`); 
                     let vacCheck = document.getElementById(`vd-${w}-${d}`);
+                    let ghostCheck = document.getElementById(`ghost-${w}-${d}`);
                     
                     let ro = roCheck.checked;
+                    let isGhost = ghostCheck ? ghostCheck.checked : false;
                     let xtra = xtraCheck ? xtraCheck.checked : false; 
                     let isHol = holCheck ? holCheck.checked : false;
                     let isVD = vacCheck ? vacCheck.checked : false;
@@ -1025,7 +1046,7 @@ function isUnionHoliday(dateStr){
                         }
                     }
                     
-                    dayMap.push({ w: w, d: d, date: new Date(dateStr), ro: ro, hasWork: hasWork, xtra: xtra, isScheduled: (hasMainShift || ro) && !xtra, timeHrs: timeHrs, dq: (dqCheck && dqCheck.checked), mt: hasMT, isVac: isVac });
+                    dayMap.push({ w: w, d: d, date: new Date(dateStr), ro: ro, hasWork: hasWork, xtra: xtra, isScheduled: (hasMainShift || ro) && !xtra, timeHrs: timeHrs, dq: (dqCheck && dqCheck.checked), mt: hasMT, isVac: isVac, isGhost: isGhost });
                 }
             }
             if (dayMap.length === 0) return;
@@ -1100,7 +1121,16 @@ function isUnionHoliday(dateStr){
                         let dObj = dayMap[dayIdx];
                         
                         if(dObj.isVac) { wk.vC += (vacHourly * 8); wk.vH += 8; continue; }
-
+                        if(dObj.isGhost) { 
+                            let miscType = document.getElementById('misc-'+w).value;
+                            let stipend = (miscType === 'jd') ? (parseFloat(document.getElementById('stipend-'+w).value) || 0) : 0;
+                            let makeWholePay = (12 * workRate) - stipend;
+                            
+                            wk.rC += makeWholePay; // Adds the pay
+                            wk.rH += 12;           // Adds the 12 hours
+                            wk.incC += makeWholePay; // Applies incentive to the make-whole pay
+                            continue; // Skips normal shift math for this day
+                        }
                         let tH = dObj.timeHrs;
                         let hasWork = dObj.hasWork;
                         if(!hasWork) continue; 
@@ -1338,6 +1368,35 @@ function isUnionHoliday(dateStr){
 
     function toggleExtra(w, d) { let c=document.getElementById('extra-'+w+'-'+d), s=document.getElementById('extra-rate-'+w+'-'+d); if(c.checked) s.classList.add('show'); else { s.classList.remove('show'); s.value="0"; } calc(); }
     function toggleVW(w) { days.forEach((d,i)=>{ document.getElementById('btn-'+w+'-'+i).classList.remove('active'); document.getElementById('time-'+w+'-'+i).value=""; }); calc(); }
+    function toggleMisc(w) {
+        let sel = document.getElementById('misc-'+w).value;
+        let stip = document.getElementById('stipend-'+w);
+        
+        // Show or hide the Court Pay input based on Dropdown
+        if (sel === 'jd') { stip.style.display = 'block'; } 
+        else { stip.style.display = 'none'; stip.value = ""; }
+        
+        // Scan the 7 days. Only show Ghost Boxes on scheduled work days
+        for (let d = 0; d < 7; d++) {
+            let lbl = document.getElementById(`ghost-label-${w}-${d}`);
+            let txt = document.getElementById(`ghost-text-${w}-${d}`);
+            let box = document.getElementById(`ghost-${w}-${d}`);
+            let btn = document.getElementById(`btn-${w}-${d}`);
+            
+            let isScheduled = btn.classList.contains('active') || document.getElementById(`ro-${w}-${d}`).checked; 
+            
+            if (sel !== 'none' && isScheduled) {
+                lbl.style.display = 'flex';
+                txt.innerText = sel.toUpperCase();
+            } else {
+                lbl.style.display = 'none';
+                box.checked = false; // Prevents phantom hours if hidden
+            }
+        }
+        calc();
+    }
+    
+    
     function toggleZone(type, w, d) { 
         let muZone = document.getElementById(`zone-mu-${w}-${d}`);
         let esZone = document.getElementById(`zone-es-${w}-${d}`);
