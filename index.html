@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.6.7(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.6.8(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -212,7 +212,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.6.7</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.6.8</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats"><div id="header-ytd-label">EST. GROSS YTD</div><div class="ytd-val" id="header-ytd-gross">$0.00</div></div>
@@ -257,10 +257,17 @@
 
     <div id="calculator-view">
         <div class="nav-bar">
-            <div class="nav-wrapper">
-                <button class="back-btn" onclick="saveAndClose()">❮</button>
-                <div class="period-title"><span class="pt-main" id="calc-title-date">PAYCHECK</span><span class="pt-sub" id="calc-title-range">RANGE</span></div>
-                <button class="save-btn" onclick="saveAndClose()">SAVE</button>
+            <div class="nav-wrapper" style="justify-content: space-between;">
+                <div style="display:flex; align-items:center;">
+                    <button class="back-btn" style="padding:0 15px 0 0;" onclick="saveAndClose()">❮</button>
+                    <div class="period-title" style="flex:none; text-align: left;"><span class="pt-main" id="calc-title-date">PAYCHECK</span><span class="pt-sub" id="calc-title-range">RANGE</span></div>
+                </div>
+                <div style="display:flex; align-items:center; flex-grow: 1; justify-content: center;">
+                    <button class="tool-btn" style="margin:0; padding:6px 10px; font-size:11px;" onclick="forceSchedule()">LOAD SCHEDULE</button>
+                </div>
+                <div style="display:flex; align-items:center;">
+                    <button class="save-btn" style="padding: 10px 0 10px 10px;" onclick="saveAndClose()">SAVE</button>
+                </div>
             </div>
         </div>
         <div id="calculator-content"></div>
@@ -269,15 +276,12 @@
             <div style="font-size: 0.7em; letter-spacing:1px;">14-DAY GROSS</div>
             <div id="grossDisplay" style="font-size: 28px; font-weight: 800;">$0.00</div>
         </div>
-        <div class="audit-header">
-            <span style="color:#ff5252; font-weight:900; font-size:12px; letter-spacing:1px;">AUDIT MODE</span>
-            <div style="display:flex; align-items:center;">
-                <button class="tool-btn" onclick="forceSchedule()">LOAD SCHEDULE</button>
-                <label class="verified-label"><input type="checkbox" id="verified-toggle" onchange="calc()"> VERIFIED</label>
-                <input type="checkbox" id="audit-toggle" class="audit-toggle" onchange="toggleAuditMode()">
-            </div>
+        <div class="audit-header" style="background:#121212; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; margin-bottom: 10px; justify-content: space-between;">
+            <button style="background:transparent; border: 1px solid var(--danger); color:var(--danger); border-radius:4px; padding:6px 10px; font-weight:900; font-size:10px; cursor:pointer; margin:0;" onclick="toggleDeductionsDrawer()" id="deductions-btn">DEDUCTIONS ▼</button>
+            <label class="verified-label" style="margin:0; padding:6px 10px;"><input type="checkbox" id="verified-toggle" onchange="calc()"> VERIFIED</label>
+            <label class="verified-label" style="border-color:var(--gold); color:var(--gold); margin:0; padding:6px 10px;"><input type="checkbox" id="audit-toggle" style="accent-color:var(--gold);" onchange="toggleAuditMode()"> AUDIT</label>
         </div>
-        <div class="deduction-list" id="summary-deductions"></div>
+        <div class="deduction-list" id="summary-deductions" style="display:none;"></div>
         <div class="total-box net-box" id="net-box-container">
             <div style="font-size: 0.7em; letter-spacing:1px;">NET TAKE HOME</div>
             <div id="netDisplay" style="font-size: 32px; font-weight: 800;">$0.00</div>
@@ -1348,7 +1352,34 @@ function isUnionHoliday(dateStr){
         return base;
     }
 
-    function toggleAuditMode() { let on=document.getElementById('audit-toggle').checked, dl=document.getElementById('summary-deductions'); if(on)dl.classList.add('audit-mode'); else dl.classList.remove('audit-mode'); calc(); }
+    function toggleAuditMode() { 
+        let on = document.getElementById('audit-toggle').checked;
+        let dl = document.getElementById('summary-deductions');
+        let btn = document.getElementById('deductions-btn'); 
+        
+        if (on) { 
+            dl.classList.add('audit-mode'); 
+            dl.style.display = 'flex'; 
+            if (btn) { btn.innerText = 'DEDUCTIONS ▲'; btn.style.background = 'rgba(255, 82, 82, 0.15)'; }
+        } else { 
+            dl.classList.remove('audit-mode'); 
+        } 
+        calc(); 
+    }
+
+    function toggleDeductionsDrawer() {
+        let el = document.getElementById('summary-deductions');
+        let btn = document.getElementById('deductions-btn');
+        if (el.style.display === 'none' || el.style.display === '') {
+            el.style.display = 'flex';
+            btn.innerText = 'DEDUCTIONS ▲';
+            btn.style.background = 'rgba(255, 82, 82, 0.15)';
+        } else {
+            el.style.display = 'none';
+            btn.innerText = 'DEDUCTIONS ▼';
+            btn.style.background = 'transparent';
+        }
+    }
     function updateAudit(k, v) { if(!auditData[currentPeriodId]) auditData[currentPeriodId]={}; if(v==="") delete auditData[currentPeriodId][k]; else auditData[currentPeriodId][k]=parseFloat(v); calc(); }
 
     function requestRateUpdate(l, a, t, i, sl) { 
@@ -1616,8 +1647,21 @@ function isUnionHoliday(dateStr){
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
     function loadPeriodData(id) {
         let data = ledgerData[id]; auditData[id] = (data && data.actuals) ? data.actuals : {};
-        if(data && data.inputs && data.inputs['audit-toggle']) { document.getElementById('audit-toggle').checked = true; document.getElementById('summary-deductions').classList.add('audit-mode'); }
-        else { document.getElementById('audit-toggle').checked = false; document.getElementById('summary-deductions').classList.remove('audit-mode'); }
+        if(data && data.inputs && data.inputs['audit-toggle']) { 
+            document.getElementById('audit-toggle').checked = true; 
+            let dl = document.getElementById('summary-deductions');
+            dl.classList.add('audit-mode'); 
+            dl.style.display = 'flex';
+            let btn = document.getElementById('deductions-btn');
+            if(btn) { btn.innerText = 'DEDUCTIONS ▲'; btn.style.background = 'rgba(255, 82, 82, 0.15)'; }
+        } else { 
+            document.getElementById('audit-toggle').checked = false; 
+            let dl = document.getElementById('summary-deductions');
+            dl.classList.remove('audit-mode'); 
+            dl.style.display = 'none';
+            let btn = document.getElementById('deductions-btn');
+            if(btn) { btn.innerText = 'DEDUCTIONS ▼'; btn.style.background = 'transparent'; }
+        }
         document.querySelectorAll('#calculator-view input').forEach(el => { if(el.type=='checkbox' && el.id !== 'audit-toggle') el.checked=false; else if(el.type!='hidden' && !el.classList.contains('d-input')) el.value=""; });
         document.querySelectorAll('.btn-12').forEach(b => b.classList.remove('active')); document.querySelectorAll('.day-card').forEach(c => { c.classList.remove('ro-active'); c.classList.remove('status-hol'); c.classList.remove('status-xtra'); c.classList.remove('status-vac'); });
         if(data && data.inputs) {
