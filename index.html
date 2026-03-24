@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.6.8(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.7.0(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -212,7 +212,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.6.8</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.0</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats"><div id="header-ytd-label">EST. GROSS YTD</div><div class="ytd-val" id="header-ytd-gross">$0.00</div></div>
@@ -232,11 +232,14 @@
 
     <div id="ytd-container">
         <div class="stub-box">
-            <div class="stub-header">EARNINGS</div>
+            <div class="stub-header" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>EARNINGS</span>
+                <span id="ytd-top-hours" style="color:#fff;">0.00</span>
+                <span id="ytd-top-gross" style="color:var(--gold);">$0.00</span>
+            </div>
             <div class="earnings-grid">
                 <div class="eg-row"><span class="eg-label">Label</span><span class="eg-units">Hrs/Unit</span><span class="eg-amt">Amount</span></div>
                 <div id="ytd-earnings-rows"></div>
-                <div class="eg-total-row"><span>TOTAL EARNINGS</span><span class="eg-units" id="ytd-total-hours">0.00</span><span class="eg-amt" id="ytd-total-gross">$0.00</span></div>
             </div>
         </div>
         <div class="stub-box"><div class="stub-header">PRE-TAX DEDUCTIONS</div><div class="deduct-grid" id="ytd-pretax-rows"></div></div>
@@ -321,13 +324,30 @@
                     <div><span class="input-label">L5 Rate ($)</span><input type="number" id="rateL5" placeholder="38.37" onchange="calc(); saveSettings();"></div><div><span class="input-label">L4 Rate ($)</span><input type="number" id="rateL4" placeholder="36.12" onchange="calc(); saveSettings();"></div><div><span class="input-label">L3 Rate ($)</span><input type="number" id="rateL3" placeholder="34.32" onchange="calc(); saveSettings();"></div><div><span class="input-label">L2 Rate ($)</span><input type="number" id="rateL2" placeholder="31.21" onchange="calc(); saveSettings();"></div><div><span class="input-label">L1 Rate ($)</span><input type="number" id="rateL1" placeholder="28.51" onchange="calc(); saveSettings();"></div><div><span class="input-label" style="color:var(--gold);">Meal Ticket ($)</span><input type="number" id="mt-val" placeholder="16.17" onchange="saveSettings()"></div>
                 </div>
                 <div id="cv-contract" class="contract-view-content">
-                    <div style="display:flex; align-items:center; gap:10px; margin-bottom:10px;"><input type="checkbox" id="enable-contract" onchange="saveSettings()"><span style="font-weight:bold; font-size:13px;">Enable Contract Logic</span></div>
-                    <span class="input-label">Contract Start Date</span><input type="date" id="contract-start" onchange="saveSettings()">
-                    <span class="input-label">Raise Type</span><select id="raise-type" onchange="saveSettings()"><option value="pct">Percentage (%)</option><option value="amt">Fixed Amount ($)</option></select>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                        <div><span class="input-label">Yr 1 Raise</span><input type="number" id="raise-1" placeholder="0.00" onchange="saveSettings()"></div>
-                        <div><span class="input-label">Yr 2 Raise</span><input type="number" id="raise-2" placeholder="0.00" onchange="saveSettings()"></div>
-                        <div><span class="input-label">Yr 3 Raise</span><input type="number" id="raise-3" placeholder="0.00" onchange="saveSettings()"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                            <input type="checkbox" id="enable-contract" onchange="saveSettings(); calc();" style="width:16px; height:16px;">
+                            <span style="font-weight:bold; font-size:13px;">Enable Contract Logic</span>
+                        </label>
+                        <div style="width:100px;">
+                            <span class="input-label" style="font-size:9px; text-align:right;">Contract Term</span>
+                            <select id="contract-term" onchange="generateContractRows(); saveSettings();" style="padding:4px; font-size:12px; margin:0; background:#222;">
+                                <option value="0">Current</option>
+                                <option value="1">1 Year</option>
+                                <option value="2">2 Years</option>
+                                <option value="3">3 Years</option>
+                                <option value="4">4 Years</option>
+                                <option value="5">5 Years</option>
+                                <option value="6">6 Years</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="raise-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;"></div>
+
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:15px;">
+                        <button class="apply-btn" style="background:#0d47a1; color:white; font-weight:bold; padding:10px;" onclick="recoverPlanner()">RECOVER PLANNER</button>
+                        <button class="apply-btn" style="background:#b71c1c; color:white; font-weight:bold; padding:10px;" onclick="restoreBaseRates()">RESTORE BASE</button>
                     </div>
                 </div>
             </div>
@@ -397,6 +417,64 @@
     const deductionLabels = { k:"401k Contribution", fed:"Fed W/H", state:"Ohio W/H", city:"ClvlndCityW/H", fica:"FICA EE", med:"Fed MWT EE (medicare)", dues:"USW Dues", duesHr:"USW Dues Hrs", life:"OPTL Life EE", addOpt:"Addl Optional", charity:"Charity", l1:"401K BU Loan 1", l2:"401K BU Loan 2", garn:"Garnishments" }, settingsMap = { state:'stateTaxRate', city:'cityTaxRate', dues:'duesRate', fed:'fedTaxRate' };
     const earningsOrder = ["MealTicket", "CallOut", "HolidayUH", "HolidayWk", "Overtime", "Sunday", "Vacation", "VacaBonus", "Regular", "ShiftDiff", "Incentive"];
     
+    const baseRates = { 5: 38.37, 4: 36.12, 3: 34.32, 2: 31.21, 1: 28.51 };
+
+    function generateContractRows() {
+        const container = document.getElementById('raise-rows-container');
+        const term = parseInt(document.getElementById('contract-term').value) || 0;
+        let html = "";
+        
+        for (let i = 1; i <= term; i++) {
+            html += `
+            <div class="pref-card" style="padding:10px; margin-bottom:0; background:rgba(255,255,255,0.02);">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:5px;">
+                    <span style="font-size:10px; font-weight:bold; color:var(--accent);">YEAR ${i} RAISE</span>
+                    <span id="proj-l5-${i}" style="font-family:monospace; font-size:11px; color:var(--gold);">$0.00 projected</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 0.8fr 1fr 1.2fr; gap:5px; align-items:center;">
+                    <select id="r-type-${i}" onchange="saveSettings(); calc();" style="font-size:11px; padding:6px; margin:0; background:#000;">
+                        <option value="pct">Percent %</option>
+                        <option value="amt">Dollar $</option>
+                    </select>
+                    <input type="number" id="r-val-${i}" placeholder="0.00" oninput="saveSettings(); calc();" style="font-size:12px; padding:6px; margin:0;">
+                    <input type="date" id="r-date-${i}" onchange="saveSettings(); calc();" style="font-size:11px; padding:6px; margin:0;">
+                </div>
+            </div>`;
+        }
+        container.innerHTML = html;
+        updateProjectedUI();
+    }
+
+    function updateProjectedUI() {
+        const term = parseInt(document.getElementById('contract-term').value) || 0;
+        let runningL5 = baseRates[5];
+        for (let i = 1; i <= term; i++) {
+            let elVal = document.getElementById(`r-val-${i}`);
+            let val = elVal ? parseFloat(elVal.value) || 0 : 0;
+            let type = document.getElementById(`r-type-${i}`).value;
+            if (type === 'pct') runningL5 += (runningL5 * (val/100));
+            else runningL5 += val;
+            let el = document.getElementById(`proj-l5-${i}`);
+            if (el) el.innerText = `$${runningL5.toFixed(2)} projected`;
+        }
+    }
+
+    function restoreBaseRates() {
+        if(confirm("RESTORE BASE RATES?\n\nThis will reset your current L1-L5 boxes to the known 2025/2026 values.")) {
+            for (let l = 1; l <= 5; l++) { document.getElementById('rateL' + l).value = baseRates[l]; }
+            saveSettings(); calc();
+        }
+    }
+
+    function recoverPlanner() {
+        if(confirm("DEEP RECOVERY?\n\nThis will attempt to reset your planner and rates from hardcoded defaults.")) {
+            document.getElementById('contract-term').value = "0";
+            for (let l = 1; l <= 5; l++) document.getElementById('rateL' + l).value = baseRates[l];
+            generateContractRows();
+            saveSettings(); calc();
+        }
+    }
+
     let currentYear = 2026;
     let vacationDates = []; 
     let currentOpenMonth = null; 
@@ -560,7 +638,7 @@ function isUnionHoliday(dateStr){
                             if (k === 'Incentive') incentivePctSum += (data.breakdownHrs[k] || 0); 
                             else if(yHrs.hasOwnProperty(k)) {
                                 yHrs[k] += (data.breakdownHrs[k] || 0);
-                                if (['Regular','Overtime','Sunday','CallOut','HolidayWk','Vacation'].includes(k)) { totalWorkedHours += (data.breakdownHrs[k] || 0); }
+                                if (['Regular','Overtime','Sunday','CallOut','HolidayWk','Vacation','HolidayUH'].includes(k)) { totalWorkedHours += (data.breakdownHrs[k] || 0); }
                             }
                         }
                     }
@@ -570,7 +648,10 @@ function isUnionHoliday(dateStr){
             }
             document.getElementById('header-ytd-label').innerText = "GROSS YTD"; document.getElementById('header-ytd-gross').innerText = f(yG);
             document.getElementById('ytd-net-pay-display').innerText = f(yN); document.getElementById('ytd-check-count').innerText = cnt;
-            document.getElementById('ytd-total-hours').innerText = totalWorkedHours.toFixed(2); document.getElementById('ytd-total-gross').innerText = f(yG);
+            
+            // V 3.6.9 BRAIN-BODY SYNC: Points to the new "top" IDs we built in the HTML
+            document.getElementById('ytd-top-hours').innerText = totalWorkedHours.toFixed(2); 
+            document.getElementById('ytd-top-gross').innerText = f(yG);
             document.getElementById('ytd-ot-premium').innerText = f(yOTPrem); 
 
             let eHTML = ""; 
@@ -598,7 +679,7 @@ function isUnionHoliday(dateStr){
             document.getElementById('ytd-posttax-rows').innerHTML = postHTML;
             document.getElementById('ytd-tax-rows').innerHTML = taxHTML;
             document.getElementById('ytd-pretax-rows').innerHTML = preHTML;
-        } catch(e) { console.error("YTD Render Error:", e); alert("Error rendering YTD: " + e.message); }
+        } catch(e) { console.error("YTD Render Error:", e); }
     }
 
     function renderDashboard() {
@@ -935,10 +1016,8 @@ function isUnionHoliday(dateStr){
             updateVacationRateUI();
             if (!currentPeriodId) return;
 
-            let isDesShiftWorker = true; 
             let mtVal = parseFloat(document.getElementById('mt-val').value) || 16.17;
             let tripwireLimit = 12;
-
             let dayMap = [];
             let bidLvl = document.getElementById('biddedRate').value;
             let bidRate = getRate(bidLvl);
@@ -988,37 +1067,22 @@ function isUnionHoliday(dateStr){
                     let stepH = document.getElementById(`step-hrs-${w}-${d}`).value;
                     let stepR = document.getElementById(`step-rate-${w}-${d}`).value;
                     let esH = document.getElementById(`es-hrs-${w}-${d}`).value;
-                    let esR = document.getElementById(`es-rate-${w}-${d}`).value;
+                    let esV = document.getElementById(`es-rate-${w}-${d}`).value;
+                    let esR = (esV != "0") ? getRate(esV) : workRate;
 
                     toggleBtnMU.classList.remove('glow-blue');
-                    toggleBtnES.classList.remove('glow-green', 'glow-blue', 'glow-gold');
-                    let mtLabel = mtCheck ? mtCheck.closest('.mt-label') : null;
-                    if (mtLabel) { mtLabel.style.borderColor = '#444'; mtLabel.style.color = 'var(--gold)'; }
+                    toggleBtnES.classList.remove('glow-green');
                     
                     if (stepH !== "" || stepR !== "0") { toggleBtnMU.classList.add('glow-blue'); }
-                    let hasES = (esH !== "" || esR !== "0");
-                    let hasMT = (mtCheck && mtCheck.checked);
-                    
-                    if (hasES || hasMT) { toggleBtnES.classList.add('glow-green'); }
-                    if (hasMT && mtLabel) { mtLabel.style.borderColor = 'var(--gold)'; }
+                    if ((esH !== "" || esV !== "0") || (mtCheck && mtCheck.checked)) { toggleBtnES.classList.add('glow-green'); }
 
                     let hasWork = false;
                     let hasMainShift = false;
-                    let parsedES = parseFloat(esH) || 0;
-                    let parsedStep = parseFloat(stepH) || 0;
-
                     if (!isVac && !ro) {
-                        // 1. Did ANY work happen? (Triggers the math engine)
-                        if (timeHrs > 0 || parsedES > 0 || parsedStep > 0 || btn.classList.contains('active')) { 
-                            hasWork = true; 
-                        }
-                        
-                        // 2. Was the MAIN shift worked? (Triggers the UI button)
+                        if (timeHrs > 0 || parseFloat(esH) > 0 || parseFloat(stepH) > 0 || btn.classList.contains('active')) { hasWork = true; }
                         if (timeHrs > 0 || btn.classList.contains('active')) {
                             hasMainShift = true;
-                            if (timeHrs === 0 && btn.classList.contains('active')) {
-                                timeHrs = parseFloat(btn.innerText.split(' ')[0]) || 12; 
-                            }
+                            if (timeHrs === 0 && btn.classList.contains('active')) { timeHrs = 12; }
                         }
                     }
 
@@ -1031,7 +1095,6 @@ function isUnionHoliday(dateStr){
                     else if (isVac) { card.classList.add('status-vac'); } 
                     else if (ro) { card.classList.add('ro-active'); }
 
-                    // 3. UI LOGIC: Decoupling the Button from the Drawer
                     if (hasMainShift) {
                         btn.classList.add('active'); 
                         if (isHol || sysHolName) { btn.classList.add('btn-purple'); } 
@@ -1039,21 +1102,12 @@ function isUnionHoliday(dateStr){
                         else { card.classList.add('status-worked'); }
                     } else {
                         btn.classList.remove('active');
-                        // If it's a holiday, the button stays dim.
-                        if (isHol || sysHolName) {
-                            // Do nothing to the main button
-                        } else if (isVac) {
-                            document.getElementById('time-'+w+'-'+d).value = ""; 
-                        } else if (hasWork) {
-                            // Card border shows work, but button stays dim
-                            card.classList.add('status-worked'); 
-                        }
+                        if (!(isHol || sysHolName) && !isVac && hasWork) { card.classList.add('status-worked'); }
                     }
                     
-                    dayMap.push({ w: w, d: d, date: new Date(dateStr), ro: ro, hasWork: hasWork, xtra: xtra, isScheduled: (hasMainShift || ro) && !xtra, timeHrs: timeHrs, dq: (dqCheck && dqCheck.checked), mt: hasMT, isVac: isVac, isGhost: isGhost });
+                    dayMap.push({ w: w, d: d, date: new Date(dateStr), ro: ro, hasWork: hasWork, xtra: xtra, isScheduled: (hasMainShift || ro) && !xtra, timeHrs: timeHrs, dq: (dqCheck && dqCheck.checked), mt: (mtCheck && mtCheck.checked), isVac: isVac, isGhost: isGhost });
                 }
             }
-            if (dayMap.length === 0) return;
 
             let GT = { rH:0, rC:0, vH:0, vC:0, oH:0, oC:0, cH:0, cC:0, sH:0, sC:0, hH:0, hC:0, uhH:0, uhC:0, incC:0, vbC:0, mtH:0, mtC:0 };
             
@@ -1062,44 +1116,27 @@ function isUnionHoliday(dateStr){
                 let card = document.getElementById(`card-${dayObj.w}-${dayObj.d}`);
                 let holCheck = document.getElementById(`hol-${dayObj.w}-${dayObj.d}`);
                 let sysHolName = isUnionHoliday(dayObj.date.toISOString().split('T')[0]);
-                
                 card.classList.remove('hol-worked', 'hol-unworked');
                 let isHoliday = (sysHolName !== null) || (holCheck && holCheck.checked);
                 dayObj.uhHrs = 0;
-                
                 if (isHoliday) { 
-                    let disqualified = false;
-                    if (dayObj.dq) disqualified = true;
+                    let disqualified = dayObj.dq;
                     if (!disqualified && !dayObj.isVac) {
-                        for (let b = i - 1; b >= 0; b--) {
-                            if (dayMap[b].isScheduled) { if (dayMap[b].ro) disqualified = true; break; }
-                        }
+                        for (let b = i - 1; b >= 0; b--) { if (dayMap[b].isScheduled) { if (dayMap[b].ro) disqualified = true; break; } }
                     }
                     if (!disqualified && !dayObj.isVac) {
-                        for (let f = i + 1; f < 14; f++) {
-                            if (dayMap[f].isScheduled) { if (dayMap[f].ro) disqualified = true; break; }
-                        }
+                        for (let f = i + 1; f < 14; f++) { if (dayMap[f].isScheduled) { if (dayMap[f].ro) disqualified = true; break; } }
                     }
-                    
                     if (!disqualified) {
                         let esH = parseFloat(document.getElementById(`es-hrs-${dayObj.w}-${dayObj.d}`).value) || 0;
                         let totWorked = dayObj.timeHrs + esH;
-
-                        if (totWorked === 0) {
-                            if (!dayObj.isVac) card.classList.add('hol-unworked'); 
-                            dayObj.uhHrs = 8;
-                        } else {
-                            card.classList.add('hol-worked');
-                            if (totWorked < 8 && !dayObj.ro) {
-                                dayObj.uhHrs = 8 - totWorked; 
-                            }
-                        }
+                        if (totWorked === 0) { if (!dayObj.isVac) card.classList.add('hol-unworked'); dayObj.uhHrs = 8; } 
+                        else { card.classList.add('hol-worked'); if (totWorked < 8 && !dayObj.ro) { dayObj.uhHrs = 8 - totWorked; } }
                     } 
                 }
             }
 
             let totalGross = 0, totalWorkHrs = 0, shiftHours = 0;
-            let sAmt = 0; 
 
             for (let w = 1; w <= 2; w++) {
                 let wk = { rH:0, rC:0, vH:0, vC:0, oH:0, oC:0, cH:0, cC:0, sH:0, sC:0, hH:0, hC:0, uhH:0, uhC:0, incC:0, mtH:0, mtC:0 };
@@ -1113,171 +1150,108 @@ function isUnionHoliday(dateStr){
                     if(dObj.mt) { wk.mtH += 1; wk.mtC += mtVal; }
                 }
 
-                if(isVW) { 
-                    wk.vC += vacHourly * 40; wk.vH += 40; 
-                    let weekDate = dayMap[(w-1)*7].date; 
-                    if (isBonusWeek(weekDate)) vacBonus = 250.00;
-                }
+                if(isVW) { wk.vC += vacHourly * 40; wk.vH += 40; if (isBonusWeek(dayMap[(w-1)*7].date)) vacBonus = 250.00; }
                 else {
                     for (let d = 0; d < 7; d++) {
+                        let dIdx = (w-1)*7 + d; let dObj = dayMap[dIdx];
                         if (document.getElementById(`ro-${w}-${d}`).checked) continue;
-                        let dayIdx = (w-1)*7 + d;
-                        let dObj = dayMap[dayIdx];
-                        
                         if(dObj.isVac) { wk.vC += (vacHourly * 8); wk.vH += 8; continue; }
                         if(dObj.isGhost) { 
                             let miscType = document.getElementById('misc-'+w).value;
                             let stipend = (miscType === 'jd') ? (parseFloat(document.getElementById('stipend-'+w).value) || 0) : 0;
-                            let makeWholePay = (12 * workRate) - stipend;
-                            
-                            wk.rC += makeWholePay; // Adds the pay
-                            wk.rH += 12;           // Adds the 12 hours
-                            wk.incC += makeWholePay; // Applies incentive to the make-whole pay
-                            continue; // Skips normal shift math for this day
+                            wk.rC += (12 * workRate) - stipend; wk.rH += 12; wk.incC += (12 * workRate) - stipend; continue;
                         }
-                        let tH = dObj.timeHrs;
-                        let hasWork = dObj.hasWork;
-                        if(!hasWork) continue; 
-
+                        let tH = dObj.timeHrs; if(!dObj.hasWork) continue;
                         let exV = document.getElementById(`extra-rate-${w}-${d}`).value;
                         let eR = (exV != "0") ? getRate(exV) : workRate; 
-                        
                         let stH = parseFloat(document.getElementById(`step-hrs-${w}-${d}`).value) || 0;
                         let stV = document.getElementById(`step-rate-${w}-${d}`).value;
                         let stR = (stV != "0") ? getRate(stV) : 0;
-                        
                         let esH = parseFloat(document.getElementById(`es-hrs-${w}-${d}`).value) || 0;
                         let esV = document.getElementById(`es-rate-${w}-${d}`).value;
                         let esR = (esV != "0") ? getRate(esV) : workRate;
 
-                        let isXTRA = document.getElementById(`extra-${w}-${d}`)?.checked;
                         if(document.getElementById(`call-${w}-${d}`).checked) { wk.cC += (eR * 2); wk.cH += 2; }
-                        let holCheck = document.getElementById(`hol-${w}-${d}`);
-                        let isHoliday = (holCheck && holCheck.checked) || isUnionHoliday(dObj.date.toISOString().split('T')[0]); 
-                        
-                        let fills = !isXTRA;
-                        let baseHrsToProcess = tH;
-                        let esHrsToProcess = esH;
-                        let maxB = Math.ceil(baseHrsToProcess * 4);
-                        
-                        for (let b = 1; b <= maxB; b++) {
-                            let chunk = 0.25;
-                            if (b * 0.25 > baseHrsToProcess) { chunk = baseHrsToProcess - ((b-1) * 0.25); } 
+                        let isHoliday = (document.getElementById(`hol-${w}-${d}`)?.checked) || isUnionHoliday(dObj.date.toISOString().split('T')[0]); 
+                        let fills = !dObj.xtra;
+
+                        for (let b = 1; b <= Math.ceil(tH * 4); b++) {
+                            let chunk = (b * 0.25 > tH) ? (tH - ((b-1) * 0.25)) : 0.25;
                             let h = b / 4; 
-                            
-                            let curR = (h > (baseHrsToProcess - stH) && stR > 0) ? stR : eR; 
-                            let regPart = 0, otPart = 0;
-                            
-                            if (h > tripwireLimit && !isHoliday && !isXTRA) {
-                                otPart = chunk; wk.oC += (curR * 1.5 * otPart); wk.oH += otPart; wk.incC += (curR * 1.5 * otPart);
-                                continue;
-                            }
-                            
-                            if (isHoliday) {
-                                otPart = chunk; wk.hC += (curR * 2.5 * otPart); wk.hH += otPart; wk.incC += (curR * 2.5 * otPart);
-                                if(fills) buck = buck + chunk;
-                            } else if (isXTRA) {
-                                otPart = chunk;
-                                if(d===0) { wk.sC += (curR * 1.5 * otPart); wk.sH += otPart; wk.incC += (curR * 1.5 * otPart);
-                                } else { wk.oC += (curR * 1.5 * otPart); wk.oH += otPart; wk.incC += (curR * 1.5 * otPart); }
-                            } else {
+                            let curR = (h > (tH - stH) && stR > 0) ? stR : eR; 
+                            if (h > tripwireLimit && !isHoliday && !dObj.xtra) { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); continue; }
+                            if (isHoliday) { wk.hC += (curR * 2.5 * chunk); wk.hH += chunk; wk.incC += (curR * 2.5 * chunk); if(fills) buck += chunk; } 
+                            else if (dObj.xtra) { if(d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); } else { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); } } 
+                            else {
                                 let space = Math.max(0, 40.00 - buck);
-                                if (d===0) {
-                                    otPart = chunk; wk.sC += (curR * 1.5 * otPart); wk.sH += otPart; wk.incC += (curR * 1.5 * otPart);
-                                    if(fills) buck = buck + chunk;
-                                } else {
-                                    if (space >= chunk) {
-                                        regPart = chunk; wk.rC += (curR * 1.0 * regPart); wk.rH += regPart; wk.incC += (curR * 1.0 * regPart);
-                                        if(fills) buck = buck + regPart;
-                                    } else if (space > 0) {
-                                        regPart = space; otPart = chunk - space;
-                                        wk.rC += (curR * 1.0 * regPart); wk.rH += regPart; wk.incC += (curR * 1.0 * regPart);
-                                        wk.oC += (curR * 1.5 * otPart); wk.oH += otPart; wk.incC += (curR * 1.5 * otPart);
-                                        if(fills) buck = buck + regPart; 
-                                    } else {
-                                        otPart = chunk; wk.oC += (curR * 1.5 * otPart); wk.oH += otPart; wk.incC += (curR * 1.5 * otPart);
-                                    }
+                                if (d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); if(fills) buck += chunk; } 
+                                else {
+                                    if (space >= chunk) { wk.rC += (curR * chunk); wk.rH += chunk; wk.incC += (curR * chunk); if(fills) buck += chunk; } 
+                                    else if (space > 0) { wk.rC += (curR * space); wk.rH += space; wk.incC += (curR * space); wk.oC += (curR * 1.5 * (chunk - space)); wk.oH += (chunk - space); wk.incC += (curR * 1.5 * (chunk - space)); if(fills) buck += space; } 
+                                    else { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); }
                                 }
                             }
                         }
-                        
-                        if (esHrsToProcess > 0) {
-                            let maxES = Math.ceil(esHrsToProcess * 4);
-                            for (let b = 1; b <= maxES; b++) {
-                                let chunk = 0.25;
-                                if (b * 0.25 > esHrsToProcess) { chunk = esHrsToProcess - ((b-1) * 0.25); }
-                                let otPart = 0;
-                                if (isHoliday) {
-                                    otPart = chunk; wk.hC += (esR * 2.5 * otPart); wk.hH += otPart; wk.incC += (esR * 2.5 * otPart); // FIXED INCENTIVE BUG
-                                    if(d===0 && fills) buck = buck + chunk;
-                                } else {
-                                    if(d===0) {
-                                        otPart = chunk; wk.sC += (esR * 1.5 * otPart); wk.sH += otPart; wk.incC += (esR * 1.5 * otPart);
-                                        if(fills) buck = buck + chunk; 
-                                    } else {
-                                        otPart = chunk; wk.oC += (esR * 1.5 * otPart); wk.oH += otPart; wk.incC += (esR * 1.5 * otPart);
-                                    }
-                                }
+                        if (esH > 0) {
+                            for (let b = 1; b <= Math.ceil(esH * 4); b++) {
+                                let chunk = (b * 0.25 > esH) ? (esH - ((b-1) * 0.25)) : 0.25;
+                                if (isHoliday) { wk.hC += (esR * 2.5 * chunk); wk.hH += chunk; wk.incC += (esR * 2.5 * chunk); if(d===0 && fills) buck += chunk; } 
+                                else { if(d===0) { wk.sC += (esR * 1.5 * chunk); wk.sH += chunk; wk.incC += (esR * 1.5 * chunk); if(fills) buck += chunk; } else { wk.oC += (esR * 1.5 * chunk); wk.oH += chunk; wk.incC += (esR * 1.5 * chunk); } }
                             }
                         }
                     }
                 }
                 
-                if (wk.vH >= 40) { let weekDate = dayMap[(w-1)*7].date; if (isBonusWeek(weekDate)) vacBonus = 250.00; }
-                
                 let smRateMult = parseFloat(document.getElementById('sm-'+w)?.getAttribute('data-rate')) || 1.5;
-                let smPay = 0;
-                if(document.getElementById('sm-'+w)?.checked) { smPay = workRate * smRateMult; wk.incC += smPay; if(smRateMult === 2.5) { wk.hH += 1; wk.hC += smPay; } else { wk.oH += 1; wk.oC += smPay; } }
+                if(document.getElementById('sm-'+w)?.checked) { let smPay = workRate * smRateMult; wk.incC += smPay; if(smRateMult === 2.5) { wk.hH += 1; wk.hC += smPay; } else { wk.oH += 1; wk.oC += smPay; } }
+
+                // V 3.6.9 MATH FIX: Define currentWkTotalHrs including Vacation and Holiday UH
+                let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.cH + wk.vH + wk.uhH);
+                totalWorkHrs += currentWkTotalHrs; 
+                if(isDesShiftWorker) shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH);
 
                 let wkGross = wk.rC+wk.vC+wk.oC+wk.sC+wk.hC+wk.uhC+wk.cC+vacBonus+(wk.incC*bPct) + wk.mtC; 
                 totalGross += wkGross; 
-                totalWorkHrs += (wk.rH + wk.oH + wk.sH + wk.hH + wk.cH); 
-                if(isDesShiftWorker) shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH);
-                
+
                 GT.rH+=wk.rH; GT.rC+=wk.rC; GT.vH+=wk.vH; GT.vC+=wk.vC; GT.oH+=wk.oH; GT.oC+=wk.oC; GT.cH+=wk.cH; GT.cC+=wk.cC; GT.sH+=wk.sH; GT.sC+=wk.sC; GT.hH+=wk.hH; GT.hC+=wk.hC; GT.incC += (wk.incC * bPct); GT.vbC += vacBonus;
                 GT.mtH+=wk.mtH; GT.mtC+=wk.mtC; GT.uhH+=wk.uhH; GT.uhC+=wk.uhC;
 
-                let wkShiftHrs = (isDesShiftWorker) ? (wk.rH + wk.oH + wk.sH + wk.hH) : 0;
-                let wkShiftPay = wkShiftHrs * 0.25;
-
+                let wkShiftPay = (isDesShiftWorker ? (wk.rH + wk.oH + wk.sH + wk.hH) : 0) * 0.25;
                 let isOpen = (w===1) ? week1Open : week2Open;
-                let cls = isOpen ? 'show' : '';
-                let wkSummaryHTML = `<div class="week-summary-grid">
+                let wkSummaryHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; padding: 5px 12px; margin: 0 10px; color: var(--accent); font-weight: 800; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                    <span style="flex:1;">EARNINGS</span>
+                    <span style="flex:1; text-align:center; color:#fff;">${currentWkTotalHrs.toFixed(2)}</span>
+                    <span style="flex:1; text-align:right; font-family:monospace;">${f(wkGross + wkShiftPay)}</span>
+                </div>
+                <div class="week-summary-grid">
                 <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${wk.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(wk.mtC)}</div>
-                <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${wk.cH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.cH>0?wk.cC/wk.cH:workRate)}</div><div class="grid-amt">${f(wk.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${wk.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(wk.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${wk.hH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.hH>0?wk.hC/wk.hH:workRate*2.5)}</div><div class="grid-amt">${f(wk.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${wk.oH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.oH>0?wk.oC/wk.oH:workRate*1.5)}</div><div class="grid-amt">${f(wk.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${wk.sH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.sH>0?wk.sC/wk.sH:workRate*1.5)}</div><div class="grid-amt">${f(wk.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${wk.vH.toFixed(2)}h</div><div class="grid-rate">${fR(vacHourly)}</div><div class="grid-amt">${f(wk.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(vacBonus)}</div><div class="grid-label">Regular</div><div class="grid-hours">${wk.rH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.rH>0?wk.rC/wk.rH:workRate)}</div><div class="grid-amt">${f(wk.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${wkShiftHrs.toFixed(2)}h</div><div class="grid-rate">${isDesShiftWorker?'$0.2500':'$0.0000'}</div><div class="grid-amt">${f(wkShiftPay)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(wk.incC * bPct)}</div><div class="grid-total"><span>Week ${w} Total</span><span>${f(wkGross + wkShiftPay)}</span></div></div>`;
-                document.getElementById('sum-'+w).innerHTML = `<div class="wk-header" onclick="toggleWeek(${w})">WEEK ${w} SUMMARY (TAP TO TOGGLE)</div><div id="ws-${w}" class="wk-content ${cls}">${wkSummaryHTML}</div>`;
+                <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${wk.cH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.cH>0?wk.cC/wk.cH:workRate)}</div><div class="grid-amt">${f(wk.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${wk.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(wk.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${wk.hH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.hH>0?wk.hC/wk.hH:workRate*2.5)}</div><div class="grid-amt">${f(wk.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${wk.oH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.oH>0?wk.oC/wk.oH:workRate*1.5)}</div><div class="grid-amt">${f(wk.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${wk.sH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.sH>0?wk.sC/wk.sH:workRate*1.5)}</div><div class="grid-amt">${f(wk.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${wk.vH.toFixed(2)}h</div><div class="grid-rate">${fR(vacHourly)}</div><div class="grid-amt">${f(wk.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(vacBonus)}</div><div class="grid-label">Regular</div><div class="grid-hours">${wk.rH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.rH>0?wk.rC/wk.rH:workRate)}</div><div class="grid-amt">${f(wk.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${(wk.rH+wk.oH+wk.sH+wk.hH).toFixed(2)}h</div><div class="grid-rate">$0.2500</div><div class="grid-amt">${f(wkShiftPay)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(wk.incC * bPct)}</div></div>`;
+                document.getElementById('sum-'+w).innerHTML = `<div class="wk-header" onclick="toggleWeek(${w})">WEEK ${w} SUMMARY (TAP TO TOGGLE)</div><div id="ws-${w}" class="wk-content ${isOpen?'show':''}">${wkSummaryHTML}</div>`;
             }
 
-            sAmt = (isDesShiftWorker) ? (shiftHours * 0.25) : 0; 
-            totalGross += sAmt;
+            let sAmt = shiftHours * 0.25; totalGross += sAmt;
+            document.getElementById('total-ledger-content').innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; padding: 5px 12px; margin: 15px 10px 0 10px; color: var(--accent); font-weight: 800; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                <span style="flex:1;">EARNINGS</span>
+                <span style="flex:1; text-align:center; color:#fff;">${totalWorkHrs.toFixed(2)}</span>
+                <span style="flex:1; text-align:right; font-family:monospace;">${f(totalGross)}</span>
+            </div>
+            <div class="total-summary-grid">
+            <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${GT.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(GT.mtC)}</div>
+            <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${GT.cH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.cH>0?GT.cC/GT.cH:workRate)}</div><div class="grid-amt">${f(GT.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${GT.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(GT.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${GT.hH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.hH>0?GT.hC/GT.hH:workRate*2.5)}</div><div class="grid-amt">${f(GT.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${GT.oH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.oH>0?GT.oC/GT.oH:workRate*1.5)}</div><div class="grid-amt">${f(GT.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${GT.sH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.sH>0?GT.sC/GT.sH:workRate*1.5)}</div><div class="grid-amt">${f(GT.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${GT.vH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.vH>0?GT.vC/GT.vH:vacHourly)}</div><div class="grid-amt">${f(GT.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.vbC)}</div><div class="grid-label">Regular</div><div class="grid-hours">${GT.rH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.rH>0?GT.rC/GT.rH:workRate)}</div><div class="grid-amt">${f(GT.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${shiftHours.toFixed(2)}h</div><div class="grid-rate">$0.2500</div><div class="grid-amt">${f(sAmt)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.incC)}</div></div>`;
+            document.getElementById('grossDisplay').innerText = f(totalGross);
+            
             lastCalcBreakdown = { Regular: GT.rC, Vacation: GT.vC, Overtime: GT.oC, Sunday: GT.sC, CallOut: GT.cC, HolidayWk: GT.hC, HolidayUH: GT.uhC, ShiftDiff: sAmt, Incentive: GT.incC, VacaBonus: GT.vbC, MealTicket: GT.mtC };
             lastCalcHours = { Regular: GT.rH, Vacation: GT.vH, Overtime: GT.oH, Sunday: GT.sH, CallOut: GT.cH, HolidayWk: GT.hH, HolidayUH: GT.uhH, ShiftDiff: shiftHours, Incentive: (parseFloat(document.getElementById('bonus-1').value)||0) + (parseFloat(document.getElementById('bonus-2').value)||0), VacaBonus: (GT.vbC > 0 ? 1 : 0), MealTicket: GT.mtH };
 
-            document.getElementById('total-ledger-content').innerHTML = `<div class="total-summary-grid">
-            <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${GT.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(GT.mtC)}</div>
-            <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${GT.cH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.cH>0?GT.cC/GT.cH:workRate)}</div><div class="grid-amt">${f(GT.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${GT.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(GT.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${GT.hH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.hH>0?GT.hC/GT.hH:workRate*2.5)}</div><div class="grid-amt">${f(GT.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${GT.oH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.oH>0?GT.oC/GT.oH:workRate*1.5)}</div><div class="grid-amt">${f(GT.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${GT.sH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.sH>0?GT.sC/GT.sH:workRate*1.5)}</div><div class="grid-amt">${f(GT.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${GT.vH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.vH>0?GT.vC/GT.vH:vacHourly)}</div><div class="grid-amt">${f(GT.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.vbC)}</div><div class="grid-label">Regular</div><div class="grid-hours">${GT.rH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.rH>0?GT.rC/GT.rH:workRate)}</div><div class="grid-amt">${f(GT.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${shiftHours.toFixed(2)}h</div><div class="grid-rate">${isDesShiftWorker?'$0.2500':'$0.0000'}</div><div class="grid-amt">${f(sAmt)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.incC)}</div><div class="grid-total"><span>Total Gross</span><span>${f(totalGross)}</span></div></div>`;
-            document.getElementById('grossDisplay').innerText = f(totalGross);
-            
-            let dR = parseFloat(document.getElementById('duesRate').value)||0; 
-            let dCF = parseFloat(document.getElementById('duesCapFactor').value)||1.2923; 
-            let dHrR = parseFloat(document.getElementById('duesHrRate').value)||0.02;
-
-            let valPct = totalGross * (dR / 100);
-            let avgHrRate = (totalWorkHrs > 0) ? (totalGross / totalWorkHrs) : 0;
-            let valCap = avgHrRate * dCF;
-            let dEst = Math.min(valPct, valCap);
-
+            let dR = parseFloat(document.getElementById('duesRate').value)||0; let dCF = parseFloat(document.getElementById('duesCapFactor').value)||1.2923; let dHrR = parseFloat(document.getElementById('duesHrRate').value)||0.02;
+            let valPct = totalGross * (dR / 100); let avgHrRate = (totalWorkHrs > 0) ? (totalGross / totalWorkHrs) : 0;
+            let dEst = Math.min(valPct, avgHrRate * dCF);
             let kR = (parseFloat(document.getElementById('kRate').value)||0)/100;
-            let fR_t = (parseFloat(document.getElementById('fedTaxRate').value)||0)/100;
-            let sR = (parseFloat(document.getElementById('stateTaxRate').value)||0)/100;
-            let cR = (parseFloat(document.getElementById('cityTaxRate').value)||0)/100;
+            let est = { k: r2((totalGross - GT.mtC) * kR), fed: r2((totalGross - r2((totalGross - GT.mtC) * kR))*((parseFloat(document.getElementById('fedTaxRate').value)||0)/100)), state: r2((totalGross - r2((totalGross - GT.mtC) * kR))*((parseFloat(document.getElementById('stateTaxRate').value)||0)/100)), city: r2(totalGross*((parseFloat(document.getElementById('cityTaxRate').value)||0)/100)), fica: r2(totalGross*0.062), med: r2(totalGross*0.0145), dues: r2(dEst), duesHr: r2(totalWorkHrs*dHrR), life: parseFloat(document.getElementById('lifeEE').value)||0, addOpt: parseFloat(document.getElementById('addOpt').value)||0, charity: parseFloat(document.getElementById('charity').value)||0, l1: parseFloat(document.getElementById('loan1').value)||0, l2: parseFloat(document.getElementById('loan2').value)||0, garn: parseFloat(document.getElementById('garnishment').value)||0 };
             
-            let est = { 
-                k: r2((totalGross - GT.mtC) * kR), fed: r2((totalGross - r2((totalGross - GT.mtC) * kR))*fR_t), state: r2((totalGross - r2((totalGross - GT.mtC) * kR))*sR), city: r2(totalGross*cR), fica: r2(totalGross*0.062), med: r2(totalGross*0.0145), dues: r2(dEst), duesHr: r2(totalWorkHrs*dHrR), life: parseFloat(document.getElementById('lifeEE').value)||0, addOpt: parseFloat(document.getElementById('addOpt').value)||0, charity: parseFloat(document.getElementById('charity').value)||0, l1: parseFloat(document.getElementById('loan1').value)||0, l2: parseFloat(document.getElementById('loan2').value)||0, garn: parseFloat(document.getElementById('garnishment').value)||0 
-            };
-            
-            let act = auditData[currentPeriodId] || {}, finalD = 0, taxG = totalGross - est.k; 
-            lastUsedDeductions = {};
+            let act = auditData[currentPeriodId] || {}, finalD = 0; lastUsedDeductions = {};
             for(let key in deductionLabels) {
                 let eV = est[key], aV = act[key], used = (aV !== undefined) ? aV : eV; 
                 finalD += used; lastUsedDeductions[key] = used;
@@ -1286,32 +1260,16 @@ function isUnionHoliday(dateStr){
                     let dlt = (aV !== undefined) ? (aV - eV) : 0; 
                     document.getElementById('delta-'+key).innerText = (aV !== undefined && Math.abs(dlt)>0.01) ? (dlt>0?"+":"" + dlt.toFixed(2)) : "";
                     document.getElementById('delta-'+key).style.color = dlt > 0 ? '#ff5252' : '#00c853';
-                    if(key === 'l1' || key === 'l2') {
-                        let chkDt = new Date(periods[currentPeriodId-1].end); 
-                        let stat = calcLoanStatus(key, chkDt, used);
-                        if(stat.total > 0) { document.getElementById('detail-'+key).innerText = stat.txt; } else { document.getElementById('detail-'+key).innerText = ""; }
-                    }
-                    let btn = document.getElementById('action-'+key); 
-                    if(key === 'k') {
-                        btn.innerText = "🔒 LOCK"; btn.classList.add('show');
-                        btn.onclick = function() { document.getElementById('in-k').value = est.k.toFixed(2); updateAudit('k', est.k.toFixed(2)); }
-                    } else if(btn) { 
-                        let isFed = (key === 'fed');
-                        let base = (key=='city'||key=='dues') ? totalGross : taxG; 
-                        if(isFed) base = taxG; 
-                        if((settingsMap[key] || isFed) && aV !== undefined && Math.abs(dlt) > 0.01 && base > 0) { 
-                            btn.classList.add('show'); btn.innerText = "↺ RATE";
-                            btn.onclick = function() { requestRateUpdate(deductionLabels[key], aV, base, (isFed ? 'fedTaxRate' : settingsMap[key]), deductionLabels[key]); }; 
-                        } else { btn.classList.remove('show'); } 
+                    if(key === 'l1' || key === 'l2') { let stat = calcLoanStatus(key, new Date(periods[currentPeriodId-1].end), used); document.getElementById('detail-'+key).innerText = stat.txt; }
+                    let btn = document.getElementById('action-'+key); if(btn) {
+                        let base = (key=='city'||key=='dues') ? totalGross : (totalGross - est.k); 
+                        if((settingsMap[key] || key==='fed') && aV !== undefined && Math.abs(dlt) > 0.01 && base > 0) { btn.classList.add('show'); btn.onclick = function() { requestRateUpdate(deductionLabels[key], aV, base, (key==='fed'?'fedTaxRate':settingsMap[key]), deductionLabels[key]); }; } else { btn.classList.remove('show'); }
                     }
                 }
             }
-            let net = r2(totalGross - finalD); 
-            let nb = document.getElementById('net-box-container'); 
-            let isV = document.getElementById('verified-toggle').checked;
-            if(isV) { nb.classList.add('verified'); } else { nb.classList.remove('verified'); }
-            document.getElementById('netDisplay').innerText = f(net > 0 ? net : 0);
-        } catch(e) { console.error("Calc Error: " + e.message); alert("Calculation Error: " + e.message); }
+            let net = r2(totalGross - finalD); document.getElementById('netDisplay').innerText = f(net > 0 ? net : 0);
+            if(document.getElementById('verified-toggle').checked) document.getElementById('net-box-container').classList.add('verified'); else document.getElementById('net-box-container').classList.remove('verified');
+        } catch(e) { console.error("Calc Error: " + e.message); }
     }
 
     function toggleRO(w, d) { 
@@ -1325,31 +1283,35 @@ function isUnionHoliday(dateStr){
     }
 
     function getRate(l) { 
-        if (currentPeriodId === null) return parseFloat(document.getElementById('rateL' + (l || 3)).value) || 0;
-        let currentCheckDate = periods[currentPeriodId-1].startDateObj;
-        let useContract = document.getElementById('enable-contract').checked;
-        let cStart = document.getElementById('contract-start').value;
-        let cDate = new Date(cStart);
-        let base = 0;
-        if(l==5) base=parseFloat(document.getElementById('rateL5').value)||0; 
-        else if(l==4) base=parseFloat(document.getElementById('rateL4').value)||0; 
-        else if(l==3) base=parseFloat(document.getElementById('rateL3').value)||0; 
-        else if(l==2) base=parseFloat(document.getElementById('rateL2').value)||0; 
-        else if(l==1) base=parseFloat(document.getElementById('rateL1').value)||0; 
-        if (useContract && cStart && currentCheckDate >= cDate) {
-            let type = document.getElementById('raise-type').value; 
-            let r1 = parseFloat(document.getElementById('raise-1').value)||0;
-            let r2 = parseFloat(document.getElementById('raise-2').value)||0;
-            let r3 = parseFloat(document.getElementById('raise-3').value)||0;
-            let diffTime = Math.abs(currentCheckDate - cDate);
-            let diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-            let totalRaise = 0;
-            if (diffYears >= 0) { if(type === 'amt') totalRaise += r1; else totalRaise += (base * (r1/100)); }
-            if (diffYears >= 1) { if(type === 'amt') totalRaise += r2; else totalRaise += ((base+totalRaise) * (r2/100)); }
-            if (diffYears >= 2) { if(type === 'amt') totalRaise += r3; else totalRaise += ((base+totalRaise) * (r3/100)); }
-            return base + totalRaise;
+        let baseInput = document.getElementById('rateL' + (l || 5));
+        let base = baseInput ? parseFloat(baseInput.value) || baseRates[l || 5] : baseRates[l || 5];
+        let useContract = document.getElementById('enable-contract')?.checked;
+        if (!useContract || !currentPeriodId) return base;
+
+        let checkDate = new Date(periods[currentPeriodId-1].startDateObj);
+        let term = parseInt(document.getElementById('contract-term').value) || 0;
+        let timeline = [];
+
+        for (let i = 1; i <= term; i++) {
+            let dVal = document.getElementById(`r-date-${i}`)?.value;
+            if (dVal) {
+                timeline.push({
+                    date: new Date(dVal),
+                    val: parseFloat(document.getElementById(`r-val-${i}`).value) || 0,
+                    type: document.getElementById(`r-type-${i}`).value
+                });
+            }
         }
-        return base;
+        timeline.sort((a, b) => a.date - b.date);
+
+        let activeRate = base;
+        timeline.forEach(raise => {
+            if (checkDate >= raise.date) {
+                if (raise.type === 'pct') activeRate += (activeRate * (raise.val / 100));
+                else activeRate += raise.val;
+            }
+        });
+        return activeRate;
     }
 
     function toggleAuditMode() { 
@@ -1642,6 +1604,7 @@ function isUnionHoliday(dateStr){
             if(s.vacationDates) vacationDates = s.vacationDates;
             if(s.wad) document.getElementById('wad-select').value = s.wad;
         }
+        generateContractRows(); // V 3.7.0 Fix: Redraw rows on load
         updateVacationRateUI(); 
     }
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
