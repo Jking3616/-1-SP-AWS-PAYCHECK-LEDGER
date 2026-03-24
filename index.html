@@ -1208,7 +1208,7 @@ function isUnionHoliday(dateStr){
                 // V 3.6.9 MATH FIX: Define currentWkTotalHrs including Vacation and Holiday UH
                 let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.cH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs; 
-                if(isDesShiftWorker) shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH);
+                shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); // CRASH FIX: Removed the broken variable here
 
                 let wkGross = wk.rC+wk.vC+wk.oC+wk.sC+wk.hC+wk.uhC+wk.cC+vacBonus+(wk.incC*bPct) + wk.mtC; 
                 totalGross += wkGross; 
@@ -1216,15 +1216,14 @@ function isUnionHoliday(dateStr){
                 GT.rH+=wk.rH; GT.rC+=wk.rC; GT.vH+=wk.vH; GT.vC+=wk.vC; GT.oH+=wk.oH; GT.oC+=wk.oC; GT.cH+=wk.cH; GT.cC+=wk.cC; GT.sH+=wk.sH; GT.sC+=wk.sC; GT.hH+=wk.hH; GT.hC+=wk.hC; GT.incC += (wk.incC * bPct); GT.vbC += vacBonus;
                 GT.mtH+=wk.mtH; GT.mtC+=wk.mtC; GT.uhH+=wk.uhH; GT.uhC+=wk.uhC;
 
-                let wkShiftPay = (isDesShiftWorker ? (wk.rH + wk.oH + wk.sH + wk.hH) : 0) * 0.25;
+                let wkShiftPay = (wk.rH + wk.oH + wk.sH + wk.hH) * 0.25; // CRASH FIX: Removed the broken variable here
                 let isOpen = (w===1) ? week1Open : week2Open;
-                let wkSummaryHTML = `
-                <div style="display:flex; justify-content:space-between; align-items:center; padding: 5px 12px; margin: 0 10px; color: var(--accent); font-weight: 800; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                let wkSummaryHTML = `<div class="week-summary-grid" style="border-top-left-radius: 0; border-top-right-radius: 0; border-top: none; margin-top: 0;">
+                <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent); font-weight: 800; font-size: 11px;">
                     <span style="flex:1;">EARNINGS</span>
                     <span style="flex:1; text-align:center; color:#fff;">${currentWkTotalHrs.toFixed(2)}</span>
                     <span style="flex:1; text-align:right; font-family:monospace;">${f(wkGross + wkShiftPay)}</span>
                 </div>
-                <div class="week-summary-grid">
                 <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${wk.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(wk.mtC)}</div>
                 <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${wk.cH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.cH>0?wk.cC/wk.cH:workRate)}</div><div class="grid-amt">${f(wk.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${wk.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(wk.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${wk.hH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.hH>0?wk.hC/wk.hH:workRate*2.5)}</div><div class="grid-amt">${f(wk.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${wk.oH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.oH>0?wk.oC/wk.oH:workRate*1.5)}</div><div class="grid-amt">${f(wk.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${wk.sH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.sH>0?wk.sC/wk.sH:workRate*1.5)}</div><div class="grid-amt">${f(wk.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${wk.vH.toFixed(2)}h</div><div class="grid-rate">${fR(vacHourly)}</div><div class="grid-amt">${f(wk.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(vacBonus)}</div><div class="grid-label">Regular</div><div class="grid-hours">${wk.rH.toFixed(2)}h</div><div class="grid-rate">${fR(wk.rH>0?wk.rC/wk.rH:workRate)}</div><div class="grid-amt">${f(wk.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${(wk.rH+wk.oH+wk.sH+wk.hH).toFixed(2)}h</div><div class="grid-rate">$0.2500</div><div class="grid-amt">${f(wkShiftPay)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(wk.incC * bPct)}</div></div>`;
                 document.getElementById('sum-'+w).innerHTML = `<div class="wk-header" onclick="toggleWeek(${w})">WEEK ${w} SUMMARY (TAP TO TOGGLE)</div><div id="ws-${w}" class="wk-content ${isOpen?'show':''}">${wkSummaryHTML}</div>`;
@@ -1232,12 +1231,12 @@ function isUnionHoliday(dateStr){
 
             let sAmt = shiftHours * 0.25; totalGross += sAmt;
             document.getElementById('total-ledger-content').innerHTML = `
-            <div style="display:flex; justify-content:space-between; align-items:center; padding: 5px 12px; margin: 15px 10px 0 10px; color: var(--accent); font-weight: 800; font-size: 11px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+            <div class="total-summary-grid">
+            <div style="grid-column: 1 / -1; display:flex; justify-content:space-between; align-items:center; padding-bottom: 8px; margin-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1); color: var(--accent); font-weight: 800; font-size: 11px;">
                 <span style="flex:1;">EARNINGS</span>
                 <span style="flex:1; text-align:center; color:#fff;">${totalWorkHrs.toFixed(2)}</span>
                 <span style="flex:1; text-align:right; font-family:monospace;">${f(totalGross)}</span>
             </div>
-            <div class="total-summary-grid">
             <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${GT.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(GT.mtC)}</div>
             <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${GT.cH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.cH>0?GT.cC/GT.cH:workRate)}</div><div class="grid-amt">${f(GT.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${GT.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(GT.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${GT.hH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.hH>0?GT.hC/GT.hH:workRate*2.5)}</div><div class="grid-amt">${f(GT.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${GT.oH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.oH>0?GT.oC/GT.oH:workRate*1.5)}</div><div class="grid-amt">${f(GT.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${GT.sH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.sH>0?GT.sC/GT.sH:workRate*1.5)}</div><div class="grid-amt">${f(GT.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${GT.vH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.vH>0?GT.vC/GT.vH:vacHourly)}</div><div class="grid-amt">${f(GT.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.vbC)}</div><div class="grid-label">Regular</div><div class="grid-hours">${GT.rH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.rH>0?GT.rC/GT.rH:workRate)}</div><div class="grid-amt">${f(GT.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${shiftHours.toFixed(2)}h</div><div class="grid-rate">$0.2500</div><div class="grid-amt">${f(sAmt)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.incC)}</div></div>`;
             document.getElementById('grossDisplay').innerText = f(totalGross);
@@ -1710,4 +1709,3 @@ function isUnionHoliday(dateStr){
 </script>
 </body>
 </html>
-
