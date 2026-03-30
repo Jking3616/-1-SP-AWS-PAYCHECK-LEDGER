@@ -1205,8 +1205,8 @@ function isUnionHoliday(dateStr){
                 let smRateMult = parseFloat(document.getElementById('sm-'+w)?.getAttribute('data-rate')) || 1.5;
                 if(document.getElementById('sm-'+w)?.checked) { let smPay = workRate * smRateMult; wk.incC += smPay; if(smRateMult === 2.5) { wk.hH += 1; wk.hC += smPay; } else { wk.oH += 1; wk.oC += smPay; } }
 
-                // V 3.6.9 MATH FIX: Define currentWkTotalHrs including Vacation and Holiday UH
-                let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.cH + wk.vH + wk.uhH);
+                // V 3.7.0 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
+                let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs; 
                 shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); // CRASH FIX: Removed the broken variable here
 
