@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.7.0(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.7.4(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -212,7 +212,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.0</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.4</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats"><div id="header-ytd-label">EST. GROSS YTD</div><div class="ytd-val" id="header-ytd-gross">$0.00</div></div>
@@ -299,89 +299,171 @@
                 <button class="close-set-btn" onclick="closeSettings()">DONE</button>
             </div>
         </div>
-        <div class="pref-card">
-            <div class="collapsible-header" onclick="toggleCard('card1')"><span id="arrow-card1" class="arrow">▶</span><span class="pref-title">1. USER CONFIGURATION</span></div>
-            <div id="card1" class="collapsible-content">
-                <span class="input-label" style="margin-top:5px; color:#4dadff;">Assigned Crew Pattern</span>
-                <select id="crew-select" onchange="saveSettings()"><option value="D">Crew D</option><option value="B">Crew B</option><option value="C">Crew C</option><option value="A">Crew A</option></select>
-                <span class="input-label">Bidded Job Class</span><select id="biddedRate" onchange="calc(); saveSettings();"><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select>
-                <div class="collapsible-header" onclick="document.getElementById('sched-box').classList.toggle('show');"><span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">DIFFERENT SCHEDULED JOB CLASS?</span></div><div id="sched-box" class="collapsible-content"><span class="input-label">Scheduled Job Class</span><select id="scheduledRate" onchange="calc(); saveSettings();"><option value="0">Same as Bidded</option><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select></div>
-                
-                <span class="input-label" style="margin-top:10px;">Prior Year W2 (Minus Profit Sharing)</span><input type="number" id="prevW2" placeholder="0.00" onchange="calc(); saveSettings();"><div id="vacRateDisplay" style="text-align:right; font-family:monospace; color:#ffeb3b;">Vacation Rate: $0.00 / hr</div>
-                <span class="input-label" style="margin-top:10px;">Default Incentive Forecast (%)</span><input type="number" id="defInc" placeholder="Can be set to a min % if you feel confident. Default = 0" onchange="saveSettings();">
-                <span class="input-label" style="margin-top:10px;">Hire Date (Continuous Service)</span><div style="display:grid; grid-template-columns: 2fr 1fr; gap:5px;"><input type="date" id="hire-date" onchange="saveSettings()"><input type="number" id="hire-year-manual" placeholder="Year" onchange="quickSetYear(this.value)"></div>
-                <button class="apply-btn" style="width:100%; font-size:14px; background:linear-gradient(135deg, #ff6f00, #e65100); color:white; font-weight:900; margin-top:10px;" onclick="openVacationView()">OPEN VACATION PLANNER</button>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card1')"><span id="arrow-card1" class="arrow">▶</span><span class="pref-title">1. USER CONFIGURATION</span></div><div id="card1" class="collapsible-content">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
+                <div><span class="input-label" style="color:#4dadff;">Crew Pattern</span><select id="crew-select" onchange="saveSettings()"><option value="D">Crew D</option><option value="B">Crew B</option><option value="C">Crew C</option><option value="A">Crew A</option><option value="Custom">Custom</option></select></div>
+                <div><span class="input-label" style="color:#4dadff;">Base Shift (Hrs)</span><select id="shift-base" onchange="saveSettings()"><option value="12">12 Hours</option><option value="10">10 Hours</option><option value="8">8 Hours</option></select></div>
             </div>
-        </div>
-        <div class="pref-card">
-            <div class="collapsible-header" onclick="toggleCard('card2')"><span id="arrow-card2" class="arrow">▶</span><span class="pref-title">2. PAY RATES & MEAL TICKET</span></div>
-            <div id="card2" class="collapsible-content">
-                <div class="tab-sub-bar">
-                    <button class="tab-sub active" id="ts-current" onclick="switchContractTab('current')">CURRENT RATES</button>
-                    <button class="tab-sub" id="ts-contract" onclick="switchContractTab('contract')">CONTRACT PLANNER</button>
-                </div>
-                <div id="cv-current" class="contract-view-content show" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><span class="input-label">L5 Rate ($)</span><input type="number" id="rateL5" placeholder="38.37" onchange="calc(); saveSettings();"></div><div><span class="input-label">L4 Rate ($)</span><input type="number" id="rateL4" placeholder="36.12" onchange="calc(); saveSettings();"></div><div><span class="input-label">L3 Rate ($)</span><input type="number" id="rateL3" placeholder="34.32" onchange="calc(); saveSettings();"></div><div><span class="input-label">L2 Rate ($)</span><input type="number" id="rateL2" placeholder="31.21" onchange="calc(); saveSettings();"></div><div><span class="input-label">L1 Rate ($)</span><input type="number" id="rateL1" placeholder="28.51" onchange="calc(); saveSettings();"></div><div><span class="input-label" style="color:var(--gold);">Meal Ticket ($)</span><input type="number" id="mt-val" placeholder="16.17" onchange="saveSettings()"></div>
-                </div>
-                <div id="cv-contract" class="contract-view-content">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-                        <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
-                            <input type="checkbox" id="enable-contract" onchange="saveSettings(); calc();" style="width:16px; height:16px;">
-                            <span style="font-weight:bold; font-size:13px;">Enable Contract Logic</span>
-                        </label>
-                        <div style="width:100px;">
-                            <span class="input-label" style="font-size:9px; text-align:right;">Contract Term</span>
-                            <select id="contract-term" onchange="generateContractRows(); saveSettings();" style="padding:4px; font-size:12px; margin:0; background:#222;">
-                                <option value="0">Current</option>
-                                <option value="1">1 Year</option>
-                                <option value="2">2 Years</option>
-                                <option value="3">3 Years</option>
-                                <option value="4">4 Years</option>
-                                <option value="5">5 Years</option>
-                                <option value="6">6 Years</option>
-                            </select>
-                        </div>
-                    </div>
+            <button class="apply-btn" style="width:100%; font-size:12px; background:rgba(77, 173, 255, 0.1); color:var(--accent); border:1px solid var(--accent); font-weight:bold; margin-bottom:15px;" onclick="openSchedulePainter()">⚙️ CUSTOMIZE 8-WEEK MATRIX</button>
+            <span class="input-label">Bidded Job Class</span><select id="biddedRate" onchange="calc(); saveSettings();"><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select>
+            <div class="collapsible-header" onclick="document.getElementById('sched-box').classList.toggle('show');" style="padding-top:0;"><span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">DIFFERENT SCHEDULED JOB CLASS?</span></div><div id="sched-box" class="collapsible-content"><span class="input-label">Scheduled Job Class</span><select id="scheduledRate" onchange="calc(); saveSettings();"><option value="0">Same as Bidded</option><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select></div>
+            <span class="input-label" style="margin-top:10px;">Prior Year W2 (Minus Profit Sharing)</span><input type="number" id="prevW2" placeholder="0.00" onchange="calc(); saveSettings();"><div id="vacRateDisplay" style="text-align:right; font-family:monospace; color:#ffeb3b;">Vacation Rate: $0.00 / hr</div>
+            <span class="input-label" style="margin-top:10px;">Default Incentive Forecast (%)</span><input type="number" id="defInc" placeholder="Can be set to a min % if you feel confident. Default = 0" onchange="saveSettings();">
+            <span class="input-label" style="margin-top:10px;">Hire Date (Continuous Service)</span><div style="display:grid; grid-template-columns: 2fr 1fr; gap:5px;"><input type="date" id="hire-date" onchange="saveSettings()"><input type="number" id="hire-year-manual" placeholder="Year" onchange="quickSetYear(this.value)"></div>
+            <button class="apply-btn" style="width:100%; font-size:14px; background:linear-gradient(135deg, #ff6f00, #e65100); color:white; font-weight:900; margin-top:10px;" onclick="openVacationView()">OPEN VACATION PLANNER</button>
+        </div></div>
 
-                    <div id="raise-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;"></div>
-
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:15px;">
-                        <button class="apply-btn" style="background:#0d47a1; color:white; font-weight:bold; padding:10px;" onclick="recoverPlanner()">RECOVER PLANNER</button>
-                        <button class="apply-btn" style="background:#b71c1c; color:white; font-weight:bold; padding:10px;" onclick="restoreBaseRates()">RESTORE BASE</button>
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card2')"><span id="arrow-card2" class="arrow">▶</span><span class="pref-title">2. PAY RATES & MEAL TICKET</span></div><div id="card2" class="collapsible-content">
+            <div class="tab-sub-bar">
+                <button class="tab-sub active" id="ts-current" onclick="switchContractTab('current')">CURRENT RATES</button>
+                <button class="tab-sub" id="ts-contract" onclick="switchContractTab('contract')">CONTRACT PLANNER</button>
+            </div>
+            <div id="cv-current" class="contract-view-content show" style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><span class="input-label">L5 Rate ($)</span><input type="number" id="rateL5" placeholder="38.37" onchange="calc(); saveSettings();"></div><div><span class="input-label">L4 Rate ($)</span><input type="number" id="rateL4" placeholder="36.12" onchange="calc(); saveSettings();"></div><div><span class="input-label">L3 Rate ($)</span><input type="number" id="rateL3" placeholder="34.32" onchange="calc(); saveSettings();"></div><div><span class="input-label">L2 Rate ($)</span><input type="number" id="rateL2" placeholder="31.21" onchange="calc(); saveSettings();"></div><div><span class="input-label">L1 Rate ($)</span><input type="number" id="rateL1" placeholder="28.51" onchange="calc(); saveSettings();"></div><div><span class="input-label" style="color:var(--gold);">Meal Ticket ($)</span><input type="number" id="mt-val" placeholder="16.17" onchange="saveSettings()"></div>
+            </div>
+            <div id="cv-contract" class="contract-view-content">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                    <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                        <input type="checkbox" id="enable-contract" onchange="saveSettings(); calc();" style="width:16px; height:16px;">
+                        <span style="font-weight:bold; font-size:13px;">Enable Contract Logic</span>
+                    </label>
+                    <div style="width:100px;">
+                        <span class="input-label" style="font-size:9px; text-align:right;">Contract Term</span>
+                        <select id="contract-term" onchange="generateContractRows(); saveSettings();" style="padding:4px; font-size:12px; margin:0; background:#222;">
+                            <option value="0">Current</option>
+                            <option value="1">1 Year</option>
+                            <option value="2">2 Years</option>
+                            <option value="3">3 Years</option>
+                            <option value="4">4 Years</option>
+                            <option value="5">5 Years</option>
+                            <option value="6">6 Years</option>
+                        </select>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card3')"><span id="arrow-card3" class="arrow">▶</span><span class="pref-title">3. SMART RATE FINDER</span></div><div id="card3" class="collapsible-content"><div id="rate-tool" class="rate-tool-box" style="display:block; margin-bottom:5px;"><div style="font-size:10px; color:#888; margin-bottom:5px;">Calculates rate based on Gross minus 401k Setting</div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="rt-gross" placeholder="Total Gross"><input type="number" id="rt-tax" placeholder="Tax Paid ($)"></div><div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><button onclick="calcRateResult()" style="background:var(--accent); color:white; border:none; padding:6px 15px; border-radius:4px; font-weight:bold; font-size:12px;">CALCULATE</button><span id="rt-result" style="font-weight:800; color:var(--success); font-size:18px;">0.000%</span></div><div class="rt-actions" style="grid-template-columns: 1fr 1fr;"><button class="apply-btn" onclick="applyRate('fedTaxRate')">SET FED RATE</button><button class="apply-btn" onclick="applyRate('stateTaxRate')">SET STATE RATE</button></div></div></div></div>
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card4')"><span id="arrow-card4" class="arrow">▶</span><span class="pref-title">4. TAX & RETIREMENT (%)</span></div><div id="card4" class="collapsible-content"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">401k %</span><input type="number" id="kRate" onchange="calc(); saveSettings();" enterkeyhint="next"></div><div><span class="input-label">Fed W/H %</span><input type="number" id="fedTaxRate" onchange="calc(); saveSettings();" enterkeyhint="next"></div></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">Ohio W/H %</span><input type="number" id="stateTaxRate" value="2.75" onchange="calc(); saveSettings();" enterkeyhint="next"></div><div><span class="input-label">City %</span><input type="number" id="cityTaxRate" value="2.5" onchange="calc(); saveSettings();" enterkeyhint="next"></div></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">FICA EE %</span><input type="number" id="ficaRate" value="6.2" onchange="calc(); saveSettings();" enterkeyhint="next"></div><div><span class="input-label">Fed MWT EE %</span><input type="number" id="medRate" value="1.45" onchange="calc(); saveSettings();" enterkeyhint="next"></div></div></div></div>
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card5')"><span id="arrow-card5" class="arrow">▶</span><span class="pref-title">5. FLAT DEDUCTIONS ($)</span></div><div id="card5" class="collapsible-content"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">USW Dues %</span><input type="number" id="duesRate" value="1.45" onchange="calc(); saveSettings();"></div><div><span class="input-label">Charity</span><input type="number" id="charity" onchange="calc(); saveSettings();"></div></div><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">OPTL Life EE</span><input type="number" id="lifeEE" onchange="calc(); saveSettings();"></div><div><span class="input-label">Addl Optional</span><input type="number" id="addOpt" onchange="calc(); saveSettings();"></div></div>
-        <div style="margin-top:15px; border-top:1px solid #333; padding-top:10px;">
-            <span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 1 TRACKER</span>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                <div><span class="input-label">Amount</span><input type="number" id="loan1" onchange="calc(); saveSettings();"></div>
-                <div><span class="input-label">Total Pymts</span><input type="number" id="l1-total" placeholder="#" onchange="calc(); saveSettings();"></div>
-                <div><span class="input-label">Final Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1')"></div>
-            </div>
-        </div>
-        <div style="margin-top:10px;">
-            <span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 2 TRACKER</span>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                <div><span class="input-label">Amount</span><input type="number" id="loan2" onchange="calc(); saveSettings();"></div>
-                <div><span class="input-label">Total Pymts</span><input type="number" id="l2-total" placeholder="#" onchange="calc(); saveSettings();"></div>
-                <div><span class="input-label">Final Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2')"></div>
-            </div>
-        </div>
-        <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-top:10px;"><div><span class="input-label" style="color:var(--danger)">Garnishments ($)</span><input type="number" id="garnishment" onchange="calc(); saveSettings();"></div></div></div></div>
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card6')"><span id="arrow-card6" class="arrow">▶</span><span class="pref-title">6. NET PAY DISTRIBUTION</span></div><div id="card6" class="collapsible-content">
-            <div style="margin-bottom:5px; color:#888; font-size:10px;">Deduct amounts to see actual Deposit.</div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                <div><span class="input-label">Sec. Acct 1</span><input type="number" id="dist1" placeholder="0.00" onchange="saveSettings(); renderDashboard();"></div>
-                <div><span class="input-label">Sec. Acct 2</span><input type="number" id="dist2" placeholder="0.00" onchange="saveSettings(); renderDashboard();"></div>
-                <div><span class="input-label">Sec. Acct 3</span><input type="number" id="dist3" placeholder="0.00" onchange="saveSettings(); renderDashboard();"></div>
+                <div id="raise-rows-container" style="display:flex; flex-direction:column; gap:8px; margin-bottom:15px;"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:15px;">
+                    <button class="apply-btn" style="background:#0d47a1; color:white; font-weight:bold; padding:10px;" onclick="recoverPlanner()">RECOVER PLANNER</button>
+                    <button class="apply-btn" style="background:#b71c1c; color:white; font-weight:bold; padding:10px;" onclick="restoreBaseRates()">RESTORE BASE</button>
+                </div>
             </div>
         </div></div>
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card7')"><span id="arrow-card7" class="arrow">▶</span><span class="pref-title">7. DUES CALIBRATION</span></div><div id="card7" class="collapsible-content"><div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">Hourly Factor</span><input type="number" id="duesCapFactor" value="1.2923" onchange="calc(); saveSettings();"></div><div><span class="input-label">Hourly Rate ($)</span><input type="number" id="duesHrRate" value="0.02" onchange="calc(); saveSettings();"></div></div><div style="margin-top:5px; color:#666; font-size:10px;">App automatically selects the lower option between 1.45% of Gross vs. Hourly Factor Cap.</div></div></div>
-        <button class="reset-btn" onclick="resetCheckData()">RESET CHECK DATA</button><button class="reset-btn" style="margin-top:10px; border-color:var(--dim); color:var(--dim);" onclick="resetSettings()">RESET APP SETTINGS</button>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card3')"><span id="arrow-card3" class="arrow">▶</span><span class="pref-title">3. 401K % CONTRIBUTION & LOAN AMORTIZATION</span></div><div id="card3" class="collapsible-content">
+            <div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:15px;">
+                <span class="input-label" style="color:var(--accent); font-weight:bold;">401k % (Pre-Tax)</span>
+                <input type="number" id="kRate" onchange="calc(); saveSettings();" enterkeyhint="next">
+            </div>
+            <div style="margin-bottom:15px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 1 DETAILS</span>
+                    <span id="l1-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px; margin-top:5px;">
+                    <div><span class="input-label">Start Date</span><input type="date" id="l1-start" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label">End Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1')" style="font-size:13px; text-align:center;"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
+                    <div><span class="input-label">Payment ($)</span><input type="number" id="loan1" placeholder="301.76" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Total Pymts</span><input type="number" id="l1-total" placeholder="104" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Int Rate (%)</span><input type="number" id="l1-rate" placeholder="7.75" onchange="calc(); saveSettings();"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr; gap:5px;">
+                    <div><span class="input-label">Total Payback ($)</span><input type="number" id="l1-payback" placeholder="31382.53" onchange="calc(); saveSettings();"></div>
+                </div>
+            </div>
+            <div style="border-top:1px solid #333; padding-top:10px;">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 2 DETAILS</span>
+                    <span id="l2-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px; margin-top:5px;">
+                    <div><span class="input-label">Start Date</span><input type="date" id="l2-start" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label">End Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2')" style="font-size:13px; text-align:center;"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
+                    <div><span class="input-label">Payment ($)</span><input type="number" id="loan2" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Total Pymts</span><input type="number" id="l2-total" placeholder="#" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Int Rate (%)</span><input type="number" id="l2-rate" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                </div>
+                <div style="display:grid; grid-template-columns: 1fr; gap:5px;">
+                    <div><span class="input-label">Total Payback ($)</span><input type="number" id="l2-payback" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                </div>
+            </div>
+        </div></div>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card4')"><span id="arrow-card4" class="arrow">▶</span><span class="pref-title">4. TAX</span></div><div id="card4" class="collapsible-content">
+            <div class="tab-sub-bar">
+                <button class="tab-sub active" id="ts-tax-smart" onclick="switchTaxMode('smart')">SMART ENGINE</button>
+                <button class="tab-sub" id="ts-tax-manual" onclick="switchTaxMode('manual')">MANUAL %</button>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
+                <div><span class="input-label">City Tax %</span><input type="number" id="cityTaxRate" placeholder="2.5" onchange="calc(); saveSettings();" enterkeyhint="next"></div>
+                <div></div>
+            </div>
+            <div id="tax-view-smart" style="display:block;">
+                <span class="input-label" style="color:var(--accent);">W-4 Filing Status (Fed & Ohio)</span>
+                <select id="filingStatus" onchange="calc(); saveSettings();">
+                    <option value="MFJ">Married Filing Jointly</option>
+                    <option value="S">Single / Married Separately</option>
+                    <option value="HOH">Head of Household</option>
+                </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px;">
+                    <div><span class="input-label">Step 3: Dependents ($)</span><input type="number" id="w4-step3" placeholder="0" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Step 4c: Extra W/H ($)</span><input type="number" id="w4-step4c" placeholder="0" onchange="calc(); saveSettings();"></div>
+                </div>
+                <span class="input-label" style="color:var(--accent); margin-top:10px; display:block;">Ohio IT-4 Settings</span>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:5px;">
+                    <div><span class="input-label">Exemptions</span><input type="number" id="oh-exempt" value="0" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Extra W/H ($)</span><input type="number" id="oh-extra" placeholder="0" onchange="calc(); saveSettings();"></div>
+                </div>
+                <div class="collapsible-header" onclick="document.getElementById('adv-tax').classList.toggle('show');" style="padding: 5px 0;">
+                    <span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">ADVANCED OFFSETS (4a & 4b)</span>
+                </div>
+                <div id="adv-tax" class="collapsible-content">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div><span class="input-label">4a: Other Income ($)</span><input type="number" id="w4-step4a" placeholder="0" onchange="calc(); saveSettings();"></div>
+                        <div><span class="input-label">4b: Deductions ($)</span><input type="number" id="w4-step4b" placeholder="0" onchange="calc(); saveSettings();"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="tax-view-manual" style="display:none;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><span class="input-label">Fed W/H %</span><input type="number" id="fedTaxRate" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Ohio W/H %</span><input type="number" id="stateTaxRate" placeholder="2.75" onchange="calc(); saveSettings();"></div>
+                </div>
+                <div id="rate-tool" class="rate-tool-box" style="display:block; margin-top:15px; margin-bottom:5px;">
+                    <div style="font-size:10px; color:#888; margin-bottom:5px;">Calculates rate based on Gross minus 401k Setting</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="rt-gross" placeholder="Total Gross"><input type="number" id="rt-tax" placeholder="Tax Paid ($)"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><button onclick="calcRateResult()" style="background:var(--accent); color:white; border:none; padding:6px 15px; border-radius:4px; font-weight:bold; font-size:12px;">CALCULATE</button><span id="rt-result" style="font-weight:800; color:var(--success); font-size:18px;">0.000%</span></div>
+                    <div class="rt-actions" style="grid-template-columns: 1fr 1fr;"><button class="apply-btn" onclick="applyRate('fedTaxRate')">SET FED RATE</button><button class="apply-btn" onclick="applyRate('stateTaxRate')">SET STATE RATE</button></div>
+                </div>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:10px; margin-top:10px;">
+                <div><span class="input-label">FICA EE % (Fixed)</span><input type="number" id="ficaRate" placeholder="6.2" onchange="calc(); saveSettings();"></div>
+                <div><span class="input-label">Medicare % (Fixed)</span><input type="number" id="medRate" placeholder="1.45" onchange="calc(); saveSettings();"></div>
+            </div>
+            <input type="hidden" id="taxMode" value="smart">
+        </div></div>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card5')"><span id="arrow-card5" class="arrow">▶</span><span class="pref-title">5. FLAT DEDUCTIONS ($)</span></div><div id="card5" class="collapsible-content">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">Charity</span><input type="number" id="charity" onchange="calc(); saveSettings();"></div><div><span class="input-label">OPTL Life EE</span><input type="number" id="lifeEE" onchange="calc(); saveSettings();"></div></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;"><div><span class="input-label">Addl Optional</span><input type="number" id="addOpt" onchange="calc(); saveSettings();"></div><div></div></div>
+            <div style="display:grid; grid-template-columns: 1fr; gap:10px; margin-top:10px; border-top:1px solid #333; padding-top:10px;"><div><span class="input-label" style="color:var(--danger)">Garnishments ($)</span><input type="number" id="garnishment" onchange="calc(); saveSettings();"></div></div>
+        </div></div>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card6')"><span id="arrow-card6" class="arrow">▶</span><span class="pref-title">6. NET PAY DISTRIBUTION</span></div><div id="card6" class="collapsible-content">
+            <div style="margin-bottom:5px; color:#888; font-size:10px;">Deduct amounts to see actual Deposit.</div>
+            <div id="dist-list"></div>
+            <button class="apply-btn" style="background:#333; width:100%; margin-top:5px; padding:10px;" onclick="addDistRow('', '')">+ ADD ACCOUNT</button>
+        </div></div>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card7')"><span id="arrow-card7" class="arrow">▶</span><span class="pref-title">7. DUES CALIBRATION</span></div><div id="card7" class="collapsible-content">
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;"><div><span class="input-label">Dues %</span><input type="number" id="duesRate" placeholder="1.45" onchange="calc(); saveSettings();"></div><div><span class="input-label">Cap Factor</span><input type="number" id="duesCapFactor" placeholder="1.2923" onchange="calc(); saveSettings();"></div><div><span class="input-label">Hr Rate ($)</span><input type="number" id="duesHrRate" placeholder="0.02" onchange="calc(); saveSettings();"></div></div><div style="margin-top:5px; color:#666; font-size:10px;">App automatically selects the lower option between % of Gross vs. (Avg Hr Rate × Cap Factor).</div>
+        </div></div>
+
+        <button class="reset-btn" onclick="resetCheckData()">RESET ALL SAVED PAYCHECKS</button>
+        <button class="reset-btn" style="margin-top: 15px; margin-bottom: 30px;" onclick="resetSettings()">RESET ALL APP SETTINGS</button>
     </div>
     <div id="vacation-view"><div class="nav-bar"><div class="nav-wrapper"><button class="back-btn" onclick="closeVacationView()">❮</button><div class="period-title"><span class="pt-main">VACATION PLANNER</span></div><button class="close-set-btn" onclick="closeVacationView()">DONE</button></div></div><div class="summary-box"><div class="sum-row" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;"><span>Split Weeks (WAD):</span><select id="wad-select" style="width:100px; background:#222; border:none; color:var(--warning); font-weight:bold; padding:2px;" onchange="saveSettings(); updateVacSummary();"><option value="0">0 Weeks</option><option value="1">1 Week</option><option value="2">2 Weeks</option></select></div><div class="sum-row"><span>Entitlement:</span><span id="vac-total-ent" class="sum-val">0 Weeks</span></div><div class="sum-row" style="color:var(--success)"><span>Weeks Left:</span><span id="vac-blocks-left" class="sum-val">0</span></div><div class="sum-row" style="color:var(--warning)"><span>Days Left:</span><span id="vac-days-left" class="sum-val">0</span></div></div><div id="calendar-container"></div></div>
     <div id="sunday-modal"><div class="modal-content"><h3 style="color:#fff; margin-top:0;">Sunday Selection</h3><p style="color:#888; font-size:12px;">Do you want to book the full week or just this day?</p><button class="modal-btn" style="background:var(--vacation); color:#fff;" onclick="confirmSunday(true)">BOOK FULL WEEK</button><button class="modal-btn" style="background:#333; color:#fff;" onclick="confirmSunday(false)">BOOK SINGLE DAY</button><button class="modal-btn" style="background:transparent; color:#888; border:1px solid #444;" onclick="document.getElementById('sunday-modal').style.display='none'">CANCEL</button></div></div>
@@ -402,15 +484,41 @@
             </div>
         </div>
     </div>
+
+    <div id="painter-modal" class="loan-cal-modal">
+        <div class="modal-content" style="width:95%; background:#121212; border-color:var(--electric);">
+            <h3 style="color:#fff; margin-top:0; color:var(--electric);">8-WEEK MATRIX PAINTER</h3>
+            <p style="color:#888; font-size:11px; margin-bottom:15px;">Tap a day to cycle: Day (D) ➔ Night (N) ➔ Off (X).</p>
+            <div id="matrix-painter-grid" style="display:flex; flex-direction:column; gap:8px;"></div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
+                <button class="modal-btn" style="background:#333; color:#fff;" onclick="closeSchedulePainter()">CANCEL</button>
+                <button class="modal-btn" style="background:var(--electric); color:#fff;" onclick="saveSchedulePainter()">SAVE MATRIX</button>
+            </div>
+        </div>
+    </div>
+    
 </div>
 <script>
     window.onerror = function(msg, url, line) { console.error("App Error: " + msg + " @ " + line); return false; };
     const ghostStyle = document.createElement('style');
     ghostStyle.innerHTML = `
+    
         .ghost-bubble { position: absolute; background: #ff6f00; color: #000; padding: 6px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; z-index: 9999; pointer-events: none; border: 2px solid #fff; box-shadow: 0 0 15px rgba(255, 111, 0, 0.5); animation: floatUp 3s forwards; }
         @keyframes floatUp { 0% { opacity: 0; transform: translateY(0); } 10% { opacity: 1; transform: translateY(-10px); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-25px); } }
     `;
     document.head.appendChild(ghostStyle);
+
+    // --- SMART TAX ENGINE DICTIONARY (2026 CALIBRATED PAYROLL VERSION) ---
+    const taxDict = {
+        2026: { 
+            fed: { 
+                MFJ: { stdDed: 17200, brackets: [[0, 0.10], [23850, 0.12], [96950, 0.22], [201050, 0.24], [383900, 0.32], [487450, 0.35], [731200, 0.37]] }, 
+                S:   { stdDed: 8600,  brackets: [[0, 0.10], [11925, 0.12], [48475, 0.22], [100525, 0.24], [191950, 0.32], [243725, 0.35], [609350, 0.37]] },
+                HOH: { stdDed: 12900, brackets: [[0, 0.10], [17000, 0.12], [60200, 0.22], [100500, 0.24], [191950, 0.32], [243700, 0.35], [609350, 0.37]] }
+            },
+            ohio: { brackets: [[0, 0.01775], [13025, 0.0275], [50000, 0.03125], [100000, 0.0364]] }
+        }
+    };
 
     let currentPeriodId = null, ledgerData = {}, days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], auditData = {}, lastCalcBreakdown = {}, lastCalcHours = {}, lastUsedDeductions = {}; 
     const catMap = { pretax: ['k'], taxes: ['fed','fica','med','state','city'], posttax: ['dues','duesHr','life','addOpt','charity','l1','l2','garn'] };
@@ -499,10 +607,27 @@
         return (parseInt(parts[0])||0) + ((parseInt(parts[1])||0)/60);
     }
 
+    function getAnchorDate() {
+        let anchorDate = new Date();
+        let highestId = 0;
+        for (const [id, data] of Object.entries(ledgerData)) {
+            if (data.inputs && data.inputs['verified-toggle']) {
+                if (parseInt(id) > highestId) highestId = parseInt(id);
+            }
+        }
+        if (highestId > 0 && periods[highestId - 1]) {
+            anchorDate = new Date(periods[highestId - 1].end);
+        }
+        return anchorDate;
+    }
+
     function calcLoanStatus(loanKey, checkDate, amount) {
         let prefix = (loanKey === 'l1') ? 'l1' : 'l2';
         let total = parseInt(document.getElementById(prefix+'-total').value) || 0;
         let finalDateStr = document.getElementById(prefix+'-date').value;
+        let rateStr = document.getElementById(prefix+'-rate')?.value;
+        let rate = rateStr ? parseFloat(rateStr) : 0;
+
         if (total === 0 || !finalDateStr) return { paid: 0, total: 0, rem: 0, bal: 0, txt: "" };
         let finalDate = new Date(finalDateStr);
         let diffTime = finalDate - checkDate;
@@ -510,6 +635,15 @@
         if(periodsLeft < 0) periodsLeft = 0;
         let currentPay = total - periodsLeft + 1;
         if(currentPay > total) currentPay = total;
+
+        let currentBalance = 0;
+        if (rate > 0 && periodsLeft > 0) {
+            let r = (rate / 100) / 26;
+            currentBalance = amount * ((1 - Math.pow(1 + r, -periodsLeft)) / r);
+        } else {
+            currentBalance = periodsLeft * amount; 
+        }
+
         let txt = "";
         let years = Math.floor(periodsLeft / 26);
         let remWeeks = periodsLeft % 26;
@@ -522,7 +656,7 @@
              if (months > 0) txt = `[${currentPay}/${total} • ${months}m & ${remChks}chk]`;
              else txt = `[${currentPay}/${total} • ${periodsLeft} checks left]`;
         }
-        return { paid: currentPay, total: total, rem: periodsLeft, bal: periodsLeft * amount, txt: txt };
+        return { paid: currentPay, total: total, rem: periodsLeft, bal: currentBalance, txt: txt };
     }
 
     function showGhost(el) {
@@ -667,15 +801,16 @@ function isUnionHoliday(dateStr){
             let taxHTML = "", preHTML = "", postHTML = "";
             catMap.taxes.forEach(k => { taxHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail"></div><span class="dg-amt">${f(yDed[k])}</span></div>`; });
             catMap.pretax.forEach(k => { preHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail"></div><span class="dg-amt">${f(yDed[k])}</span></div>`; });
+            let anchorDate = getAnchorDate();
             catMap.posttax.forEach(k => {
                 let detail = "";
                 if(k === 'l1' || k === 'l2') {
                     let amt = parseFloat(document.getElementById(k === 'l1' ? 'loan1' : 'loan2').value) || 0;
-                    let stat = calcLoanStatus(k, new Date(), amt); 
+                    let stat = calcLoanStatus(k, anchorDate, amt); 
                     if(stat.total > 0) { detail = `[Rem Bal: ${f(stat.bal)}]`; }
-                }
-                postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`; 
-            });
+            }
+        postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`; 
+        });
             document.getElementById('ytd-posttax-rows').innerHTML = postHTML;
             document.getElementById('ytd-tax-rows').innerHTML = taxHTML;
             document.getElementById('ytd-pretax-rows').innerHTML = preHTML;
@@ -686,10 +821,9 @@ function isUnionHoliday(dateStr){
         const container = document.getElementById('check-list-container'); container.innerHTML = '';
         let today = new Date().toISOString().split('T')[0];
         let totalEstGrossVal = 0; 
-        let d1 = parseFloat(document.getElementById('dist1').value)||0;
-        let d2 = parseFloat(document.getElementById('dist2').value)||0;
-        let d3 = parseFloat(document.getElementById('dist3').value)||0;
-        let distTotal = d1+d2+d3;
+        
+        let dists = JSON.parse(localStorage.getItem('app_settings_v30'))?.distAccounts || [];
+        let distTotal = dists.reduce((sum, d) => sum + d.amt, 0);
 
         periods.forEach(p => {
             let data = ledgerData[p.id];
@@ -724,7 +858,7 @@ function isUnionHoliday(dateStr){
             let customRangeHTML = `<span style="${w1Style}">${splitDates[0]}</span> - <span style="${w2Style}">${splitDates[1]}</span>`;
             
             let depBadge = "";
-            if(isDone && distTotal > 0) {
+            if(isDone) {
                 let mainDep = Math.max(0, data.net - distTotal);
                 depBadge = `<div class="deposit-badge">Main Deposit: ${f(mainDep)}</div>`;
             }
@@ -776,13 +910,66 @@ function isUnionHoliday(dateStr){
     }
 
     function openSettings() { toggleMainHeader(false); document.getElementById('dashboard-view').style.display='none'; document.getElementById('settings-view').style.display='block'; window.scrollTo(0,0); }
-    function closeSettings() { 
-        // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
-        saveSettings();
-        document.getElementById('settings-view').style.display='none'; 
-        toggleMainHeader(true); 
-        document.getElementById('dashboard-view').style.display='block'; 
+    function closeSettings() { 
+        // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
+        saveSettings();
+        document.getElementById('settings-view').style.display='none'; 
+        toggleMainHeader(true); 
+        document.getElementById('dashboard-view').style.display='block'; 
+    }
+
+    // --- V 3.7.4 MATRIX ENGINE ---
+    let defaultMatrix = "D,X,X,D,D,X,X,X,D,D,D,D,X,X,X,D,D,X,X,D,D,D,X,X,X,N,N,N,N,X,X,N,N,X,X,X,N,N,N,X,X,X,X,N,N,X,X,N,N,N,X,X,X,X,D,D".split(',');
+    let customMatrix = [];
+
+    function openSchedulePainter() {
+        let set = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
+        customMatrix = set.customMatrix && set.customMatrix.length === 56 ? set.customMatrix : [...defaultMatrix];
+        renderPainterGrid();
+        document.getElementById('painter-modal').style.display = 'flex';
     }
+
+    function renderPainterGrid() {
+        let html = '';
+        const dayLabels = ['S','M','T','W','T','F','S'];
+        html += `<div style="display:grid; grid-template-columns:30px repeat(7, 1fr); gap:4px; text-align:center; font-size:10px; font-weight:bold; color:#888; margin-bottom:5px;"><div>WK</div>` + dayLabels.map(d=>`<div>${d}</div>`).join('') + `</div>`;
+        
+        for(let w=0; w<8; w++) {
+            html += `<div style="display:grid; grid-template-columns:30px repeat(7, 1fr); gap:4px; align-items:center; margin-bottom:4px;">`;
+            html += `<div style="color:var(--accent); font-size:11px; font-weight:bold; text-align:center;">W${w}</div>`;
+            for(let d=0; d<7; d++) {
+                let idx = (w*7) + d;
+                let val = customMatrix[idx];
+                // 'D' is Blue, 'N' is Red (var(--danger)), 'X' is Dark Grey
+                let bg = val === 'D' ? 'var(--electric)' : (val === 'N' ? 'var(--danger)' : '#222');
+                let color = val === 'X' ? '#666' : '#fff';
+                html += `<div onclick="cycleMatrixDay(${idx})" style="background:${bg}; color:${color}; border:1px solid #444; border-radius:4px; height:32px; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:900; cursor:pointer; user-select:none;">${val}</div>`;
+            }
+            html += `</div>`;
+        }
+        document.getElementById('matrix-painter-grid').innerHTML = html;
+    }
+
+    function cycleMatrixDay(idx) {
+        let val = customMatrix[idx];
+        if(val === 'D') customMatrix[idx] = 'N';
+        else if(val === 'N') customMatrix[idx] = 'X';
+        else customMatrix[idx] = 'D';
+        renderPainterGrid();
+    }
+
+    function closeSchedulePainter() {
+        document.getElementById('painter-modal').style.display = 'none';
+    }
+
+    function saveSchedulePainter() {
+        let s = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
+        s.customMatrix = customMatrix;
+        localStorage.setItem('app_settings_v30', JSON.stringify(s));
+        closeSchedulePainter();
+        if(currentPeriodId) forceSchedule();
+    }
+    // -----------------------------
 
     function applySchedule(periodStart) { 
         try { 
@@ -806,25 +993,36 @@ function isUnionHoliday(dateStr){
             }
 
             let crewEl = document.getElementById('crew-select');
-            let crew = crewEl ? crewEl.value : 'A';
-            let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
-            
+            let crew = crewEl ? crewEl.value : 'A';
+            let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
+            if(crew === 'Custom') offset = 0; // Custom uses exactly what is painted
+
+            // Load Active Matrix & Dynamic Base Shift
+            let set = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
+            let activeMatrix = set.customMatrix && set.customMatrix.length === 56 ? set.customMatrix : defaultMatrix;
+            let baseShiftVal = set['shift-base'] || "12";
+            let btnText = baseShiftVal + " HR";
+
+            document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = btnText; });
+
             // MATH.ROUND FIX: Defeats the DST 23-hour trap
-            let diffTime = periodStart - scheduleAnchor; 
+            let diffTime = periodStart - scheduleAnchor; 
             let diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-            let weeksPassed = Math.floor(diffDays / 7); 
+            let weeksPassed = Math.floor(diffDays / 7); 
             let adjustedWeek = ((weeksPassed + offset) % 8 + 8) % 8;
-            let p1 = cyclePatterns[adjustedWeek];
-            let p2 = cyclePatterns[(adjustedWeek + 1) % 8];
-            
-            // SMART SCHEDULER UPGRADE
-            for(let w=1; w<=2; w++) {
-                let wkPattern = (w===1) ? p1 : p2;
-                for(let d=0; d<7; d++) { 
+            let week1StartIdx = adjustedWeek * 7;
+            let week2StartIdx = ((adjustedWeek + 1) % 8) * 7;
+
+            // MASTER MATRIX SCHEDULER UPGRADE
+                for(let w=1; w<=2; w++) {
+                let startIdx = (w===1) ? week1StartIdx : week2StartIdx;
+                for(let d=0; d<7; d++) { 
                     let card = document.getElementById('card-' + w + '-' + d);
                     let dateStr = card.getAttribute('data-date').split('T')[0];
                     let btn = document.getElementById('btn-' + w + '-' + d);
-                    let isScheduled = wkPattern && wkPattern.includes(d);
+                    
+                    let shiftType = activeMatrix[startIdx + d];
+                    let isScheduled = (shiftType === 'D' || shiftType === 'N');
                     
                     let isVac = vacationDates.includes(dateStr);
                     let sysHolName = isUnionHoliday(dateStr);
@@ -1205,7 +1403,7 @@ function isUnionHoliday(dateStr){
                 let smRateMult = parseFloat(document.getElementById('sm-'+w)?.getAttribute('data-rate')) || 1.5;
                 if(document.getElementById('sm-'+w)?.checked) { let smPay = workRate * smRateMult; wk.incC += smPay; if(smRateMult === 2.5) { wk.hH += 1; wk.hC += smPay; } else { wk.oH += 1; wk.oC += smPay; } }
 
-                // V 3.7.0 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
+                // V 3.7.4 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
                 let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs; 
                 shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); // CRASH FIX: Removed the broken variable here
@@ -1242,18 +1440,92 @@ function isUnionHoliday(dateStr){
             document.getElementById('grossDisplay').innerText = f(totalGross);
             
             lastCalcBreakdown = { Regular: GT.rC, Vacation: GT.vC, Overtime: GT.oC, Sunday: GT.sC, CallOut: GT.cC, HolidayWk: GT.hC, HolidayUH: GT.uhC, ShiftDiff: sAmt, Incentive: GT.incC, VacaBonus: GT.vbC, MealTicket: GT.mtC };
-            lastCalcHours = { Regular: GT.rH, Vacation: GT.vH, Overtime: GT.oH, Sunday: GT.sH, CallOut: GT.cH, HolidayWk: GT.hH, HolidayUH: GT.uhH, ShiftDiff: shiftHours, Incentive: (parseFloat(document.getElementById('bonus-1').value)||0) + (parseFloat(document.getElementById('bonus-2').value)||0), VacaBonus: (GT.vbC > 0 ? 1 : 0), MealTicket: GT.mtH };
+        lastCalcHours = { Regular: GT.rH, Vacation: GT.vH, Overtime: GT.oH, Sunday: GT.sH, CallOut: GT.cH, HolidayWk: GT.hH, HolidayUH: GT.uhH, ShiftDiff: shiftHours, Incentive: (parseFloat(document.getElementById('bonus-1').value)||0) + (parseFloat(document.getElementById('bonus-2').value)||0), VacaBonus: (GT.vbC > 0 ? 1 : 0), MealTicket: GT.mtH };
 
-            let dR = parseFloat(document.getElementById('duesRate').value)||0; let dCF = parseFloat(document.getElementById('duesCapFactor').value)||1.2923; let dHrR = parseFloat(document.getElementById('duesHrRate').value)||0.02;
-            let valPct = totalGross * (dR / 100); let avgHrRate = (totalWorkHrs > 0) ? (totalGross / totalWorkHrs) : 0;
-            let dEst = Math.min(valPct, avgHrRate * dCF);
-            
-            // V 3.7.0 DUAL TALLY LOGIC: Adds Call-Out penalty back in ONLY for the flat deduction
-            let totalFlatHrs = totalWorkHrs + GT.cH; 
-            
+        let dR = parseFloat(document.getElementById('duesRate').value)||1.45; let dCF = parseFloat(document.getElementById('duesCapFactor').value)||1.2923; let dHrR = parseFloat(document.getElementById('duesHrRate').value)||0.02;
+ 
+         // PROTOCOL 4: NEW SMART DUAL-BUCKET UNION DUES ENGINE
+        let totalDuesHours = totalWorkHrs + GT.cH; // Ensure Call-Out is included in divisor
+        let duesEligibleGross = totalGross - GT.mtC; // Strip untaxed meal tickets
+        let incentivePay = GT.incC; // FIX: GT.incC already contains the final calculated dollars
+        let incentiveDues = incentivePay * (dR / 100);
+        let baseGross = duesEligibleGross - incentivePay;
+        let baseDues = 0;
+        let avgHrRate = 0;
+ 
+         if (totalDuesHours > 89.12) {
+         avgHrRate = (totalDuesHours > 0) ? (baseGross / totalDuesHours) : 0;
+         baseDues = avgHrRate * dCF;
+        } else {
+         baseDues = baseGross * (dR / 100);
+        }
+        let dEst = incentiveDues + baseDues;
+        let totalFlatHrs = totalDuesHours;
+ 
             let kR = (parseFloat(document.getElementById('kRate').value)||0)/100;
-            let est = { k: r2((totalGross - GT.mtC) * kR), fed: r2((totalGross - r2((totalGross - GT.mtC) * kR))*((parseFloat(document.getElementById('fedTaxRate').value)||0)/100)), state: r2((totalGross - r2((totalGross - GT.mtC) * kR))*((parseFloat(document.getElementById('stateTaxRate').value)||0)/100)), city: r2(totalGross*((parseFloat(document.getElementById('cityTaxRate').value)||0)/100)), fica: r2(totalGross*0.062), med: r2(totalGross*0.0145), dues: r2(dEst), duesHr: r2(totalFlatHrs*dHrR), life: parseFloat(document.getElementById('lifeEE').value)||0, addOpt: parseFloat(document.getElementById('addOpt').value)||0, charity: parseFloat(document.getElementById('charity').value)||0, l1: parseFloat(document.getElementById('loan1').value)||0, l2: parseFloat(document.getElementById('loan2').value)||0, garn: parseFloat(document.getElementById('garnishment').value)||0 };
-            
+            let cityPct = document.getElementById('cityTaxRate').value !== "" ? parseFloat(document.getElementById('cityTaxRate').value) : 2.5;
+            let ficaPct = document.getElementById('ficaRate').value !== "" ? parseFloat(document.getElementById('ficaRate').value) : 6.2;
+            let medPct = document.getElementById('medRate').value !== "" ? parseFloat(document.getElementById('medRate').value) : 1.45;
+
+            let taxableGross = totalGross - GT.mtC - r2((totalGross - GT.mtC) * kR);
+            let fedTaxAmt = 0; let stateTaxAmt = 0;
+            let taxMode = document.getElementById('taxMode').value;
+
+            if (taxMode === 'manual') {
+                let fedPct = parseFloat(document.getElementById('fedTaxRate').value) || 0;
+                let statePct = document.getElementById('stateTaxRate').value !== "" ? parseFloat(document.getElementById('stateTaxRate').value) : 2.75;
+                fedTaxAmt = r2(taxableGross * (fedPct/100));
+                stateTaxAmt = r2(taxableGross * (statePct/100));
+            } else {
+                let fs = document.getElementById('filingStatus').value || 'S';
+                let dict = taxDict[currentYear] || taxDict[2026];
+                let fedData = dict.fed[fs]; let ohioData = dict.ohio;
+
+                let step3 = parseFloat(document.getElementById('w4-step3').value) || 0;
+                let step4a = parseFloat(document.getElementById('w4-step4a').value) || 0;
+                let step4b = parseFloat(document.getElementById('w4-step4b').value) || 0;
+                let step4c = parseFloat(document.getElementById('w4-step4c').value) || 0;
+
+                // Federal Progressive Engine
+                let annGross = (taxableGross * 26) + step4a - step4b;
+                let annTaxable = Math.max(0, annGross - fedData.stdDed);
+                let annFedTax = 0;
+                for (let i = fedData.brackets.length - 1; i >= 0; i--) {
+                    let b = fedData.brackets[i];
+                    if (annTaxable > b[0]) { annFedTax += (annTaxable - b[0]) * b[1]; annTaxable = b[0]; }
+                }
+                annFedTax = Math.max(0, annFedTax - step3);
+                fedTaxAmt = Math.max(0, r2((annFedTax / 26) + step4c));
+
+                // Ohio Progressive Engine
+                let ohExempt = document.getElementById('oh-exempt').value !== "" ? parseFloat(document.getElementById('oh-exempt').value) : 0;
+                let ohExtra = parseFloat(document.getElementById('oh-extra').value) || 0;
+                let annOhioTaxable = Math.max(0, (taxableGross * 26) - (ohExempt * 2600));
+                let annOhioTax = 0;
+                for (let i = ohioData.brackets.length - 1; i >= 0; i--) {
+                    let b = ohioData.brackets[i];
+                    if (annOhioTaxable > b[0]) { annOhioTax += (annOhioTaxable - b[0]) * b[1]; annOhioTaxable = b[0]; }
+                }
+                stateTaxAmt = Math.max(0, r2((annOhioTax / 26) + ohExtra));
+            }
+
+            let est = { 
+                k: r2((totalGross - GT.mtC) * kR), 
+                fed: fedTaxAmt, 
+                state: stateTaxAmt, 
+                city: r2(totalGross*(cityPct/100)), 
+                fica: r2(totalGross*(ficaPct/100)), 
+                med: r2(totalGross*(medPct/100)), 
+                dues: r2(dEst), 
+                duesHr: r2(totalFlatHrs*dHrR), 
+                life: parseFloat(document.getElementById('lifeEE').value)||0, 
+                addOpt: parseFloat(document.getElementById('addOpt').value)||0, 
+                charity: parseFloat(document.getElementById('charity').value)||0, 
+                l1: parseFloat(document.getElementById('loan1').value)||0, 
+                l2: parseFloat(document.getElementById('loan2').value)||0, 
+                garn: parseFloat(document.getElementById('garnishment').value)||0 
+            };
+                        
             let act = auditData[currentPeriodId] || {}, finalD = 0; lastUsedDeductions = {};
             for(let key in deductionLabels) {
                 let eV = est[key], aV = act[key], used = (aV !== undefined) ? aV : eV; 
@@ -1265,9 +1537,18 @@ function isUnionHoliday(dateStr){
                     document.getElementById('delta-'+key).style.color = dlt > 0 ? '#ff5252' : '#00c853';
                     if(key === 'l1' || key === 'l2') { let stat = calcLoanStatus(key, new Date(periods[currentPeriodId-1].end), used); document.getElementById('detail-'+key).innerText = stat.txt; }
                     let btn = document.getElementById('action-'+key); if(btn) {
-                        let base = (key=='city'||key=='dues') ? totalGross : (totalGross - est.k); 
-                        if((settingsMap[key] || key==='fed') && aV !== undefined && Math.abs(dlt) > 0.01 && base > 0) { btn.classList.add('show'); btn.onclick = function() { requestRateUpdate(deductionLabels[key], aV, base, (key==='fed'?'fedTaxRate':settingsMap[key]), deductionLabels[key]); }; } else { btn.classList.remove('show'); }
-                    }
+                    let base = (key=='city'||key=='dues') ? totalGross : (totalGross - est.k); 
+                     // PROTOCOL 4: Removed key==='dues' from triggering the manual ↺ RATE button
+                         if((settingsMap[key] || key==='fed') && key !== 'dues' && aV !== undefined && Math.abs(dlt) > 0.01 && base > 0) { 
+                            btn.classList.add('show');
+                            btn.onclick = function() {
+                                 let isSmart = document.getElementById('taxMode').value === 'smart';
+                                 if (isSmart && key === 'fed') smartAuditFed(aV, eV);
+                                 else if (isSmart && key === 'state') smartAuditState(aV, eV);
+                                 else requestRateUpdate(deductionLabels[key], aV, base, (key==='fed'?'fedTaxRate':settingsMap[key]), deductionLabels[key]); 
+                             };
+                         } else { btn.classList.remove('show'); }
+                     }
                 }
             }
             let net = r2(totalGross - finalD); document.getElementById('netDisplay').innerText = f(net > 0 ? net : 0);
@@ -1347,12 +1628,34 @@ function isUnionHoliday(dateStr){
     }
     function updateAudit(k, v) { if(!auditData[currentPeriodId]) auditData[currentPeriodId]={}; if(v==="") delete auditData[currentPeriodId][k]; else auditData[currentPeriodId][k]=parseFloat(v); calc(); }
 
+    function smartAuditFed(actualTax, estimatedTax) {
+        let diff = actualTax - estimatedTax;
+        let current4c = parseFloat(document.getElementById('w4-step4c').value) || 0;
+        let new4c = current4c + diff;
+        if(confirm(`SMART AUDIT (FEDERAL)\n\nThe Mill is taking $${diff.toFixed(2)} differently than the standard IRS bracket.\n\nTo lock this in and match the Mill exactly, we need to adjust your Step 4(c) Extra Withholding.\n\nApply this $${diff.toFixed(2)} adjustment?`)) {
+            document.getElementById('w4-step4c').value = new4c.toFixed(2);
+            saveSettings(); calc();
+        }
+    }
+
+    function smartAuditState(actualTax, estimatedTax) {
+        let diff = actualTax - estimatedTax;
+        let currentExtra = parseFloat(document.getElementById('oh-extra').value) || 0;
+        let newExtra = currentExtra + diff;
+        if(confirm(`SMART AUDIT (OHIO)\n\nThe Mill is taking $${diff.toFixed(2)} differently than the standard Ohio bracket.\n\nTo lock this in and match the Mill exactly, we need to adjust your Ohio Extra Withholding.\n\nApply this $${diff.toFixed(2)} adjustment?`)) {
+            document.getElementById('oh-extra').value = newExtra.toFixed(2);
+            saveSettings(); calc();
+        }
+    }
+
     function requestRateUpdate(l, a, t, i, sl) { 
-        let r=(a/t)*100, c=parseFloat(document.getElementById(i).value); 
+        let r=(a/t)*100, c=parseFloat(document.getElementById(i).value);
         if(confirm(`Update ${sl} Rate?\n\nBased on Taxable Income: $${t.toFixed(2)}\nActual Tax: $${a.toFixed(2)}\n\nNew Rate: ${r.toFixed(4)}%\nCurrent: ${c}%`)) { 
             document.getElementById(i).value=r.toFixed(4); saveSettings(); calc(); 
         } 
     }
+
+    // requestCapFactorUpdate removed via Protocol 4 (Surgical Strike)
 
     function toggle12(w, d) { 
         let b = document.getElementById('btn-'+w+'-'+d);
@@ -1424,6 +1727,19 @@ function isUnionHoliday(dateStr){
         document.getElementById('cv-'+tab).classList.add('show');
     }
 
+    function switchTaxMode(mode) {
+        document.getElementById('ts-tax-smart').classList.remove('active');
+        document.getElementById('ts-tax-manual').classList.remove('active');
+        document.getElementById('tax-view-smart').style.display = 'none';
+        document.getElementById('tax-view-manual').style.display = 'none';
+        
+        document.getElementById('ts-tax-' + mode).classList.add('active');
+        document.getElementById('tax-view-' + mode).style.display = 'block';
+        document.getElementById('taxMode').value = mode;
+        saveSettings();
+        calc();
+    }
+
     function calcRateResult() { 
         let g=parseFloat(document.getElementById('rt-gross').value)||0, t=parseFloat(document.getElementById('rt-tax').value)||0; 
         let kP=parseFloat(document.getElementById('kRate').value)||0;
@@ -1445,10 +1761,11 @@ function isUnionHoliday(dateStr){
     }
     function confirmSM(isHol) { document.getElementById('sm-modal').style.display = 'none'; document.getElementById('sm-'+smTargetWeek).setAttribute('data-rate', isHol ? '2.5' : '1.5'); calc(); }
 
-    function openVacationView() { toggleMainHeader(false); document.getElementById('settings-view').style.display='none'; document.getElementById('vacation-view').style.display='block'; renderCalendar(); }
-    function closeVacationView() { document.getElementById('vacation-view').style.display='none'; document.getElementById('settings-view').style.display='block'; }
+    function openVacationView() { toggleMainHeader(false); document.getElementById('settings-view').style.display='none'; document.getElementById('vacation-view').style.display='block'; renderCalendar(); window.scrollTo(0,0); }
+    function closeVacationView() { document.getElementById('vacation-view').style.display='none'; document.getElementById('settings-view').style.display='block'; window.scrollTo(0,0); }
 
     function renderCalendar() {
+        if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Absolute Calendar Firewall
         const cont = document.getElementById('calendar-container'); cont.innerHTML = '';
         const yr = currentYear;
         ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'].forEach((m, i) => {
@@ -1519,9 +1836,11 @@ function isUnionHoliday(dateStr){
         const ent = getEntitlement();
         const wad = parseInt(document.getElementById('wad-select').value) || 0;
         const totalBlocks = ent - wad;
-        const totalSingleDays = wad * 5; 
+        const totalSingleDays = wad * 5; 
         let usedBlocks = 0, usedDays = 0;
-        let sortedDates = [...vacationDates].sort();
+        // PROTOCOL 4 FIX: Ensure vacationDates is always a valid array before spreading
+        let safeVacationDates = Array.isArray(vacationDates) ? vacationDates : [];
+        let sortedDates = [...safeVacationDates].sort();
         let processed = new Set();
         sortedDates.forEach(dStr => {
             if(processed.has(dStr)) return;
@@ -1581,18 +1900,41 @@ function isUnionHoliday(dateStr){
         }
     }
 
+    function addDistRow(name, amt) {
+        let container = document.getElementById('dist-list');
+        let id = Date.now() + Math.floor(Math.random()*1000);
+        let html = `<div class="dist-row" id="dist-row-${id}" style="display:grid; grid-template-columns: 2fr 1fr auto; gap:5px; margin-bottom:5px; align-items:center;">
+            <input type="text" class="dist-name" placeholder="e.g. Vacation Fund" value="${name}" onchange="saveSettings(); renderDashboard();" style="margin:0; font-size:12px; padding:8px;">
+            <input type="number" class="dist-amt" placeholder="0.00" value="${amt||''}" onchange="saveSettings(); renderDashboard();" style="margin:0; font-size:12px; padding:8px;">
+            <button onclick="document.getElementById('dist-row-${id}').remove(); saveSettings(); renderDashboard();" style="background:transparent; border:none; color:var(--danger); font-size:16px; font-weight:bold; cursor:pointer;">X</button>
+        </div>`;
+        container.insertAdjacentHTML('beforeend', html);
+    }
+
     function saveSettings() { 
         let s = {}; 
         document.querySelectorAll('#settings-view input, #settings-view select').forEach(el => {
-            if(el.type === 'checkbox') s[el.id] = el.checked;
-            else if(el.type === 'radio' && el.checked) s[el.name] = el.value; 
-            else if(el.type !== 'radio') s[el.id] = el.value;
+            if(!el.classList.contains('dist-name') && !el.classList.contains('dist-amt')) {
+                if(el.type === 'checkbox') s[el.id] = el.checked;
+                else if(el.type === 'radio' && el.checked) s[el.name] = el.value; 
+                else if(el.type !== 'radio') s[el.id] = el.value;
+            }
         });
+        
+        let distArr = [];
+        document.querySelectorAll('.dist-row').forEach(row => {
+            let n = row.querySelector('.dist-name').value || "";
+            let a = parseFloat(row.querySelector('.dist-amt').value) || 0;
+            if(n !== "" || a > 0) distArr.push({name: n, amt: a});
+        });
+        s.distAccounts = distArr;
+
         s.wad = document.getElementById('wad-select').value; 
         s.vacationDates = vacationDates;
         localStorage.setItem('app_settings_v30', JSON.stringify(s)); 
         updateGhostRates();
     }
+
     function loadSettings() { 
         let set = localStorage.getItem('app_settings_v30'); 
         if(set) { 
@@ -1604,12 +1946,20 @@ function isUnionHoliday(dateStr){
                     else el.value = val; 
                 }
             }
-            if(s.vacationDates) vacationDates = s.vacationDates;
-            if(s.wad) document.getElementById('wad-select').value = s.wad;
-        }
-        generateContractRows(); // V 3.7.0 Fix: Redraw rows on load
-        updateVacationRateUI(); 
-    }
+            
+            let distContainer = document.getElementById('dist-list');
+            if (distContainer) distContainer.innerHTML = "";
+            if(s.distAccounts && Array.isArray(s.distAccounts)) {
+                s.distAccounts.forEach(d => addDistRow(d.name, d.amt));
+            }
+
+            if(s.vacationDates && Array.isArray(s.vacationDates)) { vacationDates = s.vacationDates; } else { vacationDates = []; }
+             if(s.wad) document.getElementById('wad-select').value = s.wad;
+         }
+         if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Root LocalStorage Fix
+         generateContractRows(); // V 3.7.4 Fix: Redraw rows on load
+         updateVacationRateUI(); 
+     }
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
     function loadPeriodData(id) {
         let data = ledgerData[id]; auditData[id] = (data && data.actuals) ? data.actuals : {};
@@ -1671,7 +2021,13 @@ function isUnionHoliday(dateStr){
     function lcToggleYear() { let y = prompt("Enter Year:", lcCurrentDate.getFullYear()); if(y) { lcCurrentDate.setFullYear(parseInt(y)); lcRender(); } }
     function lcPrevMonth() { lcCurrentDate.setMonth(lcCurrentDate.getMonth()-1); lcRender(); }
     function lcNextMonth() { lcCurrentDate.setMonth(lcCurrentDate.getMonth()+1); lcRender(); }
-    function lcSelectDate(dStr) { document.getElementById(lcTargetInputId+'-date').value = dStr; saveSettings(); closeLoanCalendar(); }
+    function lcSelectDate(dStr) { 
+        let parts = dStr.split('-');
+        let formatStr = `${parts[1]}/${parts[2]}/${parts[0].substring(2)}`;
+        document.getElementById(lcTargetInputId+'-date').value = formatStr; 
+        saveSettings(); 
+        closeLoanCalendar(); 
+    }
     function lcRender() {
         const mNames = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
         document.getElementById('lc-year-btn').innerText = lcCurrentDate.getFullYear();
@@ -1684,7 +2040,14 @@ function isUnionHoliday(dateStr){
         let daysInMonth = new Date(y, m+1, 0).getDate();
         for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="lc-day empty"></div>`;
         let todayStr = new Date().toISOString().split('T')[0];
-        let selectedStr = document.getElementById(lcTargetInputId+'-date').value;
+        
+        let rawSel = document.getElementById(lcTargetInputId+'-date').value;
+        let selectedStr = rawSel;
+        if(rawSel && rawSel.includes('/')) {
+            let p = rawSel.split('/');
+            selectedStr = `20${p[2]}-${p[0]}-${p[1]}`; 
+        }
+
         for(let d=1; d<=daysInMonth; d++) {
             let dStr = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
             let cls = 'lc-day';
@@ -1692,6 +2055,18 @@ function isUnionHoliday(dateStr){
             if(dStr === selectedStr) cls += ' selected';
             grid.innerHTML += `<div class="${cls}" onclick="lcSelectDate('${dStr}')">${d}</div>`;
         }
+    }
+
+    function switchTaxMode(mode) {
+        document.getElementById('ts-tax-smart').classList.remove('active');
+        document.getElementById('ts-tax-manual').classList.remove('active');
+        document.getElementById('tax-view-smart').style.display = 'none';
+        document.getElementById('tax-view-manual').style.display = 'none';
+        document.getElementById('ts-tax-' + mode).classList.add('active');
+        document.getElementById('tax-view-' + mode).style.display = 'block';
+        document.getElementById('taxMode').value = mode;
+        saveSettings();
+        calc();
     }
 
     function autoScroll() {
