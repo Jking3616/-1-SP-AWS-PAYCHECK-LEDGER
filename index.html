@@ -1405,7 +1405,14 @@ function isUnionHoliday(dateStr){
                             let curR = (h > (tH - stH) && stR > 0) ? stR : eR; 
                             if (h > tripwireLimit && !isHoliday && !dObj.xtra) { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); continue; }
                             if (isHoliday) { wk.hC += (curR * 2.5 * chunk); wk.hH += chunk; wk.incC += (curR * 2.5 * chunk); if(fills) buck += chunk; } 
-                            else if (dObj.xtra) { if(d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); } else { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); } } 
+                            else if (dObj.xtra) { 
+    if(d===0) { 
+        wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); 
+        if(fills) buck += chunk; // SURGICAL STRIKE: Sunday XTRA now fills the bucket!
+    } else { 
+        wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); 
+    } 
+} 
                             else {
                                 let space = Math.max(0, 40.00 - buck);
                                 if (d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); if(fills) buck += chunk; } 
