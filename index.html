@@ -2026,6 +2026,19 @@ function isUnionHoliday(dateStr){
         document.querySelectorAll('.btn-12').forEach(b => b.classList.remove('active')); document.querySelectorAll('.day-card').forEach(c => { c.classList.remove('ro-active'); c.classList.remove('status-hol'); c.classList.remove('status-xtra'); c.classList.remove('status-vac'); });
         if(data && data.inputs) {
             for (const [key, val] of Object.entries(data.inputs)) { let el = document.getElementById(key); if(el && key !== 'audit-toggle') { if(el.type === 'checkbox') el.checked = val; else if(el.classList.contains('btn-12') && val===true) el.classList.add('active'); else el.value = val; } }
+            
+            // SURGICAL STRIKE: Force UI update for loaded manual time inputs
+            for(let w=1; w<=2; w++) {
+                for(let d=0; d<7; d++) {
+                    let manualVal = document.getElementById(`time-${w}-${d}`).value;
+                    if(manualVal !== "") {
+                        let btn = document.getElementById(`btn-${w}-${d}`);
+                        btn.innerText = manualVal + " HR";
+                        btn.classList.add('active');
+                    }
+                }
+            }
+
             if(data.inputs['sm-1']) document.getElementById('sm-1').setAttribute('data-rate', data.inputs['sm-rate-1'] || '1.5');
             if(data.inputs['sm-2']) document.getElementById('sm-2').setAttribute('data-rate', data.inputs['sm-rate-2'] || '1.5');
             for(let w=1; w<=2; w++) { 
