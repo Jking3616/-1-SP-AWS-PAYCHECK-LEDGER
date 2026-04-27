@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.7.4(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.7.5(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -212,7 +212,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.4</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.5</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats" id="dash-header-est"><div style="color:var(--dim);">EST. GROSS YTD</div><div class="ytd-val" id="header-est-gross">$0.00</div></div>
@@ -944,7 +944,7 @@ function isUnionHoliday(dateStr){
         document.getElementById('dashboard-view').style.display='block'; 
     }
 
-    // --- V 3.7.4 MATRIX ENGINE ---
+    // --- V 3.7.5 MATRIX ENGINE ---
     let defaultMatrix = "D,X,X,D,D,X,X,X,D,D,D,D,X,X,X,D,D,X,X,D,D,D,X,X,X,N,N,N,N,X,X,N,N,X,X,X,N,N,N,X,X,X,X,N,N,X,X,N,N,N,X,X,X,X,D,D".split(',');
     let customMatrix = [];
 
@@ -1434,7 +1434,7 @@ function isUnionHoliday(dateStr){
                 let applyDiff = true;
                 if (crewVal === 'Custom') { applyDiff = document.getElementById('custom-diff-check')?.checked; }
 
-                // V 3.7.4 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
+                // V 3.7.5 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
                 let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs;
                 if (applyDiff) { shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); }
@@ -1994,7 +1994,7 @@ function isUnionHoliday(dateStr){
              if(s.wad) document.getElementById('wad-select').value = s.wad;
          }
          if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Root LocalStorage Fix
-         generateContractRows(); // V 3.7.4 Fix: Redraw rows on load
+         generateContractRows(); // V 3.7.5 Fix: Redraw rows on load
          updateVacationRateUI(); 
      }
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
