@@ -936,13 +936,13 @@ function isUnionHoliday(dateStr){
     }
 
     function openSettings() { toggleMainHeader(false); document.getElementById('dashboard-view').style.display='none'; document.getElementById('settings-view').style.display='block'; window.scrollTo(0,0); }
-    function closeSettings() { 
-        // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
-        saveSettings();
-        document.getElementById('settings-view').style.display='none'; 
-        toggleMainHeader(true); 
-        document.getElementById('dashboard-view').style.display='block'; 
-    }
+    function closeSettings() {
+        // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
+        saveSettings();
+        document.getElementById('settings-view').style.display='none';
+        toggleMainHeader(true);
+        document.getElementById('dashboard-view').style.display='block'; 
+    }
 
     // --- V 3.7.5 MATRIX ENGINE ---
     let defaultMatrix = "D,X,X,D,D,X,X,X,D,D,D,D,X,X,X,D,D,X,X,D,D,D,X,X,X,N,N,N,N,X,X,N,N,X,X,X,N,N,N,X,X,X,X,N,N,X,X,N,N,N,X,X,X,X,D,D".split(',');
@@ -1019,8 +1019,8 @@ function isUnionHoliday(dateStr){
             }
 
             let crewEl = document.getElementById('crew-select');
-            let crew = crewEl ? crewEl.value : 'A';
-            let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
+            let crew = crewEl ? crewEl.value : 'A';
+            let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
             if(crew === 'Custom') offset = 0; // Custom uses exactly what is painted
 
             // Load Active Matrix & Dynamic Base Shift
@@ -1977,6 +1977,20 @@ function isUnionHoliday(dateStr){
         s.vacationDates = vacationDates;
         localStorage.setItem('app_settings_v30', JSON.stringify(s)); 
         updateGhostRates();
+        updateLoanBalances(); // SURGICAL STRIKE: Update the green labels on save
+    }
+
+    // SURGICAL STRIKE: The missing UI pipe for the live balances
+    function updateLoanBalances() {
+        let anchor = getAnchorDate();
+        let l1Amt = parseFloat(document.getElementById('loan1').value) || 0;
+        let l2Amt = parseFloat(document.getElementById('loan2').value) || 0;
+        let stat1 = calcLoanStatus('l1', anchor, l1Amt);
+        let stat2 = calcLoanStatus('l2', anchor, l2Amt);
+        let lb1 = document.getElementById('l1-live-bal');
+        let lb2 = document.getElementById('l2-live-bal');
+        if(lb1) lb1.innerText = stat1.total > 0 ? f(stat1.bal) : "$0.00";
+        if(lb2) lb2.innerText = stat2.total > 0 ? f(stat2.bal) : "$0.00";
     }
 
     function loadSettings() { 
@@ -2003,6 +2017,7 @@ function isUnionHoliday(dateStr){
          if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Root LocalStorage Fix
          generateContractRows(); // V 3.7.5 Fix: Redraw rows on load
          updateVacationRateUI(); 
+         updateLoanBalances(); // SURGICAL STRIKE: Load the green labels on startup
      }
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
     function loadPeriodData(id) {
