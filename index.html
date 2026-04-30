@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.7.5(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.7.X(JD/BV)</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -54,8 +54,11 @@
         .card-total { font-size: 14px; font-weight: 700; color: var(--dim); text-align: right; font-family: monospace; }
         .day-card { display: flex; background: var(--card); margin: 0 10px 6px 10px; border-radius: 8px; border: 1px solid #333; overflow: hidden; min-height: 55px; transition: 0.2s; position:relative; }
         .day-card.status-worked { border-color: var(--electric); background: var(--card); }
-        .day-card.status-worked .day-label-col { background: var(--electric); border-right: 1px solid var(--electric); }
         .day-card.status-worked .day-name-part { color: #fff; }
+        .day-card.status-worked.day-shift { border-color: var(--electric); }
+        .day-card.status-worked.day-shift .day-label-col { background: var(--electric); border-right: 1px solid var(--electric); }
+        .day-card.status-worked.night-shift { border-color: var(--danger); }
+        .day-card.status-worked.night-shift .day-label-col { background: var(--danger); border-right: 1px solid var(--danger); }
         .day-card.status-xtra { border-color: var(--success); background: var(--card); }
         .day-card.status-xtra .day-label-col { background: var(--success); border-right: 1px solid var(--success); }
         .day-card.status-xtra .day-name-part { color: #fff; }
@@ -76,6 +79,7 @@
         .time-row { display: flex; align-items: center; gap: 4px; }
         .btn-12 { width: 60px; height: 36px; border: 1px solid #333; border-radius: 4px; background: var(--row); color: #444; font-weight: bold; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
         .btn-12.active { background: #2979ff !important; color: white !important; border: 1px solid #2979ff !important; box-shadow: 0 0 10px rgba(41, 121, 255, 0.4); }
+        .night-shift .btn-12.active { background: var(--danger) !important; border-color: var(--danger) !important; box-shadow: 0 0 10px rgba(255, 82, 82, 0.4); }
         .btn-12.btn-green { background: #00c853 !important; color: white !important; border: 1px solid #00c853 !important; box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
         .btn-12.btn-purple { background: #7b1fa2 !important; color: white !important; border: 1px solid #fff !important; box-shadow: 0 0 8px rgba(123, 31, 162, 0.4); }
         .v3-input { background: #000; color: #fff; border: 1.5px solid var(--accent); border-radius: 4px; height: 36px; width: 70px; text-align: center; font-family: monospace; font-size: 12px; font-weight: 700; outline: none; }
@@ -155,6 +159,10 @@
         .collapsible-content { display: none; margin-top: 5px; }
         .collapsible-content.show { display: grid; }
         .arrow { font-size: 0.8em; color: var(--accent); transition: transform 0.2s; }
+        .bal-tooltip { position: relative; display: inline-block; cursor: pointer; }
+        .bal-tooltip .bal-tooltiptext { visibility: hidden; width: 120px; background-color: #222; color: #fff; text-align: center; border-radius: 6px; padding: 6px; position: absolute; z-index: 1; bottom: 135%; left: 50%; margin-left: -60px; font-size: 11px; font-weight: 900; opacity: 0; transition: opacity 0.3s; border: 1px solid var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.8); pointer-events: none; }
+        .bal-tooltip .bal-tooltiptext::after { content: ""; position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: var(--accent) transparent transparent transparent; }
+        .bal-tooltip:hover .bal-tooltiptext, .bal-tooltip:active .bal-tooltiptext { visibility: visible; opacity: 1; }
         .rate-tool-box { display: block; background: #000; border: 1px solid var(--accent); border-radius: 8px; padding: 10px; margin-bottom: 15px; }
         .rt-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 5px; margin-top: 8px; }
         .apply-btn { background: #333; color: white; border: none; padding: 6px; font-size: 10px; border-radius: 4px; cursor: pointer; }
@@ -212,7 +220,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.5</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.X</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats" id="dash-header-est"><div style="color:var(--dim);">EST. GROSS YTD</div><div class="ytd-val" id="header-est-gross">$0.00</div></div>
@@ -312,7 +320,8 @@
                     Apply $0.25/hr Shift Differential (Operating Role)
                 </label>
             </div>
-            <button class="apply-btn" style="width:100%; font-size:12px; background:rgba(77, 173, 255, 0.1); color:var(--accent); border:1px solid var(--accent); font-weight:bold; margin-bottom:15px;" onclick="openSchedulePainter()">⚙️ CUSTOMIZE 8-WEEK MATRIX</button>
+            <button class="apply-btn" style="width:100%; font-size:12px; background:rgba(77, 173, 255, 0.1); color:var(--accent); border:1px solid var(--accent); font-weight:bold; margin-bottom:5px;" onclick="openSchedulePainter()">⚙️ OVERRIDE MATRIX PAINTER</button>
+            <button class="apply-btn" style="width:100%; font-size:10px; background:rgba(255, 82, 82, 0.05); color:var(--danger); border:1px solid var(--danger); font-weight:bold; margin-bottom:15px;" onclick="resetMatrixOverride()">↺ RESET OVERRIDE TO BASELINE</button>
             <span class="input-label">Bidded Job Class</span><select id="biddedRate" onchange="calc(); saveSettings();"><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select>
             <div class="collapsible-header" onclick="document.getElementById('sched-box').classList.toggle('show');" style="padding-top:0;"><span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">DIFFERENT SCHEDULED JOB CLASS?</span></div><div id="sched-box" class="collapsible-content"><span class="input-label">Scheduled Job Class</span><select id="scheduledRate" onchange="calc(); saveSettings();"><option value="0">Same as Bidded</option><option value="5">Level 5</option><option value="4">Level 4</option><option value="3">Level 3</option><option value="2">Level 2</option><option value="1">Level 1</option></select></div>
             <span class="input-label" style="margin-top:10px;">Prior Year W2 (Minus Profit Sharing)</span><input type="number" id="prevW2" placeholder="0.00" onchange="calc(); saveSettings();"><div id="vacRateDisplay" style="text-align:right; font-family:monospace; color:#ffeb3b;">Vacation Rate: $0.00 / hr</div>
@@ -363,91 +372,76 @@
             </div>
             
             <div class="collapsible-header" onclick="document.getElementById('loan1-box').classList.toggle('show');" style="padding-top:0; justify-content: space-between;">
-                <div style="display:flex; align-items:center; gap:8px;"><span class="arrow">▶</span><span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 1 DETAILS</span></div>
-                <span id="l1-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                <div style="display:flex; align-items:center; gap:8px;"><span class="arrow">▶</span><span style="color:var(--accent); font-size:11px; font-weight:bold; white-space:nowrap;">LOAN 1</span></div>
+                <div class="bal-tooltip" onclick="event.stopPropagation();" style="display:flex; align-items:center;">
+                    <span style="font-size:10px; color:#888; margin-right:5px; font-weight:bold; text-transform:uppercase;">Pay Off</span>
+                    <span id="l1-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                    <span class="bal-tooltiptext" id="l1-hover-info">--</span>
+                </div>
             </div>
             <div id="loan1-box" class="collapsible-content" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label">Start Date</span><input type="date" id="l1-start" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label">End Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1')" style="font-size:13px; text-align:center;"></div>
+                    <div><span class="input-label" style="text-align:center;">Start Date</span><input type="text" id="l1-start" readonly onclick="openLoanCalendar('l1-start')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1-date')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label">Payment ($)</span><input type="number" id="loan1" placeholder="0.00" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Total Pymts</span><input type="number" id="l1-total" placeholder="#" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Int Rate (%)</span><input type="number" id="l1-rate" placeholder="Rate" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan1" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l1-rate" placeholder="Rate" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l1-total" placeholder="#" onchange="saveSettings(); calc();"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr; gap:5px;">
-                    <div><span class="input-label">Total Payback ($)</span><input type="number" id="l1-payback" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                    <div><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l1-borrow" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div style="text-align:center;">
+                        <div class="bal-tooltip">
+                            <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TI ($)</span>
+                            <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Interest</span>
+                        </div>
+                        <input type="number" id="l1-ti" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                    </div>
+                    <div style="text-align:center;">
+                        <div class="bal-tooltip">
+                            <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TLC ($)</span>
+                            <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Loan Cost</span>
+                        </div>
+                        <input type="number" id="l1-tlc" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                    </div>
                 </div>
             </div>
 
             <div class="collapsible-header" onclick="document.getElementById('loan2-box').classList.toggle('show');" style="padding-top:0; justify-content: space-between;">
-                <div style="display:flex; align-items:center; gap:8px;"><span class="arrow">▶</span><span style="color:var(--accent); font-size:11px; font-weight:bold;">LOAN 2 DETAILS</span></div>
-                <span id="l2-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                <div style="display:flex; align-items:center; gap:8px;"><span class="arrow">▶</span><span style="color:var(--accent); font-size:11px; font-weight:bold; white-space:nowrap;">LOAN 2</span></div>
+                <div class="bal-tooltip" onclick="event.stopPropagation();" style="display:flex; align-items:center;">
+                    <span style="font-size:10px; color:#888; margin-right:5px; font-weight:bold; text-transform:uppercase;">Pay Off</span>
+                    <span id="l2-live-bal" style="font-family:monospace; font-weight:bold; color:var(--success); font-size:12px;">$0.00</span>
+                    <span class="bal-tooltiptext" id="l2-hover-info">--</span>
+                </div>
             </div>
             <div id="loan2-box" class="collapsible-content">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label">Start Date</span><input type="date" id="l2-start" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label">End Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2')" style="font-size:13px; text-align:center;"></div>
+                    <div><span class="input-label" style="text-align:center;">Start Date</span><input type="text" id="l2-start" readonly onclick="openLoanCalendar('l2-start')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2-date')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label">Payment ($)</span><input type="number" id="loan2" placeholder="0.00" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Total Pymts</span><input type="number" id="l2-total" placeholder="#" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Int Rate (%)</span><input type="number" id="l2-rate" placeholder="Rate" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan2" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l2-rate" placeholder="Rate" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l2-total" placeholder="#" onchange="saveSettings(); calc();"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr; gap:5px;">
-                    <div><span class="input-label">Total Payback ($)</span><input type="number" id="l2-payback" placeholder="0.00" onchange="calc(); saveSettings();"></div>
-                </div>
-            </div>
-        </div></div>
-
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card4')"><span id="arrow-card4" class="arrow">▶</span><span class="pref-title">4. TAX</span></div><div id="card4" class="collapsible-content">
-            <div class="tab-sub-bar">
-                <button class="tab-sub active" id="ts-tax-smart" onclick="switchTaxMode('smart')">SMART ENGINE</button>
-                <button class="tab-sub" id="ts-tax-manual" onclick="switchTaxMode('manual')">MANUAL %</button>
-            </div>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
-                <div><span class="input-label">City Tax %</span><input type="number" id="cityTaxRate" placeholder="2.5" onchange="calc(); saveSettings();" enterkeyhint="next"></div>
-                <div></div>
-            </div>
-            <div id="tax-view-smart" style="display:block;">
-                <span class="input-label" style="color:var(--accent);">W-4 Filing Status (Federal)</span>
-                <select id="filingStatus" onchange="calc(); saveSettings();">
-                    <option value="MFJ">Married Filing Jointly</option>
-                    <option value="S">Single / Married Separately</option>
-                    <option value="HOH">Head of Household</option>
-                </select>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px; margin-bottom:10px;">
-                    <div><span class="input-label">Step 3: Dependents ($)</span><input type="number" id="w4-step3" placeholder="0" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Step 4c: Extra W/H ($)</span><input type="number" id="w4-step4c" placeholder="0" onchange="calc(); saveSettings();"></div>
-                </div>
-                
-                <div class="collapsible-header" onclick="document.getElementById('adv-tax').classList.toggle('show');" style="padding: 5px 0; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
-                    <span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">ADVANCED W-4 OFFSETS</span>
-                </div>
-                <div id="adv-tax" class="collapsible-content" style="margin-bottom:15px;">
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div><span class="input-label">Fed W-4 Step 4a: Other (Untaxed) Income</span><input type="number" id="w4-step4a" placeholder="0" onchange="calc(); saveSettings();"></div>
-                        <div><span class="input-label">Fed W-4 Step 4b: Tax Deductions</span><input type="number" id="w4-step4b" placeholder="0" onchange="calc(); saveSettings();"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
+                    <div><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l2-borrow" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div style="text-align:center;">
+                        <div class="bal-tooltip">
+                            <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TI ($)</span>
+                            <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Interest</span>
+                        </div>
+                        <input type="number" id="l2-ti" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
                     </div>
-                </div>
-                
-                <span class="input-label" style="color:var(--accent); display:block;">Ohio IT-4 Settings</span>
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:5px;">
-                    <div><span class="input-label">Exemptions</span><input type="number" id="oh-exempt" value="0" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Extra W/H ($)</span><input type="number" id="oh-extra" placeholder="0" onchange="calc(); saveSettings();"></div>
-                </div>
-            </div>
-            <div id="tax-view-manual" style="display:none;">
-                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                    <div><span class="input-label">Fed W/H %</span><input type="number" id="fedTaxRate" placeholder="0.00" onchange="calc(); saveSettings();"></div>
-                    <div><span class="input-label">Ohio W/H %</span><input type="number" id="stateTaxRate" placeholder="2.75" onchange="calc(); saveSettings();"></div>
-                </div>
-                <div id="rate-tool" class="rate-tool-box" style="display:block; margin-top:15px; margin-bottom:5px;">
-                    <div style="font-size:10px; color:#888; margin-bottom:5px;">Calculates rate based on Gross minus 401k Setting</div>
-                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="rt-gross" placeholder="Total Gross"><input type="number" id="rt-tax" placeholder="Tax Paid ($)"></div>
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><button onclick="calcRateResult()" style="background:var(--accent); color:white; border:none; padding:6px 15px; border-radius:4px; font-weight:bold; font-size:12px;">CALCULATE</button><span id="rt-result" style="font-weight:800; color:var(--success); font-size:18px;">0.000%</span></div>
-                    <div class="rt-actions" style="grid-template-columns: 1fr 1fr;"><button class="apply-btn" onclick="applyRate('fedTaxRate')">SET FED RATE</button><button class="apply-btn" onclick="applyRate('stateTaxRate')">SET STATE RATE</button></div>
+                    <div style="text-align:center;">
+                        <div class="bal-tooltip">
+                            <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TLC ($)</span>
+                            <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Loan Cost</span>
+                        </div>
+                        <input type="number" id="l2-tlc" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                    </div>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:10px; margin-top:10px;">
@@ -498,12 +492,16 @@
 
     <div id="painter-modal" class="loan-cal-modal">
         <div class="modal-content" style="width:95%; background:#121212; border-color:var(--electric);">
-            <h3 style="color:#fff; margin-top:0; color:var(--electric);">8-WEEK MATRIX PAINTER</h3>
-            <p style="color:#888; font-size:11px; margin-bottom:15px;">Tap a day to cycle: Day (D) ➔ Night (N) ➔ Off (X).</p>
+            <h3 style="color:#fff; margin-top:0; color:var(--electric);">MATRIX OVERRIDE PAINTER</h3>
+            <p style="color:#888; font-size:11px; margin-bottom:10px;">Tap a day to cycle: Day (D) ➔ Night (N) ➔ Off (X).</p>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px; background:#222; padding:8px; border-radius:6px; border:1px solid #444;">
+                <span style="color:#bbb; font-size:10px; font-weight:bold;">SHIFT ANCHOR DATE:</span>
+                <input type="date" id="painter-anchor" style="background:#000; color:var(--electric); border:1px solid var(--electric); border-radius:4px; font-size:12px; padding:4px; width:130px; margin:0;">
+            </div>
             <div id="matrix-painter-grid" style="display:flex; flex-direction:column; gap:8px;"></div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:20px;">
                 <button class="modal-btn" style="background:#333; color:#fff;" onclick="closeSchedulePainter()">CANCEL</button>
-                <button class="modal-btn" style="background:var(--electric); color:#fff;" onclick="saveSchedulePainter()">SAVE MATRIX</button>
+                <button class="modal-btn" style="background:var(--electric); color:#fff;" onclick="saveSchedulePainter()">SAVE OVERRIDE</button>
             </div>
         </div>
     </div>
@@ -635,39 +633,49 @@
     function calcLoanStatus(loanKey, checkDate, amount) {
         let prefix = (loanKey === 'l1') ? 'l1' : 'l2';
         let total = parseInt(document.getElementById(prefix+'-total').value) || 0;
-        let finalDateStr = document.getElementById(prefix+'-date').value;
-        let rateStr = document.getElementById(prefix+'-rate')?.value;
-        let rate = rateStr ? parseFloat(rateStr) : 0;
+        let startStr = document.getElementById(prefix+'-start').value;
+        let borrow = parseFloat(document.getElementById(prefix+'-borrow').value) || 0;
+        let annRate = parseFloat(document.getElementById(prefix+'-rate').value) || 0;
 
-        if (total === 0 || !finalDateStr) return { paid: 0, total: 0, rem: 0, bal: 0, txt: "" };
-        let finalDate = new Date(finalDateStr);
-        let diffTime = finalDate - checkDate;
-        let periodsLeft = Math.ceil(diffTime / (1000 * 60 * 60 * 24 * 14)); 
-        if(periodsLeft < 0) periodsLeft = 0;
-        let currentPay = total - periodsLeft + 1;
-        if(currentPay > total) currentPay = total;
-
-        let currentBalance = 0;
-        if (rate > 0 && periodsLeft > 0) {
-            let r = (rate / 100) / 26;
-            currentBalance = amount * ((1 - Math.pow(1 + r, -periodsLeft)) / r);
+        if (total === 0 || !startStr || amount === 0) return { paid: 0, total: 0, rem: 0, bal: 0, txt: "" };
+        
+        let startDate;
+        if (startStr.includes('/')) {
+            let p = startStr.split('/');
+            startDate = new Date(`20${p[2]}-${p[0]}-${p[1]}T00:00:00`);
         } else {
-            currentBalance = periodsLeft * amount; 
+            startDate = new Date(startStr + 'T00:00:00');
         }
 
-        let txt = "";
-        let years = Math.floor(periodsLeft / 26);
-        let remWeeks = periodsLeft % 26;
-        if (years > 0) {
-             let months = Math.floor(remWeeks / 2.16); 
-             txt = `[${currentPay}/${total} • ${years}y & ${months}m]`;
-        } else {
-             let months = Math.floor(periodsLeft / 2);
-             let remChks = periodsLeft % 2;
-             if (months > 0) txt = `[${currentPay}/${total} • ${months}m & ${remChks}chk]`;
-             else txt = `[${currentPay}/${total} • ${periodsLeft} checks left]`;
+        let diffTime = checkDate - startDate;
+        let periodsPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 14));
+        if (periodsPassed < 0) periodsPassed = 0;
+        
+        let currentPay = periodsPassed;
+        if (currentPay > total) currentPay = total;
+        let periodsLeft = total - currentPay;
+        
+        // "Taken to Term" Balance
+        let toTermBalance = periodsLeft * amount; 
+        
+        // Live Payoff Balance (Amortization Math)
+        let payoffBalance = toTermBalance; // Default fallback
+        if (borrow > 0 && annRate > 0) {
+            let r = (annRate / 100) / 26; // Bi-weekly rate
+            let n = currentPay;
+            // Balance = P(1+r)^n - PMT * [ (1+r)^n - 1 ] / r
+            let compound = Math.pow(1 + r, n);
+            payoffBalance = (borrow * compound) - (amount * ((compound - 1) / r));
+            if (payoffBalance < 0) payoffBalance = 0;
+        } else if (borrow > 0 && annRate === 0) {
+            payoffBalance = borrow - (amount * currentPay);
+            if (payoffBalance < 0) payoffBalance = 0;
         }
-        return { paid: currentPay, total: total, rem: periodsLeft, bal: currentBalance, txt: txt };
+        
+        // Tooltip text NOW INCLUDES the To-Term Balance
+        let txt = `${currentPay} Made. ${periodsLeft} Left. (To Term: ${f(toTermBalance)})`;
+        
+        return { paid: currentPay, total: total, rem: periodsLeft, bal: payoffBalance, txt: txt };
     }
 
     function showGhost(el) {
@@ -828,16 +836,10 @@ function isUnionHoliday(dateStr){
             let taxHTML = "", preHTML = "", postHTML = "";
             catMap.taxes.forEach(k => { taxHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail"></div><span class="dg-amt">${f(yDed[k])}</span></div>`; });
             catMap.pretax.forEach(k => { preHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail"></div><span class="dg-amt">${f(yDed[k])}</span></div>`; });
-            let anchorDate = getAnchorDate();
             catMap.posttax.forEach(k => {
                 let detail = "";
-                if(k === 'l1' || k === 'l2') {
-                    let amt = parseFloat(document.getElementById(k === 'l1' ? 'loan1' : 'loan2').value) || 0;
-                    let stat = calcLoanStatus(k, anchorDate, amt); 
-                    if(stat.total > 0) { detail = `[Rem Bal: ${f(stat.bal)}]`; }
-            }
-        postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`; 
-        });
+                postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`; 
+            });
             document.getElementById('ytd-posttax-rows').innerHTML = postHTML;
             document.getElementById('ytd-tax-rows').innerHTML = taxHTML;
             document.getElementById('ytd-pretax-rows').innerHTML = preHTML;
@@ -908,7 +910,11 @@ function isUnionHoliday(dateStr){
         document.getElementById('dashboard-view').style.display = 'none'; document.getElementById('calculator-view').style.display = 'block';
         document.getElementById('calc-title-date').innerText = p.payDate.toUpperCase() + " PAYCHECK"; document.getElementById('calc-title-range').innerText = p.fullRange;
         renderCalculator(p.startDateObj); renderDeductionRows(); 
-        if (!ledgerData[id]) applySchedule(p.startDateObj); else loadPeriodData(id);
+        
+        // Paint shift attributes every time, but only wipe inputs if it's a brand new check
+        applySchedule(p.startDateObj, (ledgerData[id] ? false : true));
+        
+        if (ledgerData[id]) loadPeriodData(id);
         calc(); window.scrollTo(0,0);
     }
 
@@ -936,23 +942,47 @@ function isUnionHoliday(dateStr){
     }
 
     function openSettings() { toggleMainHeader(false); document.getElementById('dashboard-view').style.display='none'; document.getElementById('settings-view').style.display='block'; window.scrollTo(0,0); }
-    function closeSettings() {
+    function closeSettings() { 
         // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
         saveSettings();
-        document.getElementById('settings-view').style.display='none';
-        toggleMainHeader(true);
+        document.getElementById('settings-view').style.display='none'; 
+        toggleMainHeader(true); 
         document.getElementById('dashboard-view').style.display='block'; 
     }
 
-    // --- V 3.7.5 MATRIX ENGINE ---
-    let defaultMatrix = "D,X,X,D,D,X,X,X,D,D,D,D,X,X,X,D,D,X,X,D,D,D,X,X,X,N,N,N,N,X,X,N,N,X,X,X,N,N,N,X,X,X,X,N,N,X,X,N,N,N,X,X,X,X,D,D".split(',');
+    // --- V 3.7.X MASTER BASELINE GRID ---
+    // This is the "Baseline." D=Day(6A), N=Night(6P), X=Off.
+    // Each line is one week, starting on SUNDAY.
+    let defaultMatrix = [
+        "D","X","X","D","D","X","X", // Week 0 (Anchor 12/21/25)
+        "X","D","D","D","D","X","X", // Week 1
+        "X","D","D","X","X","D","D", // Week 2
+        "D","X","X","X","X","N","N", // Week 3
+        "N","N","X","X","N","N","X", // Week 4
+        "X","X","N","N","N","X","X", // Week 5
+        "X","X","N","N","X","X","N", // Week 6
+        "N","N","X","X","X","D","D"  // Week 7
+    ];
     let customMatrix = [];
 
     function openSchedulePainter() {
         let set = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
         customMatrix = set.customMatrix && set.customMatrix.length === 56 ? set.customMatrix : [...defaultMatrix];
+        document.getElementById('painter-anchor').value = set.customAnchor || '2025-12-21';
         renderPainterGrid();
         document.getElementById('painter-modal').style.display = 'flex';
+    }
+
+    function resetMatrixOverride() {
+        if(confirm("RESET TO DEFAULT?\n\nThis will delete your custom matrix override and snap back to the hardcoded base schedule.")) {
+            let s = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
+            delete s.customMatrix;
+            delete s.customAnchor;
+            delete s.hasOverride;
+            localStorage.setItem('app_settings_v30', JSON.stringify(s));
+            if(currentPeriodId) forceSchedule();
+            alert("Matrix reset to default baseline.");
+        }
     }
 
     function renderPainterGrid() {
@@ -991,19 +1021,23 @@ function isUnionHoliday(dateStr){
     function saveSchedulePainter() {
         let s = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
         s.customMatrix = customMatrix;
+        s.customAnchor = document.getElementById('painter-anchor').value;
+        s.hasOverride = true;
         localStorage.setItem('app_settings_v30', JSON.stringify(s));
         closeSchedulePainter();
         if(currentPeriodId) forceSchedule();
     }
     // -----------------------------
 
-    function applySchedule(periodStart) { 
+    function applySchedule(periodStart, clearInputs = true) { 
         try { 
-            document.querySelectorAll('#calculator-view input').forEach(el => { 
-            if(el.type=='checkbox') el.checked=false; // SURGICAL STRIKE: True wipe, no exemptions
-            else if(el.type!='hidden' && !el.classList.contains('d-input')) el.value=""; 
-        }); 
-            document.querySelectorAll('.v3-input').forEach(s => s.value = "");
+            if (clearInputs) {
+                document.querySelectorAll('#calculator-view input').forEach(el => { 
+                    if(el.type=='checkbox') el.checked=false; 
+                    else if(el.type!='hidden' && !el.classList.contains('d-input')) el.value=""; 
+                }); 
+                document.querySelectorAll('.v3-input').forEach(s => s.value = "");
+            }
             
             document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = "12 HR"; }); 
             
@@ -1021,33 +1055,55 @@ function isUnionHoliday(dateStr){
             let crewEl = document.getElementById('crew-select');
             let crew = crewEl ? crewEl.value : 'A';
             let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
-            if(crew === 'Custom') offset = 0; // Custom uses exactly what is painted
-
-            // Load Active Matrix & Dynamic Base Shift
+            
             let set = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
-            let activeMatrix = set.customMatrix && set.customMatrix.length === 56 ? set.customMatrix : defaultMatrix;
+            let activeMatrix = [...defaultMatrix]; 
+            let activeAnchor = scheduleAnchor; 
+
+            if (set.hasOverride || crew === 'Custom') {
+                if (set.customMatrix && set.customMatrix.length === 56) activeMatrix = set.customMatrix;
+                if (set.customAnchor) activeAnchor = new Date(set.customAnchor + 'T00:00:00');
+            }
+            
+            if (crew !== 'Custom' && !set.hasOverride) {
+                activeAnchor = scheduleAnchor;
+            } else if (crew === 'Custom') {
+                offset = 0;
+            }
+            
+            // If the user explicitly selects A, B, C, or D, we force the baseline anchor to keep them in sync
+            if (crew !== 'Custom' && !set.hasOverride) {
+                activeAnchor = scheduleAnchor;
+            } else if (crew === 'Custom') {
+                offset = 0;
+            }
+
             let baseShiftVal = set['shift-base'] || "12";
             let btnText = baseShiftVal + " HR";
 
             document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = btnText; });
 
-            // MATH.ROUND FIX: Defeats the DST 23-hour trap
-            let diffTime = periodStart - scheduleAnchor; 
+            let diffTime = periodStart - activeAnchor; 
             let diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-            let weeksPassed = Math.floor(diffDays / 7); 
+            let weeksPassed = Math.floor(diffDays / 7); 
             let adjustedWeek = ((weeksPassed + offset) % 8 + 8) % 8;
-            let week1StartIdx = adjustedWeek * 7;
-            let week2StartIdx = ((adjustedWeek + 1) % 8) * 7;
 
-            // MASTER MATRIX SCHEDULER UPGRADE
-                for(let w=1; w<=2; w++) {
-                let startIdx = (w===1) ? week1StartIdx : week2StartIdx;
-                for(let d=0; d<7; d++) { 
+            let payMatrix = new Array(14).fill('X');
+            let baseIdx = adjustedWeek * 7;
+            for(let i = 0; i < 14; i++) {
+                let globalIdx = (baseIdx + i) % 56;
+                payMatrix[i] = activeMatrix[globalIdx];
+            }
+
+            for(let w=1; w<=2; w++) {
+                let startIdx = (w===1) ? 0 : 7;
+                for(let d=0; d<7; d++) { 
                     let card = document.getElementById('card-' + w + '-' + d);
                     let dateStr = card.getAttribute('data-date').split('T')[0];
                     let btn = document.getElementById('btn-' + w + '-' + d);
                     
-                    let shiftType = activeMatrix[startIdx + d];
+                    let shiftType = payMatrix[startIdx + d];
+                    card.setAttribute('data-shift', shiftType);
                     let isScheduled = (shiftType === 'D' || shiftType === 'N');
                     
                     let isVac = vacationDates.includes(dateStr);
@@ -1319,6 +1375,10 @@ function isUnionHoliday(dateStr){
                     else if (isVac) { card.classList.add('status-vac'); } 
                     else if (ro) { card.classList.add('ro-active'); }
 
+                    let dShift = card.getAttribute('data-shift');
+                    if (dShift === 'N') card.classList.add('night-shift');
+                    if (dShift === 'D') card.classList.add('day-shift');
+
                     if (hasMainShift) {
                         btn.classList.add('active'); 
                         if (isHol || sysHolName) { btn.classList.add('btn-purple'); } 
@@ -1441,7 +1501,7 @@ function isUnionHoliday(dateStr){
                 let applyDiff = true;
                 if (crewVal === 'Custom') { applyDiff = document.getElementById('custom-diff-check')?.checked; }
 
-                // V 3.7.5 CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
+                // V 3.7.X CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
                 let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs;
                 if (applyDiff) { shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); }
@@ -1987,10 +2047,16 @@ function isUnionHoliday(dateStr){
         let l2Amt = parseFloat(document.getElementById('loan2').value) || 0;
         let stat1 = calcLoanStatus('l1', anchor, l1Amt);
         let stat2 = calcLoanStatus('l2', anchor, l2Amt);
+        
         let lb1 = document.getElementById('l1-live-bal');
-        let lb2 = document.getElementById('l2-live-bal');
+        let hover1 = document.getElementById('l1-hover-info');
         if(lb1) lb1.innerText = stat1.total > 0 ? f(stat1.bal) : "$0.00";
+        if(hover1) hover1.innerText = stat1.total > 0 ? stat1.txt : "--";
+
+        let lb2 = document.getElementById('l2-live-bal');
+        let hover2 = document.getElementById('l2-hover-info');
         if(lb2) lb2.innerText = stat2.total > 0 ? f(stat2.bal) : "$0.00";
+        if(hover2) hover2.innerText = stat2.total > 0 ? stat2.txt : "--";
     }
 
     function loadSettings() { 
@@ -2015,7 +2081,7 @@ function isUnionHoliday(dateStr){
              if(s.wad) document.getElementById('wad-select').value = s.wad;
          }
          if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Root LocalStorage Fix
-         generateContractRows(); // V 3.7.5 Fix: Redraw rows on load
+         generateContractRows(); // V 3.7.X Fix: Redraw rows on load
          updateVacationRateUI(); 
          updateLoanBalances(); // SURGICAL STRIKE: Load the green labels on startup
      }
@@ -2084,8 +2150,15 @@ function isUnionHoliday(dateStr){
     let lcTargetInputId = null;
     function openLoanCalendar(inputId) {
         lcTargetInputId = inputId;
-        let existingVal = document.getElementById(inputId+'-date').value;
-        if(existingVal) lcCurrentDate = new Date(existingVal); else lcCurrentDate = new Date();
+        let existingVal = document.getElementById(inputId).value;
+        if(existingVal) {
+            if(existingVal.includes('/')) {
+                let p = existingVal.split('/');
+                lcCurrentDate = new Date(`20${p[2]}-${p[0]}-${p[1]}T12:00:00`);
+            } else {
+                lcCurrentDate = new Date(existingVal + 'T12:00:00');
+            }
+        } else lcCurrentDate = new Date();
         document.getElementById('loan-cal-modal').classList.add('open');
         lcRender();
     }
@@ -2096,8 +2169,9 @@ function isUnionHoliday(dateStr){
     function lcSelectDate(dStr) { 
         let parts = dStr.split('-');
         let formatStr = `${parts[1]}/${parts[2]}/${parts[0].substring(2)}`;
-        document.getElementById(lcTargetInputId+'-date').value = formatStr; 
+        document.getElementById(lcTargetInputId).value = formatStr; 
         saveSettings(); 
+        if(lcTargetInputId.includes('start')) calc(); 
         closeLoanCalendar(); 
     }
     function lcRender() {
@@ -2113,7 +2187,7 @@ function isUnionHoliday(dateStr){
         for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="lc-day empty"></div>`;
         let todayStr = new Date().toISOString().split('T')[0];
         
-        let rawSel = document.getElementById(lcTargetInputId+'-date').value;
+        let rawSel = document.getElementById(lcTargetInputId).value;
         let selectedStr = rawSel;
         if(rawSel && rawSel.includes('/')) {
             let p = rawSel.split('/');
