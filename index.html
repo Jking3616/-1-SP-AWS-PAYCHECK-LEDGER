@@ -1063,7 +1063,7 @@ function isUnionHoliday(dateStr){
         renderDashboard(); // Instantly paints newly selected vacations orange
     }
 
-    // --- V 3.7.X MASTER BASELINE GRID ---
+    // --- MASTER BASELINE GRID ---
     // This is the "Baseline." D=Day(6A), N=Night(6P), X=Off.
     // Each line is one week, starting on SUNDAY.
     let defaultMatrix = [
@@ -1614,7 +1614,7 @@ function isUnionHoliday(dateStr){
                 let applyDiff = true;
                 if (crewVal === 'Custom') { applyDiff = document.getElementById('custom-diff-check')?.checked; }
 
-                // V 3.7.X CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
+                // CALL-OUT FIX: Exclude wk.cH from the divisor to match Mill logic
                 let currentWkTotalHrs = (wk.rH + wk.oH + wk.sH + wk.hH + wk.vH + wk.uhH);
                 totalWorkHrs += currentWkTotalHrs;
                 if (applyDiff) { shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); }
