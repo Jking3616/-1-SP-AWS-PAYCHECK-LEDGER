@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>#1 SP AWS Paycheck Ledger V 3.7.X(JD/BV)</title>
+    <title>#1 SP AWS Paycheck Ledger V 3.8.0 Year Silo Protocol</title>
     <style>
         :root { --bg: #000000; --app-bg: #000000; --card: #1e1e1e; --text: #e0e0e0; --border: #333; --row: #2a2a2a; --accent: #4dadff; --dim: #888; --success: #00c853; --danger: #ff5252; --warning: #ffb300; --gold: #ffd700; --est-yellow: #ffeb3b; --hol-work: #7b1fa2; --hol-off: #4a148c; --vacation: #ff6f00; --electric: #2979ff; }
         * { box-sizing: border-box; }
@@ -16,7 +16,7 @@
         #ytd-container { display: none; flex-direction: column; gap: 15px; padding: 0px 10px 80px 10px; }
         #calculator-view { display: none; padding-top: 80px; padding-bottom: 50px; background: var(--app-bg); z-index: 2000; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; }
         #settings-view { display: none; padding: 90px 15px; background: var(--app-bg); z-index: 2000; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; }
-        #vacation-view { display: none; padding: 90px 15px; background: var(--app-bg); z-index: 2000; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; } 
+        #vacation-view { display: none; padding: 90px 15px; background: var(--app-bg); z-index: 2000; position: absolute; top: 0; left: 0; width: 100%; min-height: 100vh; }
         .dash-header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 950px; background: rgba(18, 18, 18, 0.98); z-index: 1000; border-bottom: 1px solid var(--border); display: flex; flex-direction: column; box-shadow: 0 4px 6px rgba(0,0,0,0.3); transition: transform 0.2s; }
         .dash-header.hidden { display: none; }
         .header-wrapper { width: 100%; }
@@ -45,7 +45,7 @@
         .pay-card.current { border: 1px solid var(--accent); box-shadow: 0 0 10px rgba(77, 173, 255, 0.2); }
         .pay-card.current .date-badge { border-color: var(--accent); color: var(--accent); background: rgba(77, 173, 255, 0.1); }
         .pay-card.early-pay .date-badge { background-color: var(--warning); color: #000; border-color: var(--warning); box-shadow: 0 0 8px rgba(255, 179, 0, 0.4); }
-        .pay-card.vacation-active { border-left: 4px solid var(--vacation); } 
+        .pay-card.vacation-active { border-left: 4px solid var(--vacation); }
         .date-badge { background: #121212; color: var(--dim); width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; border: 2px solid var(--border); }
         .card-info { padding-left: 12px; display: flex; flex-direction: column; gap: 2px; }
         .pay-date-label { font-size: 15px; font-weight: 700; color: #fff; }
@@ -59,6 +59,8 @@
         .day-card.status-worked.day-shift .day-label-col { background: var(--electric); border-right: 1px solid var(--electric); }
         .day-card.status-worked.night-shift { border-color: var(--danger); }
         .day-card.status-worked.night-shift .day-label-col { background: var(--danger); border-right: 1px solid var(--danger); }
+        .day-card.status-worked.status-hol { border-color: var(--hol-work) !important; }
+        .day-card.status-worked.status-hol .day-label-col { background: var(--hol-work) !important; border-right: 1px solid var(--hol-work) !important; }
         .day-card.status-xtra { border-color: var(--success); background: var(--card); }
         .day-card.status-xtra .day-label-col { background: var(--success); border-right: 1px solid var(--success); }
         .day-card.status-xtra .day-name-part { color: #fff; }
@@ -80,11 +82,12 @@
         .btn-12 { width: 60px; height: 36px; border: 1px solid #333; border-radius: 4px; background: var(--row); color: #444; font-weight: bold; font-size: 11px; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
         .btn-12.active { background: #2979ff !important; color: white !important; border: 1px solid #2979ff !important; box-shadow: 0 0 10px rgba(41, 121, 255, 0.4); }
         .night-shift .btn-12.active { background: var(--danger) !important; border-color: var(--danger) !important; box-shadow: 0 0 10px rgba(255, 82, 82, 0.4); }
+        .night-shift .btn-12.active.btn-purple { background: #7b1fa2 !important; border-color: #fff !important; box-shadow: 0 0 8px rgba(123, 31, 162, 0.4) !important; }
         .btn-12.btn-green { background: #00c853 !important; color: white !important; border: 1px solid #00c853 !important; box-shadow: 0 0 8px rgba(0, 200, 83, 0.4); }
         .btn-12.btn-purple { background: #7b1fa2 !important; color: white !important; border: 1px solid #fff !important; box-shadow: 0 0 8px rgba(123, 31, 162, 0.4); }
         .v3-input { background: #000; color: #fff; border: 1.5px solid var(--accent); border-radius: 4px; height: 36px; width: 70px; text-align: center; font-family: monospace; font-size: 12px; font-weight: 700; outline: none; }
         .v3-input:focus { border-color: var(--gold); box-shadow: 0 0 10px rgba(255,215,0,0.3); }
-        
+
         .action-btn-row { display: flex; gap: 4px; width: 100%; }
         .move-up-btn { flex: 1; background: transparent; border: 1px solid var(--border); color: var(--dim); border-radius: 4px; font-size: 8px; padding: 3px; font-weight: bold; text-transform: uppercase; transition: 0.2s; cursor: pointer; }
         .move-up-btn.glow-blue { border-color: var(--electric); color: var(--electric); background: rgba(41, 121, 255, 0.1); box-shadow: 0 0 5px rgba(41, 121, 255, 0.3); }
@@ -93,15 +96,15 @@
 
         .extra-rate-select { display: none; background: #004d40; color: white; border: 1px solid #00695c; padding: 6px; border-radius: 4px; font-size: 12px; font-weight: bold; margin-top: 4px; width: 100%; }
         .extra-rate-select.show { display: block; }
-        
+
         .move-up-zone { display: none; padding-top: 4px; grid-template-columns: 1fr 1fr; gap: 4px; width: 100%; }
         .move-up-zone.show { display: grid; }
         .early-stay-zone { display: none; padding-top: 4px; grid-template-columns: 1fr 1.2fr 0.8fr; gap: 4px; width: 100%; }
         .early-stay-zone.show { display: grid; }
-        
+
         .mt-label { display: flex; align-items: center; justify-content: center; gap:3px; background: #1a1a1a; border: 1px solid #444; border-radius: 4px; color: var(--gold); font-size: 9px; font-weight: 800; cursor: pointer; user-select: none; }
         .mt-label input { width: 10px; height: 10px; accent-color: var(--gold); margin: 0; }
-        
+
         .dc-right { display: flex; flex-wrap: wrap; gap: 4px; align-items: flex-start; align-content: flex-start; justify-content: flex-end; max-width: 250px; }
         .cb-label { display: flex; align-items: center; gap: 3px; background: #222; padding: 4px 6px; border-radius: 4px; border: 1px solid #333; font-size: 9px; font-weight: 700; color: #bbb; cursor: pointer; user-select: none; }
         .cb-label input { width: 12px; height: 12px; margin: 0; accent-color: var(--accent); }
@@ -115,7 +118,7 @@
         .total-summary-grid { background: #1a1a1a; border: 2px solid var(--accent); margin-bottom: 25px; margin-top: 15px; }
         .grid-label { text-align: left; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
         .grid-hours { text-align: right; color: var(--dim); font-family: monospace; }
-        .grid-rate { text-align: right; color: #90caf9; font-family: monospace; letter-spacing: -0.5px; } 
+        .grid-rate { text-align: right; color: #90caf9; font-family: monospace; letter-spacing: -0.5px; }
         .grid-amt { text-align: right; font-family: monospace; font-weight: bold; }
         .grid-total { grid-column: 1 / -1; border-top: 1px solid var(--border); padding-top: 5px; margin-top: 5px; display: flex; justify-content: space-between; font-weight: bold; color: var(--accent); font-size: 1.4em; }
         .wk-header { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; background: #333; margin: 15px 10px 0 10px; border-radius: 8px 8px 0 0; cursor: pointer; color: var(--accent); font-weight: 800; font-size: 11px; letter-spacing: 1px; }
@@ -124,7 +127,7 @@
         .deduction-list { margin: 10px; display: flex; flex-direction: column; gap: 15px; }
         .deduction-line { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 4px; margin-bottom: 4px; min-height: 28px; }
         .d-label { text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-size: 11px; color: var(--text); flex: 1; }
-        .d-detail { text-align: center; font-size: 9px; color: var(--warning); font-family: monospace; flex: 2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .d-detail { display: none; }
         .d-est { font-family: monospace; color: var(--dim); font-size: 11px; text-align: right; flex-shrink: 0; }
         .d-input { display: none; width: 80px; background: #000; border: 1px solid var(--gold); color: var(--gold); font-family: monospace; font-size: 12px; padding: 4px; border-radius: 4px; text-align: right; margin-left: 6px; }
         .d-delta { font-family: monospace; font-weight: bold; font-size: 10px; width: 50px; text-align: right; flex-shrink: 0; }
@@ -172,7 +175,7 @@
         .vac-title { font-size: 20px; font-weight: 900; color: var(--vacation); }
         .vac-month-block { margin-bottom: 8px; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; background: var(--row); }
         .vac-month-header { background: #333; padding: 12px; font-weight: 800; color: var(--accent); cursor: pointer; display: flex; justify-content: space-between; align-items: center; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
-        .vac-month-header.has-vacation { background: #ff6f00; color: #000; text-shadow: 0 0 5px rgba(255,255,255,0.4); } 
+        .vac-month-header.has-vacation { background: #ff6f00; color: #000; text-shadow: 0 0 5px rgba(255,255,255,0.4); }
         .vac-month-content { display: none; padding: 10px; background: #1a1a1a; }
         .vac-month-content.open { display: block; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
@@ -204,6 +207,21 @@
         .tab-sub.active { background: var(--accent); color: white; border-color: var(--accent); }
         .contract-view-content { display: none; }
         .contract-view-content.show { display: block; }
+
+        #print-zone { display: none; }
+        @media print {
+            body { background: #ffffff !important; color: #000000 !important; }
+            .desktop-container { display: none !important; }
+            #print-zone { display: block !important; white-space: pre-wrap; font-family: monospace; font-size: 12px; padding: 20px; color: #000000; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+
+        .export-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg); z-index: 5000; flex-direction: column; }
+        .export-overlay.show { display: flex; }
+        .export-header { display: flex; justify-content: space-between; align-items: center; padding: 15px; background: #121212; border-bottom: 1px solid var(--accent); }
+        .export-header-title { color: var(--accent); font-weight: 900; font-size: 16px; letter-spacing: 1px; }
+        .export-close-btn { background: transparent; border: 1px solid var(--accent); color: var(--accent); padding: 8px 15px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+        .export-text-area { flex: 1; width: 100%; background: #000; color: #fff; border: none; padding: 15px; font-family: monospace; font-size: 12px; resize: none; outline: none; white-space: pre-wrap; word-wrap: break-word; }
     </style>
 </head>
 <body>
@@ -220,7 +238,7 @@
                         <option value="2030">2030 LEDGER</option>
                         <option value="2031">2031 LEDGER</option>
                     </select>
-                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.7.X</div>
+                    <div style="font-size:10px; color:#888;">#1 SP AWS PAYCHECK LEDGER V3.8.0 Year Silo Protocol</div>
                 </div>
                 <div style="display:flex; align-items:center;">
                     <div class="dash-stats" id="dash-header-est"><div style="color:var(--dim);">EST. GROSS YTD</div><div class="ytd-val" id="header-est-gross">$0.00</div></div>
@@ -365,12 +383,24 @@
             </div>
         </div></div>
 
-        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card3')"><span id="arrow-card3" class="arrow">▶</span><span class="pref-title">3. 401K % CONTRIBUTION & LOAN AMORTIZATION</span></div><div id="card3" class="collapsible-content">
-            <div style="margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:15px;">
-                <span class="input-label" style="color:var(--accent); font-weight:bold;">401k % (Pre-Tax)</span>
-                <input type="number" id="kRate" onchange="calc(); saveSettings();" enterkeyhint="next">
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card3')"><span id="arrow-card3" class="arrow">▶</span><span class="pref-title">3. 401K & LOAN AMORTIZATION</span></div><div id="card3" class="collapsible-content">
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:15px; border-bottom:1px solid #333; padding-bottom:15px;">
+                <div>
+                    <span class="input-label" style="color:var(--accent); font-weight:bold;">401k (Pre-Tax %)</span>
+                    <input type="number" id="kRate" onchange="calc(); saveSettings();" enterkeyhint="next">
+                </div>
+                <div>
+                    <span class="input-label" style="color:var(--warning); font-weight:bold;">Roth (Post-Tax)</span>
+                    <div style="display:flex; gap:5px;">
+                        <select id="rothType" onchange="calc(); saveSettings();" style="width:60px; padding:6px; font-size:12px; margin:0; background:var(--card);">
+                            <option value="pct">%</option>
+                            <option value="amt">$</option>
+                        </select>
+                        <input type="number" id="rothVal" placeholder="0.00" onchange="calc(); saveSettings();" style="margin:0;">
+                    </div>
+                </div>
             </div>
-            
+
             <div class="collapsible-header" onclick="document.getElementById('loan1-box').classList.toggle('show');" style="padding-top:0; justify-content: space-between;">
                 <div style="display:flex; align-items:center; gap:8px;"><span class="arrow">▶</span><span style="color:var(--accent); font-size:11px; font-weight:bold; white-space:nowrap;">LOAN 1</span></div>
                 <div class="bal-tooltip" onclick="event.stopPropagation();" style="display:flex; align-items:center;">
@@ -381,29 +411,29 @@
             </div>
             <div id="loan1-box" class="collapsible-content" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label" style="text-align:center;">Start Date</span><input type="text" id="l1-start" readonly onclick="openLoanCalendar('l1-start')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
-                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1-date')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">Origination Date</span><input type="text" id="l1-start" readonly onclick="openLoanCalendar('l1-start')" style="font-size:13px; padding:8px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l1-date" readonly onclick="openLoanCalendar('l1-date')" style="font-size:13px; padding:8px; text-align:center; cursor:pointer;" placeholder="Select"></div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan1" placeholder="0.00" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l1-rate" placeholder="Rate" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l1-total" placeholder="#" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan1" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l1-rate" style="font-size:13px; padding:8px; text-align:center;" placeholder="Rate" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l1-total" style="font-size:13px; padding:8px; text-align:center;" placeholder="#" onchange="saveSettings(); calc();"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                    <div><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l1-borrow" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; align-items:flex-end;">
+                    <div style="text-align:center;"><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l1-borrow" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();"></div>
                     <div style="text-align:center;">
-                        <div class="bal-tooltip">
+                        <div class="bal-tooltip" style="display:block;">
                             <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TI ($)</span>
                             <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Interest</span>
                         </div>
-                        <input type="number" id="l1-ti" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                        <input type="number" id="l1-ti" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();">
                     </div>
                     <div style="text-align:center;">
-                        <div class="bal-tooltip">
+                        <div class="bal-tooltip" style="display:block;">
                             <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TLC ($)</span>
                             <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Loan Cost</span>
                         </div>
-                        <input type="number" id="l1-tlc" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                        <input type="number" id="l1-tlc" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();">
                     </div>
                 </div>
             </div>
@@ -418,30 +448,81 @@
             </div>
             <div id="loan2-box" class="collapsible-content">
                 <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label" style="text-align:center;">Start Date</span><input type="text" id="l2-start" readonly onclick="openLoanCalendar('l2-start')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
-                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2-date')" style="font-size:11px; padding:6px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">Origination Date</span><input type="text" id="l2-start" readonly onclick="openLoanCalendar('l2-start')" style="font-size:13px; padding:8px; text-align:center; cursor:pointer;" placeholder="Select"></div>
+                    <div><span class="input-label" style="text-align:center;">End Date</span><input type="text" id="l2-date" readonly onclick="openLoanCalendar('l2-date')" style="font-size:13px; padding:8px; text-align:center; cursor:pointer;" placeholder="Select"></div>
                 </div>
                 <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; margin-bottom:5px;">
-                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan2" placeholder="0.00" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l2-rate" placeholder="Rate" onchange="saveSettings(); calc();"></div>
-                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l2-total" placeholder="#" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Pymt ($)</span><input type="number" id="loan2" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Int Rate (%)</span><input type="number" id="l2-rate" style="font-size:13px; padding:8px; text-align:center;" placeholder="Rate" onchange="saveSettings(); calc();"></div>
+                    <div><span class="input-label" style="text-align:center;">Total Pymts</span><input type="number" id="l2-total" style="font-size:13px; padding:8px; text-align:center;" placeholder="#" onchange="saveSettings(); calc();"></div>
                 </div>
-                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;">
-                    <div><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l2-borrow" placeholder="0.00" onchange="saveSettings(); calc();"></div>
+                <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px; align-items:flex-end;">
+                    <div style="text-align:center;"><span class="input-label" style="text-align:center;">Borrowed ($)</span><input type="number" id="l2-borrow" style="font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();"></div>
                     <div style="text-align:center;">
-                        <div class="bal-tooltip">
+                        <div class="bal-tooltip" style="display:block;">
                             <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TI ($)</span>
                             <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Interest</span>
                         </div>
-                        <input type="number" id="l2-ti" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                        <input type="number" id="l2-ti" style="text-align:center; font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();">
                     </div>
                     <div style="text-align:center;">
-                        <div class="bal-tooltip">
+                        <div class="bal-tooltip" style="display:block;">
                             <span class="input-label" style="text-align:center; display:inline-block; margin-bottom:4px;">TLC ($)</span>
                             <span class="bal-tooltiptext" style="bottom:120%; margin-left:-40px; width:80px;">Total Loan Cost</span>
                         </div>
-                        <input type="number" id="l2-tlc" style="text-align:center; font-size:12px;" placeholder="0.00" onchange="saveSettings(); calc();">
+                        <input type="number" id="l2-tlc" style="text-align:center; font-size:13px; padding:8px; text-align:center;" placeholder="0.00" onchange="saveSettings(); calc();">
                     </div>
+                </div>
+            </div>
+        </div></div>
+
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card4')"><span id="arrow-card4" class="arrow">▶</span><span class="pref-title">4. TAX</span></div><div id="card4" class="collapsible-content">
+            <div class="tab-sub-bar">
+                <button class="tab-sub active" id="ts-tax-smart" onclick="switchTaxMode('smart')">SMART ENGINE</button>
+                <button class="tab-sub" id="ts-tax-manual" onclick="switchTaxMode('manual')">MANUAL %</button>
+            </div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;">
+                <div><span class="input-label">City Tax %</span><input type="number" id="cityTaxRate" placeholder="2.5" onchange="calc(); saveSettings();" enterkeyhint="next"></div>
+                <div></div>
+            </div>
+            <div id="tax-view-smart" style="display:block;">
+                <span class="input-label" style="color:var(--accent);">W-4 Filing Status (Federal)</span>
+                <select id="filingStatus" onchange="calc(); saveSettings();">
+                    <option value="MFJ">Married Filing Jointly</option>
+                    <option value="S">Single / Married Separately</option>
+                    <option value="HOH">Head of Household</option>
+                </select>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:5px; margin-bottom:10px;">
+                    <div><span class="input-label">Step 3: Dependents ($)</span><input type="number" id="w4-step3" placeholder="0" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Step 4c: Extra W/H ($)</span><input type="number" id="w4-step4c" placeholder="0" onchange="calc(); saveSettings();"></div>
+                </div>
+
+                <div class="collapsible-header" onclick="document.getElementById('adv-tax').classList.toggle('show');" style="padding: 5px 0; border-bottom: 1px solid #333; padding-bottom: 10px; margin-bottom: 10px;">
+                    <span class="arrow">▶</span><span class="pref-title" style="color:var(--dim); font-size:0.65em;">ADVANCED W-4 OFFSETS</span>
+                </div>
+                <div id="adv-tax" class="collapsible-content" style="margin-bottom:15px;">
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                        <div><span class="input-label">Fed W-4 Step 4a: Other (Untaxed) Income</span><input type="number" id="w4-step4a" placeholder="0" onchange="calc(); saveSettings();"></div>
+                        <div><span class="input-label">Fed W-4 Step 4b: Tax Deductions</span><input type="number" id="w4-step4b" placeholder="0" onchange="calc(); saveSettings();"></div>
+                    </div>
+                </div>
+
+                <span class="input-label" style="color:var(--accent); display:block;">Ohio IT-4 Settings</span>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:5px;">
+                    <div><span class="input-label">Exemptions</span><input type="number" id="oh-exempt" value="0" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Extra W/H ($)</span><input type="number" id="oh-extra" placeholder="0" onchange="calc(); saveSettings();"></div>
+                </div>
+            </div>
+            <div id="tax-view-manual" style="display:none;">
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div><span class="input-label">Fed W/H %</span><input type="number" id="fedTaxRate" placeholder="0.00" onchange="calc(); saveSettings();"></div>
+                    <div><span class="input-label">Ohio W/H %</span><input type="number" id="stateTaxRate" placeholder="2.75" onchange="calc(); saveSettings();"></div>
+                </div>
+                <div id="rate-tool" class="rate-tool-box" style="display:block; margin-top:15px; margin-bottom:5px;">
+                    <div style="font-size:10px; color:#888; margin-bottom:5px;">Calculates rate based on Gross minus 401k Setting</div>
+                    <div style="display:grid; grid-template-columns: 1fr 1fr; gap:5px;"><input type="number" id="rt-gross" placeholder="Total Gross"><input type="number" id="rt-tax" placeholder="Tax Paid ($)"></div>
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-top:8px;"><button onclick="calcRateResult()" style="background:var(--accent); color:white; border:none; padding:6px 15px; border-radius:4px; font-weight:bold; font-size:12px;">CALCULATE</button><span id="rt-result" style="font-weight:800; color:var(--success); font-size:18px;">0.000%</span></div>
+                    <div class="rt-actions" style="grid-template-columns: 1fr 1fr;"><button class="apply-btn" onclick="applyRate('fedTaxRate')">SET FED RATE</button><button class="apply-btn" onclick="applyRate('stateTaxRate')">SET STATE RATE</button></div>
                 </div>
             </div>
             <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; border-top:1px solid #333; padding-top:10px; margin-top:10px;">
@@ -467,10 +548,40 @@
             <div style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:5px;"><div><span class="input-label">Dues %</span><input type="number" id="duesRate" placeholder="1.45" onchange="calc(); saveSettings();"></div><div><span class="input-label">Cap Factor</span><input type="number" id="duesCapFactor" placeholder="1.2923" onchange="calc(); saveSettings();"></div><div><span class="input-label">Hr Rate ($)</span><input type="number" id="duesHrRate" placeholder="0.02" onchange="calc(); saveSettings();"></div></div><div style="margin-top:5px; color:#666; font-size:10px;">App automatically selects the lower option between % of Gross vs. (Avg Hr Rate × Cap Factor).</div>
         </div></div>
 
+        <div class="pref-card"><div class="collapsible-header" onclick="toggleCard('card8')"><span id="arrow-card8" class="arrow">▶</span><span class="pref-title">8. EXPORT & SYSTEM BACKUP</span></div><div id="card8" class="collapsible-content">
+            <div style="margin-bottom:5px; color:var(--accent); font-size:10px; font-weight:bold; letter-spacing:1px;">PAYCHECK REPORTS</div>
+            <div style="margin-bottom:10px; color:#888; font-size:11px;">Human-readable text breakdown of all verified checks.</div>
+            <div style="display:flex; flex-direction:column; gap:8px; margin-bottom: 20px;">
+                <button class="apply-btn" style="background:var(--accent); color:#000; font-size:12px; padding:12px; font-weight:900;" onclick="exportData('clipboard')">📋 COPY TO CLIPBOARD</button>
+                <button class="apply-btn" style="background:#333; color:#fff; font-size:12px; padding:12px; font-weight:900; border:1px solid #555;" onclick="exportData('share')">📤 SHARE / SAVE REPORT</button>
+                <button class="apply-btn" style="background:transparent; color:var(--success); font-size:12px; padding:12px; font-weight:900; border:1px solid var(--success);" onclick="exportData('print')">🖨️ PRINT REPORT</button>
+            </div>
+
+            <div style="margin-bottom:5px; color:var(--warning); font-size:10px; font-weight:bold; letter-spacing:1px;">APP BACKUP & RESTORE</div>
+            <div style="margin-bottom:10px; color:#888; font-size:11px;">Machine-readable system files to protect and restore your data.</div>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+                <button class="apply-btn" style="background:var(--warning); color:#000; font-size:12px; padding:12px; font-weight:900;" onclick="backupSystemData()">💾 SAVE SYSTEM BACKUP</button>
+                <button class="apply-btn" style="background:transparent; color:var(--warning); font-size:12px; padding:12px; font-weight:900; border:1px solid var(--warning);" onclick="document.getElementById('restore-file-input').click()">📂 RESTORE FROM FILE</button>
+                <input type="file" id="restore-file-input" style="display:none;" accept=".json,.txt" onchange="restoreSystemData(event)">
+            </div>
+        </div></div>
+
         <button class="reset-btn" onclick="resetCheckData()">RESET ALL SAVED PAYCHECKS</button>
         <button class="reset-btn" style="margin-top: 15px; margin-bottom: 30px;" onclick="resetSettings()">RESET ALL APP SETTINGS</button>
     </div>
     <div id="vacation-view"><div class="nav-bar"><div class="nav-wrapper"><button class="back-btn" onclick="closeVacationView()">❮</button><div class="period-title"><span class="pt-main">VACATION PLANNER</span></div><button class="close-set-btn" onclick="closeVacationView()">DONE</button></div></div><div class="summary-box"><div class="sum-row" style="border-bottom:1px solid #333; padding-bottom:10px; margin-bottom:10px;"><span>Split Weeks (WAD):</span><select id="wad-select" style="width:100px; background:#222; border:none; color:var(--warning); font-weight:bold; padding:2px;" onchange="saveSettings(); updateVacSummary();"><option value="0">0 Weeks</option><option value="1">1 Week</option><option value="2">2 Weeks</option></select></div><div class="sum-row"><span>Entitlement:</span><span id="vac-total-ent" class="sum-val">0 Weeks</span></div><div class="sum-row" style="color:var(--success)"><span>Weeks Left:</span><span id="vac-blocks-left" class="sum-val">0</span></div><div class="sum-row" style="color:var(--warning)"><span>Days Left:</span><span id="vac-days-left" class="sum-val">0</span></div></div><div id="calendar-container"></div></div>
+
+    <div id="export-overlay" class="export-overlay">
+        <div class="export-header">
+            <span class="export-header-title">RAW DATA EXPORT</span>
+            <button class="export-close-btn" onclick="closeExportOverlay()">DONE</button>
+        </div>
+        <div style="background:#2a0000; color:var(--warning); padding:10px; font-size:11px; text-align:center; font-weight:bold; border-bottom:1px solid var(--danger);">
+            MOBILE OVERRIDE: Tap and hold the text below to Select All, Copy, or Save to Notes.
+        </div>
+        <textarea id="export-text-area" class="export-text-area" readonly></textarea>
+    </div>
+
     <div id="sunday-modal"><div class="modal-content"><h3 style="color:#fff; margin-top:0;">Sunday Selection</h3><p style="color:#888; font-size:12px;">Do you want to book the full week or just this day?</p><button class="modal-btn" style="background:var(--vacation); color:#fff;" onclick="confirmSunday(true)">BOOK FULL WEEK</button><button class="modal-btn" style="background:#333; color:#fff;" onclick="confirmSunday(false)">BOOK SINGLE DAY</button><button class="modal-btn" style="background:transparent; color:#888; border:1px solid #444;" onclick="document.getElementById('sunday-modal').style.display='none'">CANCEL</button></div></div>
     <div id="sm-modal"><div class="modal-content"><h3 style="color:#fff; margin-top:0;">Safety Meeting</h3><p style="color:#888; font-size:12px;">Does this meeting fall on a Holiday (2.5x)?</p><button class="modal-btn" style="background:var(--vacation); color:#fff;" onclick="confirmSM(true)">YES (2.5x HOLIDAY)</button><button class="modal-btn" style="background:#333; color:#fff;" onclick="confirmSM(false)">NO (1.5x STANDARD)</button></div></div>
     <div id="loan-cal-modal" class="loan-cal-modal">
@@ -505,13 +616,13 @@
             </div>
         </div>
     </div>
-    
+
 </div>
 <script>
     window.onerror = function(msg, url, line) { console.error("App Error: " + msg + " @ " + line); return false; };
     const ghostStyle = document.createElement('style');
     ghostStyle.innerHTML = `
-    
+
         .ghost-bubble { position: absolute; background: #ff6f00; color: #000; padding: 6px 10px; border-radius: 6px; font-weight: 900; font-size: 11px; z-index: 9999; pointer-events: none; border: 2px solid #fff; box-shadow: 0 0 15px rgba(255, 111, 0, 0.5); animation: floatUp 3s forwards; }
         @keyframes floatUp { 0% { opacity: 0; transform: translateY(0); } 10% { opacity: 1; transform: translateY(-10px); } 80% { opacity: 1; } 100% { opacity: 0; transform: translateY(-25px); } }
     `;
@@ -519,9 +630,9 @@
 
     // --- SMART TAX ENGINE DICTIONARY (2026 CALIBRATED PAYROLL VERSION) ---
     const taxDict = {
-        2026: { 
-            fed: { 
-                MFJ: { stdDed: 17200, brackets: [[0, 0.10], [23850, 0.12], [96950, 0.22], [201050, 0.24], [383900, 0.32], [487450, 0.35], [731200, 0.37]] }, 
+        2026: {
+            fed: {
+                MFJ: { stdDed: 17200, brackets: [[0, 0.10], [23850, 0.12], [96950, 0.22], [201050, 0.24], [383900, 0.32], [487450, 0.35], [731200, 0.37]] },
                 S:   { stdDed: 8600,  brackets: [[0, 0.10], [11925, 0.12], [48475, 0.22], [100525, 0.24], [191950, 0.32], [243725, 0.35], [609350, 0.37]] },
                 HOH: { stdDed: 12900, brackets: [[0, 0.10], [17000, 0.12], [60200, 0.22], [100500, 0.24], [191950, 0.32], [243700, 0.35], [609350, 0.37]] }
             },
@@ -529,18 +640,18 @@
         }
     };
 
-    let currentPeriodId = null, ledgerData = {}, days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], auditData = {}, lastCalcBreakdown = {}, lastCalcHours = {}, lastUsedDeductions = {}; 
-    const catMap = { pretax: ['k'], taxes: ['fed','fica','med','state','city'], posttax: ['dues','duesHr','life','addOpt','charity','l1','l2','garn'] };
-    const deductionLabels = { k:"401k Contribution", fed:"Fed W/H", state:"Ohio W/H", city:"ClvlndCityW/H", fica:"FICA EE", med:"Fed MWT EE (medicare)", dues:"USW Dues", duesHr:"USW Dues Hrs", life:"OPTL Life EE", addOpt:"Addl Optional", charity:"Charity", l1:"401K BU Loan 1", l2:"401K BU Loan 2", garn:"Garnishments" }, settingsMap = { state:'stateTaxRate', city:'cityTaxRate', dues:'duesRate', fed:'fedTaxRate' };
+    let currentPeriodId = null, ledgerData = {}, days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'], auditData = {}, lastCalcBreakdown = {}, lastCalcHours = {}, lastUsedDeductions = {};
+    const catMap = { pretax: ['k'], taxes: ['fed','fica','med','state','city'], posttax: ['roth','dues','duesHr','life','addOpt','charity','l1','l2','garn'] };
+    const deductionLabels = { k:"401k Contribution", fed:"Fed W/H", state:"Ohio W/H", city:"ClvlndCityW/H", fica:"FICA EE", med:"Fed MWT EE (medicare)", roth:"Roth / Post-Tax", dues:"USW Dues", duesHr:"USW Dues Hrs", life:"OPTL Life EE", addOpt:"Addl Optional", charity:"Charity", l1:"401K BU Loan 1", l2:"401K BU Loan 2", garn:"Garnishments" }, settingsMap = { state:'stateTaxRate', city:'cityTaxRate', dues:'duesRate', fed:'fedTaxRate' };
     const earningsOrder = ["MealTicket", "CallOut", "HolidayUH", "HolidayWk", "Overtime", "Sunday", "Vacation", "VacaBonus", "Regular", "ShiftDiff", "Incentive"];
-    
+
     const baseRates = { 5: 38.37, 4: 36.12, 3: 34.32, 2: 31.21, 1: 28.51 };
 
     function generateContractRows() {
         const container = document.getElementById('raise-rows-container');
         const term = parseInt(document.getElementById('contract-term').value) || 0;
         let html = "";
-        
+
         for (let i = 1; i <= term; i++) {
             html += `
             <div class="pref-card" style="padding:10px; margin-bottom:0; background:rgba(255,255,255,0.02);">
@@ -593,9 +704,10 @@
     }
 
     let currentYear = 2026;
-    let vacationDates = []; 
-    let currentOpenMonth = null; 
-    let sundayTargetDate = null; 
+    let masterVacationSilos = {}; // V3.8.0: Master object holding all years
+    let vacationDates = []; // Active array for the currently selected year
+    let currentOpenMonth = null;
+    let sundayTargetDate = null;
     let smTargetWeek = null;
     let shiftLengthPref = 12;
     let week1Open = false;
@@ -607,7 +719,7 @@
     function fmtS(d) { return `${d.getMonth()+1}/${d.getDate()}/${d.getFullYear().toString().substr(-2)}`; }
     function fmtM(d) { return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }); }
     function fmt(d) { return d.toISOString().split('T')[0]; }
-    
+
     function parseTimeInput(val) {
         if (!val) return 0;
         let valStr = val.toString();
@@ -638,7 +750,7 @@
         let annRate = parseFloat(document.getElementById(prefix+'-rate').value) || 0;
 
         if (total === 0 || !startStr || amount === 0) return { paid: 0, total: 0, rem: 0, bal: 0, txt: "" };
-        
+
         let startDate;
         if (startStr.includes('/')) {
             let p = startStr.split('/');
@@ -650,14 +762,14 @@
         let diffTime = checkDate - startDate;
         let periodsPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 14));
         if (periodsPassed < 0) periodsPassed = 0;
-        
+
         let currentPay = periodsPassed;
         if (currentPay > total) currentPay = total;
         let periodsLeft = total - currentPay;
-        
+
         // "Taken to Term" Balance
-        let toTermBalance = periodsLeft * amount; 
-        
+        let toTermBalance = periodsLeft * amount;
+
         // Live Payoff Balance (Amortization Math)
         let payoffBalance = toTermBalance; // Default fallback
         if (borrow > 0 && annRate > 0) {
@@ -671,10 +783,10 @@
             payoffBalance = borrow - (amount * currentPay);
             if (payoffBalance < 0) payoffBalance = 0;
         }
-        
+
         // Tooltip text NOW INCLUDES the To-Term Balance
         let txt = `${currentPay} Made. ${periodsLeft} Left. (To Term: ${f(toTermBalance)})`;
-        
+
         return { paid: currentPay, total: total, rem: periodsLeft, bal: payoffBalance, txt: txt };
     }
 
@@ -696,21 +808,21 @@ function isUnionHoliday(dateStr){
         let d=new Date(y,m,dy);
         let dw=d.getDay(), n=Math.ceil(dy/7);
         let e=getEaster(y), gf=new Date(e); gf.setDate(e.getDate()-2);
-        
+
         // Smart Fixed Holiday Check (Pushes Sundays to Monday)
         function isObserved(cM, cD) {
             let hd = new Date(y, cM, cD);
-            if (hd.getDay() === 0) { 
+            if (hd.getDay() === 0) {
                 let obs = new Date(y, cM, cD + 1);
                 return (m === obs.getMonth() && dy === obs.getDate());
             }
             return (m === cM && dy === cD);
         }
-        
+
         if(isObserved(0, 1)) return "New Years";
         if(isObserved(5, 19)) return "Juneteenth";
         if(isObserved(6, 4)) return "Independence";
-        
+
         // Christmas Eve / Day specific Sunday push logic
         let xEve = new Date(y, 11, 24), xDay = new Date(y, 11, 25);
         if (xEve.getDay() === 0) { // Eve is Sun -> Eve Mon, Day Tue
@@ -723,7 +835,7 @@ function isUnionHoliday(dateStr){
             if(m===11 && dy===24) return "Xmas Eve";
             if(m===11 && dy===25) return "Xmas Day";
         }
-        
+
         if(m==gf.getMonth()&&dy==gf.getDate()) return "Good Friday";
         if(m==0&&dw==1&&n==3) return "MLK Day";
         if(m==4&&dw==1&&dy+7>31) return "Memorial Day";
@@ -736,7 +848,7 @@ function isUnionHoliday(dateStr){
 
     const scheduleAnchor = new Date('2025-12-21T00:00:00');
     const cyclePatterns = [ [0,3,4], [1,2,3,4], [1,2,5,6], [0,5,6], [0,1,4,5], [2,3,4], [2,3,6], [0,1,5,6] ];
-    let periods = []; 
+    let periods = [];
 
     function genPeriods() {
         periods = [];
@@ -753,83 +865,83 @@ function isUnionHoliday(dateStr){
         }
     }
 
-    function init() { try { genPeriods(); loadLedger(); loadSettings(); renderYTD(); renderDashboard(); updateGhostRates(); } catch(e) { console.error(e); } }
-    function switchYear(val) { currentYear = parseInt(val); genPeriods(); init(); }
+    function init() { try { loadSettings(); genPeriods(); loadLedger(); renderYTD(); renderDashboard(); updateGhostRates(); } catch(e) { console.error(e); } }
+    function switchYear(val) { currentYear = parseInt(val); saveSettings(); genPeriods(); loadLedger(); renderYTD(); renderDashboard(); updateGhostRates(); }
     function quickSetYear(val) { if(val.length===4){let y=parseInt(val);if(y>1950&&y<2030){document.getElementById('hire-date').value=`${y}-01-01`;saveSettings();}}}
 
     function switchTab(t) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); 
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('tab-'+t).classList.add('active');
-        document.getElementById('check-list-container').style.display = 'none'; 
+        document.getElementById('check-list-container').style.display = 'none';
         document.getElementById('ytd-container').style.display = 'none';
-        document.getElementById('settings-view').style.display = 'none'; 
+        document.getElementById('settings-view').style.display = 'none';
         document.getElementById('vacation-view').style.display = 'none';
-        
-        if(t === 'checks') { 
+
+        if(t === 'checks') {
             document.getElementById('dash-header-est').style.display = 'block';
             document.getElementById('dash-header-ytd').style.display = 'none';
-            document.getElementById('dashboard-view').style.display = 'block'; 
-            document.getElementById('check-list-container').style.display = 'block'; 
-            renderDashboard(); 
+            document.getElementById('dashboard-view').style.display = 'block';
+            document.getElementById('check-list-container').style.display = 'block';
+            renderDashboard();
         }
-        else if(t === 'ytd') { 
+        else if(t === 'ytd') {
             document.getElementById('dash-header-est').style.display = 'none';
             document.getElementById('dash-header-ytd').style.display = 'block';
-            document.getElementById('dashboard-view').style.display = 'block'; 
-            document.getElementById('ytd-container').style.display = 'flex'; 
-            renderYTD(); 
+            document.getElementById('dashboard-view').style.display = 'block';
+            document.getElementById('ytd-container').style.display = 'flex';
+            renderYTD();
         }
     }
 
     function resetSingleCheck(id, event) {
-        event.stopPropagation(); 
+        event.stopPropagation();
         if(confirm(`⚠️ RESET Check #${id}?\n\nThis will clear all manual edits for this period.`)) {
             delete ledgerData[id]; delete auditData[id];
             localStorage.setItem(`ledger_${currentYear}_final`, JSON.stringify(ledgerData));
-            renderDashboard(); renderYTD(); 
+            renderDashboard(); renderYTD();
         }
     }
 
     function renderYTD() {
         try {
-            let yG = 0, yN = 0, cnt = 0; 
-            let yEarn = {}, yHrs = {}; 
+            let yG = 0, yN = 0, cnt = 0;
+            let yEarn = {}, yHrs = {};
             earningsOrder.forEach(k => { yEarn[k] = 0; yHrs[k] = 0; });
-            let yDed = { k:0, fed:0, state:0, city:0, fica:0, med:0, dues:0, duesHr:0, life:0, addOpt:0, charity:0, l1:0, l2:0, garn:0 };
-            let incentivePctSum = 0; let totalWorkedHours = 0; let yOTPrem = 0; 
+            let yDed = { k:0, fed:0, state:0, city:0, fica:0, med:0, roth:0, dues:0, duesHr:0, life:0, addOpt:0, charity:0, l1:0, l2:0, garn:0 };
+            let incentivePctSum = 0; let totalWorkedHours = 0; let yOTPrem = 0;
 
-            for (const [id, data] of Object.entries(ledgerData)) { 
-                if (data.inputs && data.inputs['verified-toggle']) { 
-                    yG += (data.gross || 0); yN += (data.net || 0); cnt++; 
-                    if (data.breakdown) { for(let k in yEarn) yEarn[k] += (data.breakdown[k] || 0); } 
-                    if (data.breakdownHrs) { 
+            for (const [id, data] of Object.entries(ledgerData)) {
+                if (data.inputs && data.inputs['verified-toggle']) {
+                    yG += (data.gross || 0); yN += (data.net || 0); cnt++;
+                    if (data.breakdown) { for(let k in yEarn) yEarn[k] += (data.breakdown[k] || 0); }
+                    if (data.breakdownHrs) {
                         for(let k in yHrs) {
-                            if (k === 'Incentive') incentivePctSum += (data.breakdownHrs[k] || 0); 
+                            if (k === 'Incentive') incentivePctSum += (data.breakdownHrs[k] || 0);
                             else if(yHrs.hasOwnProperty(k)) {
                                 yHrs[k] += (data.breakdownHrs[k] || 0);
                                 if (['Regular','Overtime','Sunday','CallOut','HolidayWk','Vacation','HolidayUH'].includes(k)) { totalWorkedHours += (data.breakdownHrs[k] || 0); }
                             }
                         }
                     }
-                    if (data.deductions) { for(let k in yDed) yDed[k] += (data.deductions[k] || 0); } 
+                    if (data.deductions) { for(let k in yDed) yDed[k] += (data.deductions[k] || 0); }
                     if(data.otPremium) yOTPrem += data.otPremium;
-                } 
+                }
             }
             document.getElementById('header-actual-gross').innerText = f(yG);
             document.getElementById('ytd-net-pay-display').innerText = f(yN); document.getElementById('ytd-check-count').innerText = cnt;
-            
-            // V 3.6.9 BRAIN-BODY SYNC: Points to the new "top" IDs we built in the HTML
-            document.getElementById('ytd-top-hours').innerText = totalWorkedHours.toFixed(2); 
-            document.getElementById('ytd-top-gross').innerText = f(yG);
-            document.getElementById('ytd-ot-premium').innerText = f(yOTPrem); 
 
-            let eHTML = ""; 
+            // V 3.6.9 BRAIN-BODY SYNC: Points to the new "top" IDs we built in the HTML
+            document.getElementById('ytd-top-hours').innerText = totalWorkedHours.toFixed(2);
+            document.getElementById('ytd-top-gross').innerText = f(yG);
+            document.getElementById('ytd-ot-premium').innerText = f(yOTPrem);
+
+            let eHTML = "";
             earningsOrder.forEach(k => {
                 let displayMid = "--";
-                if (k === 'Incentive') { if (cnt > 0) displayMid = (incentivePctSum / (cnt * 2)).toFixed(2) + "%"; } 
-                else if (k === 'VacaBonus') { displayMid = yHrs[k].toFixed(0); } 
+                if (k === 'Incentive') { if (cnt > 0) displayMid = (incentivePctSum / (cnt * 2)).toFixed(2) + "%"; }
+                else if (k === 'VacaBonus') { displayMid = yHrs[k].toFixed(0); }
                 else if (k === 'MealTicket') { displayMid = yHrs[k].toFixed(0); }
-                else { displayMid = yHrs[k].toFixed(2); } 
+                else { displayMid = yHrs[k].toFixed(2); }
                 eHTML += `<div class="eg-row"><span class="eg-label">${k}</span><span class="eg-units">${displayMid}</span><span class="eg-amt">${f(yEarn[k])}</span></div>`;
             });
             document.getElementById('ytd-earnings-rows').innerHTML = eHTML;
@@ -838,7 +950,7 @@ function isUnionHoliday(dateStr){
             catMap.pretax.forEach(k => { preHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail"></div><span class="dg-amt">${f(yDed[k])}</span></div>`; });
             catMap.posttax.forEach(k => {
                 let detail = "";
-                postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`; 
+                postHTML += `<div class="dg-row"><span class="dg-label">${deductionLabels[k]}</span><div class="dg-detail">${detail}</div><span class="dg-amt">${f(yDed[k])}</span></div>`;
             });
             document.getElementById('ytd-posttax-rows').innerHTML = postHTML;
             document.getElementById('ytd-tax-rows').innerHTML = taxHTML;
@@ -849,8 +961,8 @@ function isUnionHoliday(dateStr){
     function renderDashboard() {
         const container = document.getElementById('check-list-container'); container.innerHTML = '';
         let today = new Date().toISOString().split('T')[0];
-        let totalEstGrossVal = 0; 
-        
+        let totalEstGrossVal = 0;
+
         let dists = JSON.parse(localStorage.getItem('app_settings_v30'))?.distAccounts || [];
         let distTotal = dists.reduce((sum, d) => sum + d.amt, 0);
 
@@ -862,41 +974,41 @@ function isUnionHoliday(dateStr){
             let val = isDone ? f(data.net) : "--";
             let statusClass = "";
             if (isVerified) statusClass = "verified"; else if (isDone) statusClass = "estimated"; else if (today >= p.start && today <= p.end) statusClass = "current";
-            
+
             // SCAN THE 14 DAYS FOR VACATIONS AND HOLIDAYS (SPLIT WEEK)
             let isVac = false;
             let hasHolW1 = false;
             let hasHolW2 = false;
             let pS = new Date(p.start);
-            
-            for(let i=0; i<14; i++) { 
+
+            for(let i=0; i<14; i++) {
                 let dStr = fmt(pS);
-                if(vacationDates.includes(dStr)) isVac = true; 
+                if(vacationDates.includes(dStr)) isVac = true;
                 if(isUnionHoliday(dStr)) {
                     if (i < 7) hasHolW1 = true;
                     else hasHolW2 = true;
                 }
-                pS.setDate(pS.getDate()+1); 
+                pS.setDate(pS.getDate()+1);
             }
             if(isVac) statusClass += " vacation-active";
-            
+
             let w1Style = hasHolW1 ? "color: #ba68c8; font-weight: bold;" : "";
             let w2Style = hasHolW2 ? "color: #ba68c8; font-weight: bold;" : "";
-            
+
             let splitDates = p.fullRange.split(' - ');
             let customRangeHTML = `<span style="${w1Style}">${splitDates[0]}</span> - <span style="${w2Style}">${splitDates[1]}</span>`;
-            
+
             let depBadge = "";
             if(isDone) {
                 let mainDep = Math.max(0, data.net - distTotal);
                 depBadge = `<div class="deposit-badge">Main Deposit: ${f(mainDep)}</div>`;
             }
-            
+
             container.innerHTML += `<div class="pay-card ${statusClass} ${p.isEarly?'early-pay':''}" onclick="openPeriod(${p.id})" data-ref-section="Dashboard" data-ref-selector=".pay-card"><div class="date-badge" onclick="resetSingleCheck(${p.id}, event)">#${p.id}</div><div class="card-info"><span class="pay-date-label">${p.payDate} Paycheck</span><span class="period-range">${customRangeHTML}</span>${depBadge}</div><div class="card-total">${val}</div></div>`;
         });
-        
+
         document.getElementById('header-est-gross').innerText = f(totalEstGrossVal);
-        autoScroll(); 
+        autoScroll();
     }
 
     function toggleMainHeader(show) {
@@ -909,45 +1021,46 @@ function isUnionHoliday(dateStr){
         toggleMainHeader(false);
         document.getElementById('dashboard-view').style.display = 'none'; document.getElementById('calculator-view').style.display = 'block';
         document.getElementById('calc-title-date').innerText = p.payDate.toUpperCase() + " PAYCHECK"; document.getElementById('calc-title-range').innerText = p.fullRange;
-        renderCalculator(p.startDateObj); renderDeductionRows(); 
-        
+        renderCalculator(p.startDateObj); renderDeductionRows();
+
         // Paint shift attributes every time, but only wipe inputs if it's a brand new check
         applySchedule(p.startDateObj, (ledgerData[id] ? false : true));
-        
+
         if (ledgerData[id]) loadPeriodData(id);
         calc(); window.scrollTo(0,0);
     }
 
-    function saveAndClose() { 
-        let pData = { inputs: {}, gross: 0, net: 0, actuals: {}, breakdown: {}, breakdownHrs: {}, deductions: {} }; 
-        document.querySelectorAll('#calculator-view input:not(.d-input), #calculator-view select').forEach(el => { if(el.type === 'checkbox') pData.inputs[el.id] = el.checked; else pData.inputs[el.id] = el.value; }); 
-        document.querySelectorAll('.btn-12').forEach(b => { if(b.classList.contains('active')) pData.inputs[b.id] = true; }); 
-        pData.actuals = auditData[currentPeriodId] || {}; 
-        pData.inputs['audit-toggle'] = document.getElementById('audit-toggle').checked; 
-        pData.inputs['verified-toggle'] = document.getElementById('verified-toggle').checked; 
-        pData.gross = parseFloat(document.getElementById('grossDisplay').innerText.replace(/[^0-9.-]+/g,"")) || 0; 
-        pData.net = parseFloat(document.getElementById('netDisplay').innerText.replace(/[^0-9.-]+/g,"")) || 0; 
-        pData.breakdown = lastCalcBreakdown; 
+    function saveAndClose() {
+        let pData = { inputs: {}, gross: 0, net: 0, actuals: {}, breakdown: {}, breakdownHrs: {}, deductions: {} };
+        document.querySelectorAll('#calculator-view input:not(.d-input), #calculator-view select').forEach(el => { if(el.type === 'checkbox') pData.inputs[el.id] = el.checked; else pData.inputs[el.id] = el.value; });
+        document.querySelectorAll('.btn-12').forEach(b => { if(b.classList.contains('active')) pData.inputs[b.id] = true; });
+        pData.actuals = auditData[currentPeriodId] || {};
+        pData.inputs['audit-toggle'] = document.getElementById('audit-toggle').checked;
+        pData.inputs['verified-toggle'] = document.getElementById('verified-toggle').checked;
+        pData.gross = parseFloat(document.getElementById('grossDisplay').innerText.replace(/[^0-9.-]+/g,"")) || 0;
+        pData.net = parseFloat(document.getElementById('netDisplay').innerText.replace(/[^0-9.-]+/g,"")) || 0;
+        pData.breakdown = lastCalcBreakdown;
         let totalOTPay = lastCalcBreakdown.Overtime || 0;
         pData.otPremium = totalOTPay / 3;
-        pData.breakdownHrs = lastCalcHours; 
-        pData.deductions = lastUsedDeductions; 
-        ledgerData[currentPeriodId] = pData; 
-        localStorage.setItem(`ledger_${currentYear}_final`, JSON.stringify(ledgerData)); 
-        
-        document.getElementById('calculator-view').style.display = 'none'; 
+        pData.breakdownHrs = lastCalcHours;
+        pData.deductions = lastUsedDeductions;
+        ledgerData[currentPeriodId] = pData;
+        localStorage.setItem(`ledger_${currentYear}_final`, JSON.stringify(ledgerData));
+
+        document.getElementById('calculator-view').style.display = 'none';
         toggleMainHeader(true);
-        document.getElementById('dashboard-view').style.display = 'block'; 
-        renderDashboard(); 
+        document.getElementById('dashboard-view').style.display = 'block';
+        renderDashboard();
     }
 
     function openSettings() { toggleMainHeader(false); document.getElementById('dashboard-view').style.display='none'; document.getElementById('settings-view').style.display='block'; window.scrollTo(0,0); }
-    function closeSettings() { 
+    function closeSettings() { 
         // Force an overarching save to finalize any on-the-fly typing that missed the trigger.
         saveSettings();
-        document.getElementById('settings-view').style.display='none'; 
-        toggleMainHeader(true); 
-        document.getElementById('dashboard-view').style.display='block'; 
+        document.getElementById('settings-view').style.display='none'; 
+        toggleMainHeader(true); 
+        document.getElementById('dashboard-view').style.display='block'; 
+        renderDashboard(); // Instantly paints newly selected vacations orange
     }
 
     // --- V 3.7.X MASTER BASELINE GRID ---
@@ -989,7 +1102,7 @@ function isUnionHoliday(dateStr){
         let html = '';
         const dayLabels = ['S','M','T','W','T','F','S'];
         html += `<div style="display:grid; grid-template-columns:30px repeat(7, 1fr); gap:4px; text-align:center; font-size:10px; font-weight:bold; color:#888; margin-bottom:5px;"><div>WK</div>` + dayLabels.map(d=>`<div>${d}</div>`).join('') + `</div>`;
-        
+
         for(let w=0; w<8; w++) {
             html += `<div style="display:grid; grid-template-columns:30px repeat(7, 1fr); gap:4px; align-items:center; margin-bottom:4px;">`;
             html += `<div style="color:var(--accent); font-size:11px; font-weight:bold; text-align:center;">W${w}</div>`;
@@ -1029,48 +1142,48 @@ function isUnionHoliday(dateStr){
     }
     // -----------------------------
 
-    function applySchedule(periodStart, clearInputs = true) { 
-        try { 
+    function applySchedule(periodStart, clearInputs = true) {
+        try {
             if (clearInputs) {
-                document.querySelectorAll('#calculator-view input').forEach(el => { 
-                    if(el.type=='checkbox') el.checked=false; 
-                    else if(el.type!='hidden' && !el.classList.contains('d-input')) el.value=""; 
-                }); 
+                document.querySelectorAll('#calculator-view input').forEach(el => {
+                    if(el.type=='checkbox') el.checked=false;
+                    else if(el.type!='hidden' && !el.classList.contains('d-input')) el.value="";
+                });
                 document.querySelectorAll('.v3-input').forEach(s => s.value = "");
             }
-            
-            document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = "12 HR"; }); 
-            
-            document.querySelectorAll('.day-card').forEach(c => { 
-                c.classList.remove('ro-active'); c.classList.remove('status-hol'); c.classList.remove('status-xtra'); 
-                c.classList.remove('status-vac'); c.classList.remove('hol-worked'); c.classList.remove('hol-unworked'); 
-            }); 
-            
+
+            document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = "12 HR"; });
+
+            document.querySelectorAll('.day-card').forEach(c => {
+                c.classList.remove('ro-active'); c.classList.remove('status-hol'); c.classList.remove('status-xtra');
+                c.classList.remove('status-vac'); c.classList.remove('hol-worked'); c.classList.remove('hol-unworked');
+            });
+
             let defInc = document.getElementById('defInc').value;
-            if(defInc) { 
-                let b1 = document.getElementById('bonus-1'); if(b1) b1.value = defInc; 
-                let b2 = document.getElementById('bonus-2'); if(b2) b2.value = defInc; 
+            if(defInc) {
+                let b1 = document.getElementById('bonus-1'); if(b1) b1.value = defInc;
+                let b2 = document.getElementById('bonus-2'); if(b2) b2.value = defInc;
             }
 
             let crewEl = document.getElementById('crew-select');
             let crew = crewEl ? crewEl.value : 'A';
             let offset = (crew === 'B') ? 2 : (crew === 'C') ? 4 : (crew === 'A') ? 6 : 0;
-            
+
             let set = JSON.parse(localStorage.getItem('app_settings_v30') || '{}');
-            let activeMatrix = [...defaultMatrix]; 
-            let activeAnchor = scheduleAnchor; 
+            let activeMatrix = [...defaultMatrix];
+            let activeAnchor = scheduleAnchor;
 
             if (set.hasOverride || crew === 'Custom') {
                 if (set.customMatrix && set.customMatrix.length === 56) activeMatrix = set.customMatrix;
                 if (set.customAnchor) activeAnchor = new Date(set.customAnchor + 'T00:00:00');
             }
-            
+
             if (crew !== 'Custom' && !set.hasOverride) {
                 activeAnchor = scheduleAnchor;
             } else if (crew === 'Custom') {
                 offset = 0;
             }
-            
+
             // If the user explicitly selects A, B, C, or D, we force the baseline anchor to keep them in sync
             if (crew !== 'Custom' && !set.hasOverride) {
                 activeAnchor = scheduleAnchor;
@@ -1083,9 +1196,9 @@ function isUnionHoliday(dateStr){
 
             document.querySelectorAll('.btn-12').forEach(b => { b.classList.remove('active'); b.innerText = btnText; });
 
-            let diffTime = periodStart - activeAnchor; 
+            let diffTime = periodStart - activeAnchor;
             let diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
-            let weeksPassed = Math.floor(diffDays / 7); 
+            let weeksPassed = Math.floor(diffDays / 7);
             let adjustedWeek = ((weeksPassed + offset) % 8 + 8) % 8;
 
             let payMatrix = new Array(14).fill('X');
@@ -1097,18 +1210,18 @@ function isUnionHoliday(dateStr){
 
             for(let w=1; w<=2; w++) {
                 let startIdx = (w===1) ? 0 : 7;
-                for(let d=0; d<7; d++) { 
+                for(let d=0; d<7; d++) {
                     let card = document.getElementById('card-' + w + '-' + d);
                     let dateStr = card.getAttribute('data-date').split('T')[0];
                     let btn = document.getElementById('btn-' + w + '-' + d);
-                    
+
                     let shiftType = payMatrix[startIdx + d];
                     card.setAttribute('data-shift', shiftType);
                     let isScheduled = (shiftType === 'D' || shiftType === 'N');
-                    
+
                     let isVac = vacationDates.includes(dateStr);
                     let sysHolName = isUnionHoliday(dateStr);
-                    
+
                     let holCheck = document.getElementById('hol-' + w + '-' + d);
                     let vdCheck = document.getElementById('vd-' + w + '-' + d);
 
@@ -1126,32 +1239,32 @@ function isUnionHoliday(dateStr){
                     }
                 }
             }
-            calc(); 
-        } catch(e) { console.error("Schedule Error: " + e.message); alert("Schedule Error: " + e.message); } 
+            calc();
+        } catch(e) { console.error("Schedule Error: " + e.message); alert("Schedule Error: " + e.message); }
     }
-    
+
     function forceSchedule() { if(confirm("Force reload schedule?")) { applySchedule(periods[currentPeriodId-1].startDateObj); } }
 
-    function renderDeductionRows() { 
-        const container = document.getElementById('summary-deductions'); 
+    function renderDeductionRows() {
+        const container = document.getElementById('summary-deductions');
         if(!container) return;
-        container.innerHTML = ""; 
-        const groups = [ { key: 'pretax', title: 'PRE-TAX DEDUCTIONS' }, { key: 'taxes', title: 'TAXES' }, { key: 'posttax', title: 'POST-TAX DEDUCTIONS' } ]; 
-        
+        container.innerHTML = "";
+        const groups = [ { key: 'pretax', title: 'PRE-TAX DEDUCTIONS' }, { key: 'taxes', title: 'TAXES' }, { key: 'posttax', title: 'POST-TAX DEDUCTIONS' } ];
+
         // Flatten list for turbo navigation
         let inputOrder = [];
         groups.forEach(g => catMap[g.key].forEach(k => inputOrder.push(`in-${k}`)));
 
-        groups.forEach(group => { 
-            let box = document.createElement('div'); box.className = 'stub-box'; 
-            let header = document.createElement('div'); header.className = 'stub-header'; header.innerText = group.title; box.appendChild(header); 
-            catMap[group.key].forEach(k => { 
-                let row = document.createElement('div'); row.className = 'deduction-line'; 
-                row.innerHTML = `<div class="d-label">${deductionLabels[k]}</div><div class="d-detail" id="detail-${k}"></div><div class="d-est" id="est-${k}">$0.00</div><input type="number" class="d-input" id="in-${k}" placeholder="0.00" oninput="updateAudit('${k}', this.value)" enterkeyhint="next"><div class="d-delta" id="delta-${k}"></div><button class="d-action" id="action-${k}">↺ RATE</button>`; 
-                box.appendChild(row); 
-            }); 
-            container.appendChild(box); 
-        }); 
+        groups.forEach(group => {
+            let box = document.createElement('div'); box.className = 'stub-box';
+            let header = document.createElement('div'); header.className = 'stub-header'; header.innerText = group.title; box.appendChild(header);
+            catMap[group.key].forEach(k => {
+                let row = document.createElement('div'); row.className = 'deduction-line';
+                row.innerHTML = `<div class="d-label">${deductionLabels[k]}</div><div class="d-detail" id="detail-${k}"></div><div class="d-est" id="est-${k}">$0.00</div><input type="number" class="d-input" id="in-${k}" placeholder="0.00" oninput="updateAudit('${k}', this.value)" enterkeyhint="next"><div class="d-delta" id="delta-${k}"></div><button class="d-action" id="action-${k}">↺ RATE</button>`;
+                box.appendChild(row);
+            });
+            container.appendChild(box);
+        });
 
         // Apply Daisy Chain logic
         inputOrder.forEach((id, idx) => {
@@ -1176,13 +1289,13 @@ function isUnionHoliday(dateStr){
         let btn = document.getElementById(`btn-${w}-${d}`);
         let val = document.getElementById(`time-${w}-${d}`).value;
         if (val !== "") {
-            btn.classList.add('active'); 
-            btn.innerText = val + " HR"; 
+            btn.classList.add('active');
+            btn.innerText = val + " HR";
         } else {
-            btn.classList.remove('active'); 
+            btn.classList.remove('active');
             btn.innerText = "12 HR";
         }
-        calc(); 
+        calc();
     }
 
     function renderCalculator(pStart) {
@@ -1213,11 +1326,11 @@ function isUnionHoliday(dateStr){
                 let isSun = (day === 'Sun'), dateNum = cur.getDate();
                 let curDateStr = cur.toISOString().split('T')[0];
                 let isHol = isUnionHoliday(curDateStr);
-                
+
                 let holHTML = isSun ? '' : `<label class="cb-label hol"><input type="checkbox" id="hol-${w}-${i}" onchange="toggleSmart(${w},${i})">HOL</label>`;
                 let dqHTML = '';
                 if (isHol) { dqHTML = `<label class="cb-label ro" style="border-color:#ff5252; color:#ff5252; margin-left:2px;"><input type="checkbox" id="dq-${w}-${i}" onchange="calc()">DQ</label>`; }
-                
+
                 container.innerHTML += `
                 <div class="day-card" id="card-${w}-${i}" data-date="${cur.toISOString()}" data-ref-section="Day Card" data-ref-selector=".day-card">
                     <div class="day-label-col"><div class="day-name-part">${day}</div><div class="day-date-part">${dateNum}</div></div>
@@ -1271,24 +1384,24 @@ function isUnionHoliday(dateStr){
             if(disp) disp.innerText = 'Vacation Rate: ' + fR(finalVac) + ' / hr';
         } catch(e) { console.log("Vacation UI Update skipped"); }
     }
-    
+
     function toggleSmart(w, d) {
         let xtra = document.getElementById('extra-' + w + '-' + d).checked;
         let hol = document.getElementById('hol-' + w + '-' + d);
-        let isHol = hol ? hol.checked : false; 
+        let isHol = hol ? hol.checked : false;
         let btn = document.getElementById('btn-' + w + '-' + d);
         let timeInput = document.getElementById('time-' + w + '-' + d);
 
         if (xtra || isHol) {
             btn.classList.add('active');
             btn.innerText = "12 HR";
-            timeInput.value = ""; 
+            timeInput.value = "";
         } else {
             btn.classList.remove('active');
             btn.innerText = "12 HR";
             timeInput.value = "";
         }
-        calc(); 
+        calc();
     }
 
     function calc() {
@@ -1305,7 +1418,7 @@ function isUnionHoliday(dateStr){
             let workRate = (schedLvl == 0) ? bidRate : getRate(schedLvl);
             let prevW2 = parseFloat(document.getElementById('prevW2').value) || 0;
             let vacHourly = Math.max(bidRate, (prevW2 * 0.02) / 40);
-            
+
             let pStart = periods[currentPeriodId-1].startDateObj;
             for(let w=1; w<=2; w++) {
                 let isFullWeekOrange = true;
@@ -1324,19 +1437,19 @@ function isUnionHoliday(dateStr){
                     let card = document.getElementById(`card-${w}-${d}`);
                     let btn = document.getElementById(`btn-${w}-${d}`);
                     let inputVal = document.getElementById('time-'+w+'-'+d).value;
-                    let timeHrs = parseTimeInput(inputVal); 
-                    
+                    let timeHrs = parseTimeInput(inputVal);
+
                     let roCheck = document.getElementById(`ro-${w}-${d}`);
                     let xtraCheck = document.getElementById(`extra-${w}-${d}`);
                     let holCheck = document.getElementById(`hol-${w}-${d}`);
-                    let dqCheck = document.getElementById(`dq-${w}-${d}`); 
-                    let mtCheck = document.getElementById(`mt-${w}-${d}`); 
+                    let dqCheck = document.getElementById(`dq-${w}-${d}`);
+                    let mtCheck = document.getElementById(`mt-${w}-${d}`);
                     let vacCheck = document.getElementById(`vd-${w}-${d}`);
                     let ghostCheck = document.getElementById(`ghost-${w}-${d}`);
-                    
+
                     let ro = roCheck.checked;
                     let isGhost = ghostCheck ? ghostCheck.checked : false;
-                    let xtra = xtraCheck ? xtraCheck.checked : false; 
+                    let xtra = xtraCheck ? xtraCheck.checked : false;
                     let isHol = holCheck ? holCheck.checked : false;
                     let isVD = vacCheck ? vacCheck.checked : false;
                     let isVac = (isVW || isVD || vacationDates.includes(card.getAttribute('data-date').split('T')[0]));
@@ -1352,7 +1465,7 @@ function isUnionHoliday(dateStr){
 
                     toggleBtnMU.classList.remove('glow-blue');
                     toggleBtnES.classList.remove('glow-green');
-                    
+
                     if (stepH !== "" || stepR !== "0") { toggleBtnMU.classList.add('glow-blue'); }
                     if ((esH !== "" || esV !== "0") || (mtCheck && mtCheck.checked)) { toggleBtnES.classList.add('glow-green'); }
 
@@ -1366,13 +1479,13 @@ function isUnionHoliday(dateStr){
                         }
                     }
 
-                    card.className = 'day-card'; 
-                    btn.classList.remove('btn-green', 'btn-purple'); 
+                    card.className = 'day-card';
+                    btn.classList.remove('btn-green', 'btn-purple');
                     let sysHolName = isUnionHoliday(dateStr.split('T')[0]);
 
-                    if (isHol || sysHolName) { card.classList.add('status-hol'); } 
-                    else if (xtra) { card.classList.add('status-xtra'); } 
-                    else if (isVac) { card.classList.add('status-vac'); } 
+                    if (isHol || sysHolName) { card.classList.add('status-hol'); }
+                    else if (xtra) { card.classList.add('status-xtra'); }
+                    else if (isVac) { card.classList.add('status-vac'); }
                     else if (ro) { card.classList.add('ro-active'); }
 
                     let dShift = card.getAttribute('data-shift');
@@ -1380,21 +1493,21 @@ function isUnionHoliday(dateStr){
                     if (dShift === 'D') card.classList.add('day-shift');
 
                     if (hasMainShift) {
-                        btn.classList.add('active'); 
-                        if (isHol || sysHolName) { btn.classList.add('btn-purple'); } 
-                        else if (xtra) { btn.classList.add('btn-green'); } 
+                        btn.classList.add('active');
+                        if (isHol || sysHolName) { btn.classList.add('btn-purple'); }
+                        else if (xtra) { btn.classList.add('btn-green'); }
                         else { card.classList.add('status-worked'); }
                     } else {
                         btn.classList.remove('active');
                         if (!(isHol || sysHolName) && !isVac && hasWork) { card.classList.add('status-worked'); }
                     }
-                    
+
                     dayMap.push({ w: w, d: d, date: new Date(dateStr), ro: ro, hasWork: hasWork, xtra: xtra, isScheduled: (hasMainShift || ro) && !xtra, timeHrs: timeHrs, dq: (dqCheck && dqCheck.checked), mt: (mtCheck && mtCheck.checked), isVac: isVac, isGhost: isGhost });
                 }
             }
 
             let GT = { rH:0, rC:0, vH:0, vC:0, oH:0, oC:0, cH:0, cC:0, sH:0, sC:0, hH:0, hC:0, uhH:0, uhC:0, incC:0, vbC:0, mtH:0, mtC:0 };
-            
+
             for (let i = 0; i < 14; i++) {
                 let dayObj = dayMap[i];
                 let card = document.getElementById(`card-${dayObj.w}-${dayObj.d}`);
@@ -1403,7 +1516,7 @@ function isUnionHoliday(dateStr){
                 card.classList.remove('hol-worked', 'hol-unworked');
                 let isHoliday = (sysHolName !== null) || (holCheck && holCheck.checked);
                 dayObj.uhHrs = 0;
-                if (isHoliday) { 
+                if (isHoliday) {
                     let disqualified = dayObj.dq;
                     if (!disqualified && !dayObj.isVac) {
                         for (let b = i - 1; b >= 0; b--) { if (dayMap[b].isScheduled) { if (dayMap[b].ro) disqualified = true; break; } }
@@ -1414,9 +1527,9 @@ function isUnionHoliday(dateStr){
                     if (!disqualified) {
                         let esH = parseFloat(document.getElementById(`es-hrs-${dayObj.w}-${dayObj.d}`).value) || 0;
                         let totWorked = dayObj.timeHrs + esH;
-                        if (totWorked === 0) { if (!dayObj.isVac) card.classList.add('hol-unworked'); dayObj.uhHrs = 8; } 
+                        if (totWorked === 0) { if (!dayObj.isVac) card.classList.add('hol-unworked'); dayObj.uhHrs = 8; }
                         else { card.classList.add('hol-worked'); if (totWorked < 8 && !dayObj.ro) { dayObj.uhHrs = 8 - totWorked; } }
-                    } 
+                    }
                 }
             }
 
@@ -1428,7 +1541,7 @@ function isUnionHoliday(dateStr){
                 let bPct = (parseFloat(document.getElementById('bonus-'+w).value)||0) / 100;
                 let vacBonus = 0, buck = 0;
 
-                for(let i=(w-1)*7; i<(w*7); i++) { 
+                for(let i=(w-1)*7; i<(w*7); i++) {
                     let dObj = dayMap[i];
                     if(dObj.uhHrs > 0) { wk.uhH += dObj.uhHrs; wk.uhC += (bidRate * dObj.uhHrs); }
                     if(dObj.mt) { wk.mtH += 1; wk.mtC += mtVal; }
@@ -1440,14 +1553,14 @@ function isUnionHoliday(dateStr){
                         let dIdx = (w-1)*7 + d; let dObj = dayMap[dIdx];
                         if (document.getElementById(`ro-${w}-${d}`).checked) continue;
                         if(dObj.isVac) { wk.vC += (vacHourly * 8); wk.vH += 8; continue; }
-                        if(dObj.isGhost) { 
+                        if(dObj.isGhost) {
                             let miscType = document.getElementById('misc-'+w).value;
                             let stipend = (miscType === 'jd') ? (parseFloat(document.getElementById('stipend-'+w).value) || 0) : 0;
                             wk.rC += (12 * workRate) - stipend; wk.rH += 12; wk.incC += (12 * workRate) - stipend; continue;
                         }
                         let tH = dObj.timeHrs; if(!dObj.hasWork) continue;
                         let exV = document.getElementById(`extra-rate-${w}-${d}`).value;
-                        let eR = (exV != "0") ? getRate(exV) : workRate; 
+                        let eR = (exV != "0") ? getRate(exV) : workRate;
                         let stH = parseFloat(document.getElementById(`step-hrs-${w}-${d}`).value) || 0;
                         let stV = document.getElementById(`step-rate-${w}-${d}`).value;
                         let stR = (stV != "0") ? getRate(stV) : 0;
@@ -1456,29 +1569,29 @@ function isUnionHoliday(dateStr){
                         let esR = (esV != "0") ? getRate(esV) : workRate;
 
                         if(document.getElementById(`call-${w}-${d}`).checked) { wk.cC += (eR * 2); wk.cH += 2; }
-                        let isHoliday = (document.getElementById(`hol-${w}-${d}`)?.checked) || isUnionHoliday(dObj.date.toISOString().split('T')[0]); 
+                        let isHoliday = (document.getElementById(`hol-${w}-${d}`)?.checked) || isUnionHoliday(dObj.date.toISOString().split('T')[0]);
                         let fills = (d === 0) ? true : !dObj.xtra;
 
                         for (let b = 1; b <= Math.ceil(tH * 4); b++) {
                             let chunk = (b * 0.25 > tH) ? (tH - ((b-1) * 0.25)) : 0.25;
-                            let h = b / 4; 
-                            let curR = (h > (tH - stH) && stR > 0) ? stR : eR; 
+                            let h = b / 4;
+                            let curR = (h > (tH - stH) && stR > 0) ? stR : eR;
                             if (h > tripwireLimit && !isHoliday && !dObj.xtra) { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); continue; }
-                            if (isHoliday) { wk.hC += (curR * 2.5 * chunk); wk.hH += chunk; wk.incC += (curR * 2.5 * chunk); if(fills) buck += chunk; } 
-                            else if (dObj.xtra) { 
-    if(d===0) { 
-        wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); 
+                            if (isHoliday) { wk.hC += (curR * 2.5 * chunk); wk.hH += chunk; wk.incC += (curR * 2.5 * chunk); if(fills) buck += chunk; }
+                            else if (dObj.xtra) {
+    if(d===0) {
+        wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk);
         if(fills) buck += chunk; // SURGICAL STRIKE: Sunday XTRA now fills the bucket!
-    } else { 
-        wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); 
-    } 
-} 
+    } else {
+        wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk);
+    }
+}
                             else {
                                 let space = Math.max(0, 40.00 - buck);
-                                if (d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); if(fills) buck += chunk; } 
+                                if (d===0) { wk.sC += (curR * 1.5 * chunk); wk.sH += chunk; wk.incC += (curR * 1.5 * chunk); if(fills) buck += chunk; }
                                 else {
-                                    if (space >= chunk) { wk.rC += (curR * chunk); wk.rH += chunk; wk.incC += (curR * chunk); if(fills) buck += chunk; } 
-                                    else if (space > 0) { wk.rC += (curR * space); wk.rH += space; wk.incC += (curR * space); wk.oC += (curR * 1.5 * (chunk - space)); wk.oH += (chunk - space); wk.incC += (curR * 1.5 * (chunk - space)); if(fills) buck += space; } 
+                                    if (space >= chunk) { wk.rC += (curR * chunk); wk.rH += chunk; wk.incC += (curR * chunk); if(fills) buck += chunk; }
+                                    else if (space > 0) { wk.rC += (curR * space); wk.rH += space; wk.incC += (curR * space); wk.oC += (curR * 1.5 * (chunk - space)); wk.oH += (chunk - space); wk.incC += (curR * 1.5 * (chunk - space)); if(fills) buck += space; }
                                     else { wk.oC += (curR * 1.5 * chunk); wk.oH += chunk; wk.incC += (curR * 1.5 * chunk); }
                                 }
                             }
@@ -1486,13 +1599,13 @@ function isUnionHoliday(dateStr){
                         if (esH > 0) {
                             for (let b = 1; b <= Math.ceil(esH * 4); b++) {
                                 let chunk = (b * 0.25 > esH) ? (esH - ((b-1) * 0.25)) : 0.25;
-                                if (isHoliday) { wk.hC += (esR * 2.5 * chunk); wk.hH += chunk; wk.incC += (esR * 2.5 * chunk); if(d===0 && fills) buck += chunk; } 
+                                if (isHoliday) { wk.hC += (esR * 2.5 * chunk); wk.hH += chunk; wk.incC += (esR * 2.5 * chunk); if(d===0 && fills) buck += chunk; }
                                 else { if(d===0) { wk.sC += (esR * 1.5 * chunk); wk.sH += chunk; wk.incC += (esR * 1.5 * chunk); if(fills) buck += chunk; } else { wk.oC += (esR * 1.5 * chunk); wk.oH += chunk; wk.incC += (esR * 1.5 * chunk); } }
                             }
                         }
                     }
                 }
-                
+
                 let smRateMult = parseFloat(document.getElementById('sm-'+w)?.getAttribute('data-rate')) || 1.5;
                 if(document.getElementById('sm-'+w)?.checked) { let smPay = workRate * smRateMult; wk.incC += smPay; if(smRateMult === 2.5) { wk.hH += 1; wk.hC += smPay; } else { wk.oH += 1; wk.oC += smPay; } }
 
@@ -1506,8 +1619,8 @@ function isUnionHoliday(dateStr){
                 totalWorkHrs += currentWkTotalHrs;
                 if (applyDiff) { shiftHours += (wk.rH + wk.oH + wk.sH + wk.hH); }
 
-                let wkGross = wk.rC+wk.vC+wk.oC+wk.sC+wk.hC+wk.uhC+wk.cC+vacBonus+(wk.incC*bPct) + wk.mtC; 
-                totalGross += wkGross; 
+                let wkGross = wk.rC+wk.vC+wk.oC+wk.sC+wk.hC+wk.uhC+wk.cC+vacBonus+(wk.incC*bPct) + wk.mtC;
+                totalGross += wkGross;
 
                 GT.rH+=wk.rH; GT.rC+=wk.rC; GT.vH+=wk.vH; GT.vC+=wk.vC; GT.oH+=wk.oH; GT.oC+=wk.oC; GT.cH+=wk.cH; GT.cC+=wk.cC; GT.sH+=wk.sH; GT.sC+=wk.sC; GT.hH+=wk.hH; GT.hC+=wk.hC; GT.incC += (wk.incC * bPct); GT.vbC += vacBonus;
                 GT.mtH+=wk.mtH; GT.mtC+=wk.mtC; GT.uhH+=wk.uhH; GT.uhC+=wk.uhC;
@@ -1536,12 +1649,12 @@ function isUnionHoliday(dateStr){
             <div class="grid-label" style="color:var(--gold)">Meal Ticket</div><div class="grid-hours">${GT.mtH}</div><div class="grid-rate"></div><div class="grid-amt">${f(GT.mtC)}</div>
             <div class="grid-label" style="color:#64ffda">Call Out</div><div class="grid-hours">${GT.cH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.cH>0?GT.cC/GT.cH:workRate)}</div><div class="grid-amt">${f(GT.cC)}</div><div class="grid-label" style="color:#e1bee7">Holiday UH</div><div class="grid-hours">${GT.uhH.toFixed(2)}h</div><div class="grid-rate">${fR(bidRate)}</div><div class="grid-amt">${f(GT.uhC)}</div><div class="grid-label" style="color:#ba68c8">Holiday Wk</div><div class="grid-hours">${GT.hH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.hH>0?GT.hC/GT.hH:workRate*2.5)}</div><div class="grid-amt">${f(GT.hC)}</div><div class="grid-label">Overtime</div><div class="grid-hours">${GT.oH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.oH>0?GT.oC/GT.oH:workRate*1.5)}</div><div class="grid-amt">${f(GT.oC)}</div><div class="grid-label" style="color:#ffa000">Sunday</div><div class="grid-hours">${GT.sH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.sH>0?GT.sC/GT.sH:workRate*1.5)}</div><div class="grid-amt">${f(GT.sC)}</div><div class="grid-label" style="color:#ffeb3b">Vacation</div><div class="grid-hours">${GT.vH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.vH>0?GT.vC/GT.vH:vacHourly)}</div><div class="grid-amt">${f(GT.vC)}</div><div class="grid-label" style="color:#ffd700">Vaca Bonus</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.vbC)}</div><div class="grid-label">Regular</div><div class="grid-hours">${GT.rH.toFixed(2)}h</div><div class="grid-rate">${fR(GT.rH>0?GT.rC/GT.rH:workRate)}</div><div class="grid-amt">${f(GT.rC)}</div><div class="grid-label" style="color:#ce93d8">Shift Diff</div><div class="grid-hours">${shiftHours.toFixed(2)}h</div><div class="grid-rate">$0.2500</div><div class="grid-amt">${f(sAmt)}</div><div class="grid-label" style="color:#b2dfdb">Incentive</div><div class="grid-hours"></div><div class="grid-rate"></div><div class="grid-amt">${f(GT.incC)}</div></div>`;
             document.getElementById('grossDisplay').innerText = f(totalGross);
-            
+
             lastCalcBreakdown = { Regular: GT.rC, Vacation: GT.vC, Overtime: GT.oC, Sunday: GT.sC, CallOut: GT.cC, HolidayWk: GT.hC, HolidayUH: GT.uhC, ShiftDiff: sAmt, Incentive: GT.incC, VacaBonus: GT.vbC, MealTicket: GT.mtC };
         lastCalcHours = { Regular: GT.rH, Vacation: GT.vH, Overtime: GT.oH, Sunday: GT.sH, CallOut: GT.cH, HolidayWk: GT.hH, HolidayUH: GT.uhH, ShiftDiff: shiftHours, Incentive: (parseFloat(document.getElementById('bonus-1').value)||0) + (parseFloat(document.getElementById('bonus-2').value)||0), VacaBonus: (GT.vbC > 0 ? 1 : 0), MealTicket: GT.mtH };
 
         let dR = parseFloat(document.getElementById('duesRate').value)||1.45; let dCF = parseFloat(document.getElementById('duesCapFactor').value)||1.2923; let dHrR = parseFloat(document.getElementById('duesHrRate').value)||0.02;
- 
+
          // PROTOCOL 4: NEW SMART DUAL-BUCKET UNION DUES ENGINE
         let totalDuesHours = totalWorkHrs + GT.cH; // Ensure Call-Out is included in divisor
         let duesEligibleGross = totalGross - GT.mtC; // Strip untaxed meal tickets
@@ -1550,7 +1663,7 @@ function isUnionHoliday(dateStr){
         let baseGross = duesEligibleGross - incentivePay;
         let baseDues = 0;
         let avgHrRate = 0;
- 
+
          if (totalDuesHours > 89.12) {
          avgHrRate = (totalDuesHours > 0) ? (baseGross / totalDuesHours) : 0;
          baseDues = avgHrRate * dCF;
@@ -1559,7 +1672,7 @@ function isUnionHoliday(dateStr){
         }
         let dEst = incentiveDues + baseDues;
         let totalFlatHrs = totalDuesHours;
- 
+
             let kR = (parseFloat(document.getElementById('kRate').value)||0)/100;
             let cityPct = document.getElementById('cityTaxRate').value !== "" ? parseFloat(document.getElementById('cityTaxRate').value) : 2.5;
             let ficaPct = document.getElementById('ficaRate').value !== "" ? parseFloat(document.getElementById('ficaRate').value) : 6.2;
@@ -1607,33 +1720,39 @@ function isUnionHoliday(dateStr){
                 stateTaxAmt = Math.max(0, r2((annOhioTax / 26) + ohExtra));
             }
 
-            let est = { 
-                k: r2((totalGross - GT.mtC) * kR), 
-                fed: fedTaxAmt, 
-                state: stateTaxAmt, 
-                city: r2(totalGross*(cityPct/100)), 
-                fica: r2(totalGross*(ficaPct/100)), 
-                med: r2(totalGross*(medPct/100)), 
-                dues: r2(dEst), 
-                duesHr: r2(totalFlatHrs*dHrR), 
-                life: parseFloat(document.getElementById('lifeEE').value)||0, 
-                addOpt: parseFloat(document.getElementById('addOpt').value)||0, 
-                charity: parseFloat(document.getElementById('charity').value)||0, 
-                l1: parseFloat(document.getElementById('loan1').value)||0, 
-                l2: parseFloat(document.getElementById('loan2').value)||0, 
-                garn: parseFloat(document.getElementById('garnishment').value)||0 
+            let rothVal = parseFloat(document.getElementById('rothVal')?.value) || 0;
+            let rothType = document.getElementById('rothType')?.value || 'pct';
+            let rothDeduction = (rothType === 'pct') ? r2((totalGross - GT.mtC) * (rothVal/100)) : rothVal;
+
+            let est = {
+                k: r2((totalGross - GT.mtC) * kR),
+                fed: fedTaxAmt,
+                state: stateTaxAmt,
+                city: r2(totalGross*(cityPct/100)),
+                fica: r2(totalGross*(ficaPct/100)),
+                med: r2(totalGross*(medPct/100)),
+                roth: rothDeduction,
+                dues: r2(dEst),
+                duesHr: r2(totalFlatHrs*dHrR),
+                life: parseFloat(document.getElementById('lifeEE').value)||0,
+                addOpt: parseFloat(document.getElementById('addOpt').value)||0,
+                charity: parseFloat(document.getElementById('charity').value)||0,
+                l1: parseFloat(document.getElementById('loan1').value)||0,
+                l2: parseFloat(document.getElementById('loan2').value)||0,
+                garn: parseFloat(document.getElementById('garnishment').value)||0
             };
-                        
+
             let act = auditData[currentPeriodId] || {}, finalD = 0; lastUsedDeductions = {};
             for(let key in deductionLabels) {
-                let eV = est[key], aV = act[key], used = (aV !== undefined) ? aV : eV; 
+                let eV = est[key] || 0;
+                let aV = act[key];
+                let used = (aV !== undefined && !isNaN(aV)) ? aV : eV;
                 finalD += used; lastUsedDeductions[key] = used;
                 if(document.getElementById('est-'+key)) document.getElementById('est-'+key).innerText = f(eV);
                 if(document.getElementById('delta-'+key)) {
-                    let dlt = (aV !== undefined) ? (aV - eV) : 0; 
+                    let dlt = (aV !== undefined) ? (aV - eV) : 0;
                     document.getElementById('delta-'+key).innerText = (aV !== undefined && Math.abs(dlt)>0.01) ? (dlt>0?"+":"" + dlt.toFixed(2)) : "";
                     document.getElementById('delta-'+key).style.color = dlt > 0 ? '#ff5252' : '#00c853';
-                    if(key === 'l1' || key === 'l2') { let stat = calcLoanStatus(key, new Date(periods[currentPeriodId-1].end), used); document.getElementById('detail-'+key).innerText = stat.txt; }
                     let btn = document.getElementById('action-'+key); if(btn) {
                     let base = (key=='city'||key=='dues') ? totalGross : (totalGross - est.k); 
                      // PROTOCOL 4: Removed key==='dues' from triggering the manual ↺ RATE button
@@ -1654,17 +1773,17 @@ function isUnionHoliday(dateStr){
         } catch(e) { console.error("Calc Error: " + e.message); }
     }
 
-    function toggleRO(w, d) { 
-        let r=document.getElementById(`ro-${w}-${d}`); 
-        let b=document.getElementById(`btn-${w}-${d}`); 
-        let t=document.getElementById(`time-${w}-${d}`); 
-        let c=document.getElementById(`card-${w}-${d}`); 
-        if(r.checked){ b.classList.remove('active'); t.value=""; c.classList.add('ro-active'); } 
-        else { c.classList.remove('ro-active'); } 
-        calc(); 
+    function toggleRO(w, d) {
+        let r=document.getElementById(`ro-${w}-${d}`);
+        let b=document.getElementById(`btn-${w}-${d}`);
+        let t=document.getElementById(`time-${w}-${d}`);
+        let c=document.getElementById(`card-${w}-${d}`);
+        if(r.checked){ b.classList.remove('active'); t.value=""; c.classList.add('ro-active'); }
+        else { c.classList.remove('ro-active'); }
+        calc();
     }
 
-    function getRate(l) { 
+    function getRate(l) {
         let baseInput = document.getElementById('rateL' + (l || 5));
         let base = baseInput ? parseFloat(baseInput.value) || baseRates[l || 5] : baseRates[l || 5];
         let useContract = document.getElementById('enable-contract')?.checked;
@@ -1696,19 +1815,19 @@ function isUnionHoliday(dateStr){
         return activeRate;
     }
 
-    function toggleAuditMode() { 
+    function toggleAuditMode() {
         let on = document.getElementById('audit-toggle').checked;
         let dl = document.getElementById('summary-deductions');
-        let btn = document.getElementById('deductions-btn'); 
-        
-        if (on) { 
-            dl.classList.add('audit-mode'); 
-            dl.style.display = 'flex'; 
+        let btn = document.getElementById('deductions-btn');
+
+        if (on) {
+            dl.classList.add('audit-mode');
+            dl.style.display = 'flex';
             if (btn) { btn.innerText = 'DEDUCTIONS ▲'; btn.style.background = 'rgba(255, 82, 82, 0.15)'; }
-        } else { 
-            dl.classList.remove('audit-mode'); 
-        } 
-        calc(); 
+        } else {
+            dl.classList.remove('audit-mode');
+        }
+        calc();
     }
 
     function toggleDeductionsDrawer() {
@@ -1746,21 +1865,21 @@ function isUnionHoliday(dateStr){
         }
     }
 
-    function requestRateUpdate(l, a, t, i, sl) { 
+    function requestRateUpdate(l, a, t, i, sl) {
         let r=(a/t)*100, c=parseFloat(document.getElementById(i).value);
-        if(confirm(`Update ${sl} Rate?\n\nBased on Taxable Income: $${t.toFixed(2)}\nActual Tax: $${a.toFixed(2)}\n\nNew Rate: ${r.toFixed(4)}%\nCurrent: ${c}%`)) { 
-            document.getElementById(i).value=r.toFixed(4); saveSettings(); calc(); 
-        } 
+        if(confirm(`Update ${sl} Rate?\n\nBased on Taxable Income: $${t.toFixed(2)}\nActual Tax: $${a.toFixed(2)}\n\nNew Rate: ${r.toFixed(4)}%\nCurrent: ${c}%`)) {
+            document.getElementById(i).value=r.toFixed(4); saveSettings(); calc();
+        }
     }
 
     // requestCapFactorUpdate removed via Protocol 4 (Surgical Strike)
 
-    function toggle12(w, d) { 
+    function toggle12(w, d) {
         let b = document.getElementById('btn-'+w+'-'+d);
         let t = document.getElementById('time-'+w+'-'+d);
-        if(b.classList.contains('active')) { b.classList.remove('active'); b.innerText = "12 HR"; t.value = ""; } 
+        if(b.classList.contains('active')) { b.classList.remove('active'); b.innerText = "12 HR"; t.value = ""; }
         else { b.classList.add('active'); b.innerText = "12 HR"; t.value = ""; }
-        calc(); 
+        calc();
     }
 
     function toggleExtra(w, d) { let c=document.getElementById('extra-'+w+'-'+d), s=document.getElementById('extra-rate-'+w+'-'+d); if(c.checked) s.classList.add('show'); else { s.classList.remove('show'); s.value="0"; } calc(); }
@@ -1768,20 +1887,20 @@ function isUnionHoliday(dateStr){
     function toggleMisc(w) {
         let sel = document.getElementById('misc-'+w).value;
         let stip = document.getElementById('stipend-'+w);
-        
+
         // Show or hide the Court Pay input based on Dropdown
-        if (sel === 'jd') { stip.style.display = 'block'; } 
+        if (sel === 'jd') { stip.style.display = 'block'; }
         else { stip.style.display = 'none'; stip.value = ""; }
-        
+
         // Scan the 7 days. Only show Ghost Boxes on scheduled work days
         for (let d = 0; d < 7; d++) {
             let lbl = document.getElementById(`ghost-label-${w}-${d}`);
             let txt = document.getElementById(`ghost-text-${w}-${d}`);
             let box = document.getElementById(`ghost-${w}-${d}`);
             let btn = document.getElementById(`btn-${w}-${d}`);
-            
-            let isScheduled = btn.classList.contains('active') || document.getElementById(`ro-${w}-${d}`).checked; 
-            
+
+            let isScheduled = btn.classList.contains('active') || document.getElementById(`ro-${w}-${d}`).checked;
+
             if (sel !== 'none' && isScheduled) {
                 lbl.style.display = 'flex';
                 txt.innerText = sel.toUpperCase();
@@ -1792,12 +1911,12 @@ function isUnionHoliday(dateStr){
         }
         calc();
     }
-    
-    
-    function toggleZone(type, w, d) { 
+
+
+    function toggleZone(type, w, d) {
         let muZone = document.getElementById(`zone-mu-${w}-${d}`);
         let esZone = document.getElementById(`zone-es-${w}-${d}`);
-        
+
         if (type === 'mu') {
             muZone.classList.toggle('show');
             if (muZone.classList.contains('show')) esZone.classList.remove('show');
@@ -1830,7 +1949,7 @@ function isUnionHoliday(dateStr){
         document.getElementById('ts-tax-manual').classList.remove('active');
         document.getElementById('tax-view-smart').style.display = 'none';
         document.getElementById('tax-view-manual').style.display = 'none';
-        
+
         document.getElementById('ts-tax-' + mode).classList.add('active');
         document.getElementById('tax-view-' + mode).style.display = 'block';
         document.getElementById('taxMode').value = mode;
@@ -1838,11 +1957,11 @@ function isUnionHoliday(dateStr){
         calc();
     }
 
-    function calcRateResult() { 
-        let g=parseFloat(document.getElementById('rt-gross').value)||0, t=parseFloat(document.getElementById('rt-tax').value)||0; 
+    function calcRateResult() {
+        let g=parseFloat(document.getElementById('rt-gross').value)||0, t=parseFloat(document.getElementById('rt-tax').value)||0;
         let kP=parseFloat(document.getElementById('kRate').value)||0;
         let taxable = g - (g * (kP/100));
-        if(taxable>0) document.getElementById('rt-result').innerText = ((t/taxable)*100).toFixed(4)+'%'; 
+        if(taxable>0) document.getElementById('rt-result').innerText = ((t/taxable)*100).toFixed(4)+'%';
     }
     function applyRate(targetId) { let res = document.getElementById('rt-result').innerText; if(res !== '0.000%') { document.getElementById(targetId).value = parseFloat(res).toFixed(4); calc(); saveSettings(); alert('Updated!'); } }
 
@@ -1925,7 +2044,7 @@ function isUnionHoliday(dateStr){
         const hire = document.getElementById('hire-date').value;
         if (!hire) return 0;
         const hireDate = new Date(hire);
-        const endOfYear = new Date(currentYear, 11, 31); 
+        const endOfYear = new Date(currentYear, 11, 31);
         const yrs = (endOfYear - hireDate)/(1000*60*60*24*365);
         if(yrs>=30) return 6; if(yrs>=24) return 5; if(yrs>=15) return 4; if(yrs>=5) return 3; if(yrs>=1) return 2; return 1;
     }
@@ -1943,7 +2062,7 @@ function isUnionHoliday(dateStr){
         sortedDates.forEach(dStr => {
             if(processed.has(dStr)) return;
             let d = new Date(dStr+'T12:00:00');
-            if(d.getDay() === 0) { 
+            if(d.getDay() === 0) {
                 let isBlock = true;
                 let blockArr = [dStr];
                 let curr = new Date(d);
@@ -1975,13 +2094,13 @@ function isUnionHoliday(dateStr){
         let baseRates = { 1: 28.51, 2: 31.21, 3: 34.32, 4: 36.12, 5: 38.37 };
         let cStart = document.getElementById('contract-start').value;
         if(!cStart) return;
-        
+
         let cDate = new Date(cStart);
         let now = new Date();
         let diffTime = Math.abs(now - cDate);
         let diffYears = Math.floor(diffTime / (1000 * 60 * 60 * 24 * 365));
-        
-        let type = document.getElementById('raise-type').value; 
+
+        let type = document.getElementById('raise-type').value;
         let r1 = parseFloat(document.getElementById('raise-1').value)||0;
         let r2 = parseFloat(document.getElementById('raise-2').value)||0;
         let r3 = parseFloat(document.getElementById('raise-3').value)||0;
@@ -2015,16 +2134,16 @@ function isUnionHoliday(dateStr){
         if(diffBox) diffBox.style.display = (crew === 'Custom') ? 'block' : 'none';
     }
 
-    function saveSettings() { 
-        let s = {}; 
+    function saveSettings() {
+        let s = {};
         document.querySelectorAll('#settings-view input, #settings-view select').forEach(el => {
             if(!el.classList.contains('dist-name') && !el.classList.contains('dist-amt')) {
                 if(el.type === 'checkbox') s[el.id] = el.checked;
-                else if(el.type === 'radio' && el.checked) s[el.name] = el.value; 
+                else if(el.type === 'radio' && el.checked) s[el.name] = el.value;
                 else if(el.type !== 'radio') s[el.id] = el.value;
             }
         });
-        
+
         let distArr = [];
         document.querySelectorAll('.dist-row').forEach(row => {
             let n = row.querySelector('.dist-name').value || "";
@@ -2034,7 +2153,9 @@ function isUnionHoliday(dateStr){
         s.distAccounts = distArr;
 
         s.wad = document.getElementById('wad-select').value; 
-        s.vacationDates = vacationDates;
+        masterVacationSilos[currentYear] = vacationDates; // Load active dates into the silo
+        s.vacationSilos = masterVacationSilos; // Save the master object to the phone
+        s.lastYear = currentYear; // Remember selected year
         localStorage.setItem('app_settings_v30', JSON.stringify(s)); 
         updateGhostRates();
         updateLoanBalances(); // SURGICAL STRIKE: Update the green labels on save
@@ -2047,7 +2168,7 @@ function isUnionHoliday(dateStr){
         let l2Amt = parseFloat(document.getElementById('loan2').value) || 0;
         let stat1 = calcLoanStatus('l1', anchor, l1Amt);
         let stat2 = calcLoanStatus('l2', anchor, l2Amt);
-        
+
         let lb1 = document.getElementById('l1-live-bal');
         let hover1 = document.getElementById('l1-hover-info');
         if(lb1) lb1.innerText = stat1.total > 0 ? f(stat1.bal) : "$0.00";
@@ -2063,42 +2184,56 @@ function isUnionHoliday(dateStr){
         let set = localStorage.getItem('app_settings_v30'); 
         if(set) { 
             let s = JSON.parse(set); 
+            if(s.lastYear) {
+                currentYear = parseInt(s.lastYear);
+                let ys = document.getElementById('year-selector');
+                if(ys) ys.value = currentYear;
+            }
             for (const [key, val] of Object.entries(s)) { 
-                let el = document.getElementById(key); 
+                let el = document.getElementById(key);
                 if(el) {
                     if(el.type === 'checkbox') el.checked = val;
-                    else el.value = val; 
+                    else el.value = val;
                 }
             }
-            
+
             let distContainer = document.getElementById('dist-list');
             if (distContainer) distContainer.innerHTML = "";
             if(s.distAccounts && Array.isArray(s.distAccounts)) {
                 s.distAccounts.forEach(d => addDistRow(d.name, d.amt));
             }
 
-            if(s.vacationDates && Array.isArray(s.vacationDates)) { vacationDates = s.vacationDates; } else { vacationDates = []; }
+            if (s.vacationSilos) { 
+                masterVacationSilos = s.vacationSilos; 
+            } else if (s.vacationDates && Array.isArray(s.vacationDates)) { 
+                // V3.8.0 Migration: Move old flat array into the 2026 silo safely
+                masterVacationSilos['2026'] = s.vacationDates; 
+            } else { 
+                masterVacationSilos = {}; 
+            }
+            vacationDates = masterVacationSilos[currentYear] || []; // Extract only the current year
+
              if(s.wad) document.getElementById('wad-select').value = s.wad;
          }
-         if(!Array.isArray(vacationDates)) vacationDates = []; // PROTOCOL 4: Root LocalStorage Fix
-         generateContractRows(); // V 3.7.X Fix: Redraw rows on load
+         if(!Array.isArray(vacationDates)) vacationDates = []; 
+         generateContractRows(); 
          updateVacationRateUI(); 
-         updateLoanBalances(); // SURGICAL STRIKE: Load the green labels on startup
+         updateLoanBalances(); 
      }
     function loadLedger() { let saved = localStorage.getItem(`ledger_${currentYear}_final`); if(saved) ledgerData = JSON.parse(saved); else ledgerData = {}; }
     function loadPeriodData(id) {
         let data = ledgerData[id]; auditData[id] = (data && data.actuals) ? data.actuals : {};
-        if(data && data.inputs && data.inputs['audit-toggle']) { 
-            document.getElementById('audit-toggle').checked = true; 
+        if(data && data.inputs && data.inputs['audit-toggle']) {
+            document.getElementById('audit-toggle').checked = true;
             let dl = document.getElementById('summary-deductions');
-            dl.classList.add('audit-mode'); 
+            dl.classList.add('audit-mode');
             dl.style.display = 'flex';
             let btn = document.getElementById('deductions-btn');
             if(btn) { btn.innerText = 'DEDUCTIONS ▲'; btn.style.background = 'rgba(255, 82, 82, 0.15)'; }
-        } else { 
-            document.getElementById('audit-toggle').checked = false; 
+        } else {
+            document.getElementById('audit-toggle').checked = false;
             let dl = document.getElementById('summary-deductions');
-            dl.classList.remove('audit-mode'); 
+            dl.classList.remove('audit-mode');
             dl.style.display = 'none';
             let btn = document.getElementById('deductions-btn');
             if(btn) { btn.innerText = 'DEDUCTIONS ▼'; btn.style.background = 'transparent'; }
@@ -2107,7 +2242,7 @@ function isUnionHoliday(dateStr){
         document.querySelectorAll('.btn-12').forEach(b => b.classList.remove('active')); document.querySelectorAll('.day-card').forEach(c => { c.classList.remove('ro-active'); c.classList.remove('status-hol'); c.classList.remove('status-xtra'); c.classList.remove('status-vac'); });
         if(data && data.inputs) {
             for (const [key, val] of Object.entries(data.inputs)) { let el = document.getElementById(key); if(el && key !== 'audit-toggle') { if(el.type === 'checkbox') el.checked = val; else if(el.classList.contains('btn-12') && val===true) el.classList.add('active'); else el.value = val; } }
-            
+
             // SURGICAL STRIKE: Force UI update for loaded manual time inputs
             for(let w=1; w<=2; w++) {
                 for(let d=0; d<7; d++) {
@@ -2122,29 +2257,63 @@ function isUnionHoliday(dateStr){
 
             if(data.inputs['sm-1']) document.getElementById('sm-1').setAttribute('data-rate', data.inputs['sm-rate-1'] || '1.5');
             if(data.inputs['sm-2']) document.getElementById('sm-2').setAttribute('data-rate', data.inputs['sm-rate-2'] || '1.5');
-            for(let w=1; w<=2; w++) { 
-                days.forEach((d,i) => { 
+            for(let w=1; w<=2; w++) {
+                days.forEach((d,i) => {
                     let muHrs = parseFloat(document.getElementById(`step-hrs-${w}-${i}`).value)>0;
                     let muRate = parseFloat(document.getElementById(`step-rate-${w}-${i}`).value)>0;
                     let esHrs = parseFloat(document.getElementById(`es-hrs-${w}-${i}`).value)>0;
                     let esRate = parseFloat(document.getElementById(`es-rate-${w}-${i}`).value)>0;
                     let mtOn = document.getElementById(`mt-${w}-${i}`).checked;
-                    
+
                     if (muHrs || muRate) {
                         document.getElementById(`zone-mu-${w}-${i}`).classList.add('show');
                     }
                     if (esHrs || esRate || mtOn) {
                         document.getElementById(`zone-es-${w}-${i}`).classList.add('show');
                     }
-                    
-                    if(document.getElementById(`ro-${w}-${i}`).checked) document.getElementById(`card-${w}-${i}`).classList.add('ro-active'); 
-                }); 
+
+                    if(document.getElementById(`ro-${w}-${i}`).checked) document.getElementById(`card-${w}-${i}`).classList.add('ro-active');
+                });
                 toggleMisc(w); // <--- THIS WAKES UP THE JURY DUTY UI ON LOAD
             }
         }
     }
-    function resetCheckData() { if(confirm("Are you sure? This will DELETE all saved checks for "+currentYear)) { localStorage.removeItem(`ledger_${currentYear}_final`); location.reload(); } }
-    function resetSettings() { if(confirm("Reset all settings?")) { localStorage.removeItem('app_settings_v30'); location.reload(); } }
+    function downloadBackup(filename, dataObj) {
+        let dataStr = JSON.stringify(dataObj, null, 2);
+        let blob = new Blob([dataStr], { type: "text/plain" });
+        let url = URL.createObjectURL(blob);
+        let a = document.createElement("a");
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    function resetCheckData() {
+        if(confirm("PARACHUTE PROTOCOL:\nWould you like to download a backup of your Paycheck Ledger data before resetting?")) {
+            let saved = localStorage.getItem(`ledger_${currentYear}_final`);
+            if(saved) downloadBackup(`AWS_Ledger_Backup_${currentYear}.txt`, JSON.parse(saved));
+            else alert("No check data found to backup.");
+        }
+        if(confirm(`⚠️ DANGER: Are you sure you want to PERMANENTLY DELETE all saved checks for ${currentYear}?`)) {
+            localStorage.removeItem(`ledger_${currentYear}_final`);
+            location.reload();
+        }
+    }
+
+    function resetSettings() {
+        if(confirm("PARACHUTE PROTOCOL:\nWould you like to download a backup of your Settings before wiping them?")) {
+            let set = localStorage.getItem('app_settings_v30');
+            if(set) downloadBackup('AWS_Settings_Backup.txt', JSON.parse(set));
+            else alert("No settings found to backup.");
+        }
+        if(confirm("⚠️ DANGER: Are you sure you want to PERMANENTLY wipe all app settings?")) {
+            localStorage.removeItem('app_settings_v30');
+            location.reload();
+        }
+    }
 
     let lcCurrentDate = new Date();
     let lcTargetInputId = null;
@@ -2166,13 +2335,13 @@ function isUnionHoliday(dateStr){
     function lcToggleYear() { let y = prompt("Enter Year:", lcCurrentDate.getFullYear()); if(y) { lcCurrentDate.setFullYear(parseInt(y)); lcRender(); } }
     function lcPrevMonth() { lcCurrentDate.setMonth(lcCurrentDate.getMonth()-1); lcRender(); }
     function lcNextMonth() { lcCurrentDate.setMonth(lcCurrentDate.getMonth()+1); lcRender(); }
-    function lcSelectDate(dStr) { 
+    function lcSelectDate(dStr) {
         let parts = dStr.split('-');
         let formatStr = `${parts[1]}/${parts[2]}/${parts[0].substring(2)}`;
-        document.getElementById(lcTargetInputId).value = formatStr; 
-        saveSettings(); 
-        if(lcTargetInputId.includes('start')) calc(); 
-        closeLoanCalendar(); 
+        document.getElementById(lcTargetInputId).value = formatStr;
+        saveSettings();
+        if(lcTargetInputId.includes('start')) calc();
+        closeLoanCalendar();
     }
     function lcRender() {
         const mNames = ['JANUARY','FEBRUARY','MARCH','APRIL','MAY','JUNE','JULY','AUGUST','SEPTEMBER','OCTOBER','NOVEMBER','DECEMBER'];
@@ -2186,12 +2355,12 @@ function isUnionHoliday(dateStr){
         let daysInMonth = new Date(y, m+1, 0).getDate();
         for(let i=0; i<firstDay; i++) grid.innerHTML += `<div class="lc-day empty"></div>`;
         let todayStr = new Date().toISOString().split('T')[0];
-        
+
         let rawSel = document.getElementById(lcTargetInputId).value;
         let selectedStr = rawSel;
         if(rawSel && rawSel.includes('/')) {
             let p = rawSel.split('/');
-            selectedStr = `20${p[2]}-${p[0]}-${p[1]}`; 
+            selectedStr = `20${p[2]}-${p[0]}-${p[1]}`;
         }
 
         for(let d=1; d<=daysInMonth; d++) {
@@ -2222,12 +2391,238 @@ function isUnionHoliday(dateStr){
             let target = null;
             for(let c of cards) { if(!c.classList.contains('verified')) { target = c; break; } }
             if(target) {
-                let headerOffset = 135; 
+                let headerOffset = 135;
                 let elementPosition = target.getBoundingClientRect().top;
                 let offsetPosition = elementPosition + window.scrollY - headerOffset;
                 window.scrollTo({ top: offsetPosition, behavior: "smooth" });
             }
         }, 100);
+    }
+
+    function exportData(method) {
+        let report = "==================================================\n";
+        report += "   AWS PAYCHECK LEDGER - VERIFIED DATA EXPORT\n";
+        report += "   Generated: " + new Date().toLocaleDateString() + "\n";
+        report += "==================================================\n\n";
+
+        let verifiedCount = 0;
+
+        periods.forEach(p => {
+            let data = ledgerData[p.id];
+            if (data && data.inputs && data.inputs['verified-toggle']) {
+                verifiedCount++;
+                report += `--------------------------------------------------\n`;
+                report += `CHECK #${p.id} | PAY DATE: ${p.payDate.toUpperCase()} | PERIOD: ${p.fullRange}\n`;
+                report += `--------------------------------------------------\n`;
+                report += `GROSS PAY: ${f(data.gross)}\n`;
+                report += `NET PAY:   ${f(data.net)}\n\n`;
+
+                report += `[ DAILY BREAKDOWN ]\n`;
+                let pStart = new Date(p.startDateObj);
+                const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                for(let w=1; w<=2; w++) {
+                    for(let d=0; d<7; d++) {
+                        let curD = new Date(pStart);
+                        curD.setDate(curD.getDate() + ((w-1)*7) + d);
+                        let dateStr = `${curD.getMonth()+1}/${curD.getDate()}`;
+                        let dName = dayNames[d];
+
+                        let inp = data.inputs || {};
+                        let isWorked = inp['btn-'+w+'-'+d];
+                        let timeInp = inp['time-'+w+'-'+d];
+                        let hrs = timeInp ? parseFloat(timeInp) : (isWorked ? 12 : 0);
+
+                        let ro = inp['ro-'+w+'-'+d];
+                        let xtra = inp['extra-'+w+'-'+d];
+                        let call = inp['call-'+w+'-'+d];
+                        let vacD = inp['vd-'+w+'-'+d];
+                        let vacW = inp['vw-'+w];
+                        let isVac = vacD || vacW;
+
+                        let sysHol = isUnionHoliday(curD.toISOString().split('T')[0]);
+                        let isHol = inp['hol-'+w+'-'+d] || sysHol;
+                        let mt = inp['mt-'+w+'-'+d];
+                        let esH = parseFloat(inp['es-hrs-'+w+'-'+d]) || 0;
+                        let stepH = parseFloat(inp['step-hrs-'+w+'-'+d]) || 0;
+
+                        let status = "";
+                        if (isVac) {
+                            status = "VACATION";
+                        } else if (ro) {
+                            status = "ROLLED OFF (RO)";
+                        } else if (!isWorked && hrs === 0 && esH === 0) {
+                            if (isHol) status = "OFF (UNWORKED HOLIDAY)";
+                            else status = "OFF";
+                        } else {
+                            let tot = hrs + esH;
+                            status = `${tot}h`;
+                            let flags = [];
+                            if (xtra) flags.push("XTRA");
+                            if (isHol) flags.push("HOL");
+                            if (call) flags.push("CALL-OUT");
+                            if (mt) flags.push("MEAL TKT");
+                            if (stepH > 0) flags.push("MOVE-UP");
+                            if (flags.length > 0) status += ` [${flags.join(', ')}]`;
+                        }
+
+                        let prefix = `  ${dName} ${dateStr}:`;
+                        report += prefix.padEnd(14, " ") + status + "\n";
+                    }
+                }
+                report += `\n`;
+
+                report += `[ HOURS & EARNINGS ]\n`;
+                if(data.breakdownHrs) {
+                    for(let k in data.breakdownHrs) {
+                        let hrs = data.breakdownHrs[k];
+                        if(hrs > 0) {
+                            if(k === 'MealTicket') report += `  Meal Tickets: ${hrs}\n`;
+                            else if(k === 'VacaBonus') report += `  Vacation Bonus: Active\n`;
+                            else if(k === 'Incentive') {
+                                let b1 = parseFloat(data.inputs['bonus-1']) || 0;
+                                let b2 = parseFloat(data.inputs['bonus-2']) || 0;
+                                report += `  Incentive W1: ${b1.toFixed(2)}%\n`;
+                                report += `  Incentive W2: ${b2.toFixed(2)}%\n`;
+                            }
+                            else report += `  ${k}: ${hrs.toFixed(2)}h\n`;
+                        }
+                    }
+                }
+
+                report += `\n[ DEDUCTIONS & TAXES ]\n`;
+                if(data.deductions) {
+                    for(let k in data.deductions) {
+                        let amt = data.deductions[k];
+                        let isOverride = (data.actuals && data.actuals[k] !== undefined);
+                        if(amt > 0 || isOverride) {
+                            let label = deductionLabels[k] || k;
+                            let overrideText = isOverride ? `  <-- (MANUAL OVERRIDE APPLIED)` : "";
+                            report += `  ${label}: ${f(amt)}${overrideText}\n`;
+                        }
+                    }
+                }
+                report += `\n\n`;
+            }
+        });
+
+        if (verifiedCount === 0) {
+            alert("Export Failed: You do not have any VERIFIED checks to export.");
+            return;
+        }
+
+        if (method === 'clipboard') {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(report).then(() => {
+                    alert("Success! Export copied to your clipboard.");
+                }).catch(err => { openExportOverlay(report); });
+            } else { openExportOverlay(report); }
+        } else if (method === 'share') {
+            if (navigator.share) {
+                navigator.share({
+                    title: `AWS Ledger Report - ${currentYear}`,
+                    text: report
+                }).catch(err => { openExportOverlay(report); });
+            } else { openExportOverlay(report); }
+        } else if (method === 'print') {
+            openExportOverlay(report);
+        }
+    }
+
+    function backupSystemData() {
+        try {
+            let payload = {
+                version: "3.8.0",
+                year: currentYear,
+                timestamp: new Date().toISOString(),
+                settings: JSON.parse(localStorage.getItem('app_settings_v30') || '{}'),
+                ledger: ledgerData
+            };
+            let dataStr = JSON.stringify(payload, null, 2);
+            let fileName = `AWS_System_Backup_${currentYear}.txt`;
+
+            // Detect if the user is on a mobile device
+            let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry/i.test(navigator.userAgent);
+
+            const triggerFallback = () => {
+                // 1. Try standard download (Works perfectly on laptops)
+                let blob = new Blob([dataStr], { type: "text/plain" });
+                let url = URL.createObjectURL(blob);
+                let a = document.createElement("a");
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                // 2. If it's a mobile device, the above download will silently fail.
+                // Wake up the Terminal Overlay half a second later so the user is never locked out.
+                if (isMobile) {
+                    setTimeout(() => {
+                        openExportOverlay(dataStr);
+                    }, 500);
+                }
+            };
+
+            // Attempt Native Mobile Share First
+            if (navigator.share && navigator.canShare) {
+                let file = new File([dataStr], fileName, { type: 'text/plain' });
+                if (navigator.canShare({ files: [file] })) {
+                    navigator.share({
+                        files: [file],
+                        title: 'AWS Ledger System Backup',
+                    }).catch(err => {
+                        triggerFallback();
+                    });
+                } else {
+                    triggerFallback();
+                }
+            } else {
+                // Not a secure HTTPS context (running locally), forces fallback
+                triggerFallback();
+            }
+        } catch (error) {
+            alert("Backup creation failed: " + error.message);
+        }
+    }
+
+    function restoreSystemData(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let importedData = JSON.parse(e.target.result);
+                if (!importedData.ledger || !importedData.settings) {
+                    alert("Invalid backup file format. Please select a valid AWS System Backup.");
+                    return;
+                }
+
+                if(confirm(`⚠️ PARACHUTE DEPLOYMENT ⚠️\n\nAre you sure you want to completely overwrite your current app with this backup file from ${new Date(importedData.timestamp).toLocaleString()}?`)) {
+                    localStorage.setItem('app_settings_v30', JSON.stringify(importedData.settings));
+                    localStorage.setItem(`ledger_${importedData.year}_final`, JSON.stringify(importedData.ledger));
+                    alert("System Restore Complete! The app will now reload.");
+                    location.reload();
+                }
+            } catch (err) {
+                alert("Failed to read file. It might be corrupted.");
+                console.error(err);
+            }
+            event.target.value = "";
+        };
+        reader.readAsText(file);
+    }
+
+    function openExportOverlay(text) {
+        let overlay = document.getElementById('export-overlay');
+        let textArea = document.getElementById('export-text-area');
+        textArea.value = text;
+        overlay.classList.add('show');
+    }
+
+    function closeExportOverlay() {
+        document.getElementById('export-overlay').classList.remove('show');
     }
 
     init();
